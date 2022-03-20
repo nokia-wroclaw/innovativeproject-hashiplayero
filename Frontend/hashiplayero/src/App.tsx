@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Suspense } from "react";
+import HeaderBar from "./components/HeaderBar";
+import NavBar from "./components/NavBar";
+import { Routes, Route } from "react-router-dom";
+import SinglePlay from "./SinglePlay/SinglePlay";
+import Dashboard from "./Dashboard/Dashboard";
+import CreateRoom from "./CreateRoom/CreateRoom";
+import FindRoom from "./FindRoom/FindRoom";
+import SignUp from "./SignUp/SignUp";
+import SignIn from "./SignIn/SignIn";
+import Faq from "./Faq/Faq";
+import Contact from "./Contact/Contact";
+import Rules from "./Rules/Rules";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <HeaderBar />
+        <div className="section columns">
+          <NavBar />
+          <main className="column">
+            <Suspense fallback={<div>Loading...</div>}></Suspense>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/singleplay" element={<SinglePlay />} />
+              <Route path="/createroom" element={<CreateRoom />} />
+              <Route path="/findroom" element={<FindRoom />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/faq" element={<Faq />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/rules" element={<Rules />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
