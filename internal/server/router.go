@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	rice "github.com/GeertJohan/go.rice"
-	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,7 +36,7 @@ func setRouter() *gin.Engine {
 
 	router.GET("/static/", gin.WrapH(http.FileServer(appBox.HTTPBox())))
 
-	router.Use(static.Serve("/", static.LocalFile("./../../ui/hashiplayero/build", true)))
+	router.Use(gin.WrapH(http.FileServer(appBox.HTTPBox())))
 
 	return router
 }
