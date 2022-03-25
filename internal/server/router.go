@@ -23,7 +23,7 @@ func setRouter() *gin.Engine {
 	router := gin.Default()
 
 	// Define the rice box with the frontend client static files.
-	appBox, err := rice.FindBox("../../ui/hashiplayero/build")
+	appBox, err := rice.FindBox("../../ui/build")
 	if err != nil {
 		log.Fatal(err)
 	}
