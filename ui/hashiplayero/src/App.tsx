@@ -11,6 +11,7 @@ import SignIn from "./SignIn/SignIn";
 import Faq from "./Faq/Faq";
 import Contact from "./Contact/Contact";
 import Rules from "./Rules/Rules";
+import Game from "./Game/Game";
 
 class App extends Component {
   render() {
@@ -18,19 +19,22 @@ class App extends Component {
       <div>
         <HeaderBar />
         <div className="section columns">
-          <NavBar />
+          {/* <NavBar /> */}
           <main className="column">
             <Suspense fallback={<div>Loading...</div>}></Suspense>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/singleplay" element={<SinglePlay />} />
-              <Route path="/createroom" element={<CreateRoom />} />
-              <Route path="/findroom" element={<FindRoom />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/faq" element={<Faq />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/rules" element={<Rules />} />
+              <Route path="/" element={<Dashboard />}>
+                <Route path="/singleplay" element={<SinglePlay />}>
+                  <Route path="/play" element={<Game />} />
+                </Route>
+                <Route path="/createroom" element={<CreateRoom />} />
+                <Route path="/findroom" element={<FindRoom />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/rules" element={<Rules />} />
+              </Route>
             </Routes>
           </main>
         </div>
