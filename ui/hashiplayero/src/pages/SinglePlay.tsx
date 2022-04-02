@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SinglePlay = () => {
   const [difficultyInput, setDifficultyInput] = useState(2);
   const [boardSizeInput, setBoardSizeInput] = useState(3);
   const [timeLimitInput, setTimeLimitInput] = useState(10);
   const [seedInput, setSeedInput] = useState("");
+  const navigate = useNavigate()
 
   const handleSetDifficultyInput = (event: any) => {
     setDifficultyInput(event.target.value);
@@ -22,6 +23,8 @@ const SinglePlay = () => {
   const handleSetSeedInput = (event: any) => {
     setSeedInput(event.target.value);
   };
+
+  const gameId = 1;
 
   //   const sendFormForData = () => {
   //     const options = {
@@ -50,8 +53,9 @@ const SinglePlay = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        // history("/singleplay/play")
-      });
+       
+      }); 
+    navigate(`${gameId}`);
   };
 
   return (
@@ -116,12 +120,15 @@ const SinglePlay = () => {
         <button
           className="button-single-play m-5"
           type="button"
-          onClick={sendFormForData}
+
+          //when onClick navigate to /singleplay/gameId
+          onClick={() => {
+            sendFormForData();
+          }}
         >
           <div className="text-start-game text-center">Play!</div>
         </button>
       </div>
-      <Outlet />
     </div>
   );
 };
