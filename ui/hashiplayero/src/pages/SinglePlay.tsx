@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { addFormData, addBoard, addBoardResult } from '../store/gameSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import initialGameData from '../components/initialGameData';
 
 const SinglePlay = () => {
+  const dispatch = useDispatch()
   const [difficultyInput, setDifficultyInput] = useState(2);
   const [boardSizeInput, setBoardSizeInput] = useState(3);
   const [timeLimitInput, setTimeLimitInput] = useState(10);
@@ -45,14 +49,23 @@ const SinglePlay = () => {
   //   };
 
   const sendFormForData = () => {
-    fetch("http://localhost:8080/api/puzzle", {
+    fetch("https://localhost:44354/WeatherForecast/puzzle", {
       method: "GET",
-      mode: "no-cors",
+      mode: 'no-cors',
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+
+        let initialData: initialGameData = {
+          seed: data.seed,
+          timeLimit: data.timeLimit,
+          boardSize: data.boardSize,
+          difficulty: data.boardResult,
+          board: data.board,
+          boardResult: data.boardResult,
+        };
+        dispatch(addFormData(initialData));
        
       }); 
     navigate(`${gameId}`);
