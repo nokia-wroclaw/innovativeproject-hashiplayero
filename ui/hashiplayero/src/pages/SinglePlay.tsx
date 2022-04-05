@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { addFormData, addBoard, addBoardResult } from '../store/gameSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import initialGameData from '../components/initialGameData';
+import axios from "axios"
 
 const SinglePlay = () => {
   const dispatch = useDispatch()
@@ -30,46 +31,24 @@ const SinglePlay = () => {
 
   const gameId = 1;
 
-  //   const sendFormForData = () => {
-  //     const options = {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         difficulty: difficultyInput,
-  //         boardSize: boardSizeInput,
-  //         timeLimit: timeLimitInput,
-  //         seed: seedInput,
-  //       }),
-  //     };
-  //     fetch("https://localhost.com/api/singleplayform", options)
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         console.log(data);
-  //       });
-  //   };
-
   const sendFormForData = () => {
-    fetch("https://localhost:44354/WeatherForecast/puzzle", {
-      method: "GET",
-      mode: 'no-cors',
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-
-        let initialData: initialGameData = {
-          seed: data.seed,
-          timeLimit: data.timeLimit,
-          boardSize: data.boardSize,
-          difficulty: data.boardResult,
-          board: data.board,
-          boardResult: data.boardResult,
-        };
-        dispatch(addFormData(initialData));
-       
-      }); 
+    axios.get("http://localhost:8080/api/puzzle")
+      .then(res => {
+        if (res.request.status === 200) {
+          let initialData: initialGameData = {
+            seed: res.data.seed,
+            timeLimit: res.data.timeLimit,
+            boardSize: res.data.boardSize,
+            difficulty: res.data.boardResult,
+            board: res.data.board,
+            boardResult: res.data.boardResult,
+          }
+          dispatch(addFormData(initialData));
+        }
+      })
+      .catch(err => console.log(err))
     navigate(`${gameId}`);
-  };
+  }
 
   return (
     <div className="form-play">
