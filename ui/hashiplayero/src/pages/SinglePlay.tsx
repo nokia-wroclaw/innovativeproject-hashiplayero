@@ -49,7 +49,7 @@ const SinglePlay = () => {
   //   };
 
   const sendFormForData = () => {
-    fetch("https://localhost:44354/WeatherForecast/puzzle", {
+    fetch("http://localhost:8080/albums", {
       method: "GET",
       mode: 'no-cors',
       headers: { "Content-Type": "application/json" },
@@ -66,7 +66,7 @@ const SinglePlay = () => {
           boardResult: data.boardResult,
         };
         dispatch(addFormData(initialData));
-       
+        
       }); 
     navigate(`${gameId}`);
   };
