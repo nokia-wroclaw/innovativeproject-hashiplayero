@@ -16,9 +16,9 @@ import Game from "./pages/Game";
 class App extends Component {
   render() {
     return (
-      <div>
+      <div className="main">
         <HeaderBar />
-        <div className="section columns">
+        <div className="main-content">
           {/* <NavBar /> */}
           <main className="column">
             <Suspense fallback={<div>Loading...</div>}></Suspense>

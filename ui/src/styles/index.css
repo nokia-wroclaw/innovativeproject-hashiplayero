@@ -1,0 +1,163 @@
+.main-navbar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  height: 80px;
+  padding: 0 20px;
+  background-color: #FFFFFF;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.main-navbar-menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: 18px;
+}
+
+.button-secondary {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+  color: #7081A6;
+  padding: 8px 16px;
+  margin: 0px 8px;
+  border: none;
+  background-color: #FFFFFF;
+  -webkit-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
+.button-secondary:hover {
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  color: #374157;
+  scale: 1.2;
+}
+
+.button-primary {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+  color: #FFFFFF;
+  padding: 8px 16px;
+  margin: 0px 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #5452E4;
+  -webkit-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+  margin-right: 24px;
+}
+
+.button-primary:hover {
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  scale: 1.1;
+  background-color: #403eb4;
+}
+
+.main-navbar-logo {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.button-logo {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+  color: #7081A6;
+  padding: 8px 16px;
+  margin: 0px 8px;
+  border: none;
+  background-color: #FFFFFF;
+  font-size: 22px;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  margin-right: 24px;
+}
+
+.button-logo .logo-text-first {
+  color: #5452E4;
+}
+
+.button-logo .logo-text-second {
+  color: #7081A6;
+}
+
+.button-logo:hover {
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  background-color: #403eb4;
+}
+
+.button-logo:hover .logo-text-first {
+  color: #FFFFFF;
+}
+
+.button-logo:hover .logo-text-second {
+  color: #8b89ec;
+}
+
+.main-content {
+  margin-top: 90px;
+}
+
+.button-primary-centered {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+  color: #FFFFFF;
+  padding: 8px 16px;
+  margin: 0px 8px;
+  border: none;
+  width: 160px;
+  border-radius: 4px;
+  background-color: #5452E4;
+  -webkit-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+  margin-right: 24px;
+}
+
+.button-primary-centered:hover {
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  scale: 1.1;
+  background-color: #403eb4;
+}
+/*# sourceMappingURL=index.css.map */

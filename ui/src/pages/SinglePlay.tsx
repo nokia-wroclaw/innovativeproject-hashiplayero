@@ -31,7 +31,6 @@ const SinglePlay = () => {
   };
 
   const gameId = 1;
-  // https://localhost:3001/api/puzzle
   const sendFormForData = () => {
     axios
       .get("http://localhost:3001/api/puzzle")
@@ -53,8 +52,7 @@ const SinglePlay = () => {
   };
 
   return (
-    <div className="form-play">
-      <div>
+    <div className="content-buttons">
         <div className="form-group">
           <label id="difficultyLabel">Difficulty</label>
           <input
@@ -112,16 +110,14 @@ const SinglePlay = () => {
           <small id="seedSmall" className="form-text text-muted"></small>
         </div>
         <button
-          className="button-single-play m-5"
+          className="button-primary-centered"
           type="button"
-          //when onClick navigate to /singleplay/gameId
           onClick={() => {
             sendFormForData();
           }}
         >
           <div className="text-start-game text-center">Play!</div>
         </button>
-      </div>
     </div>
   );
 };

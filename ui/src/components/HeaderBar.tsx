@@ -5,7 +5,7 @@ import HeaderBarSite from "./HeaderBarSide";
 const HeaderBar = () => (
   <header>
     <nav
-      className="navbar has-background-dark is-dark"
+      className="main-navbar"
       role="navigation"
       aria-label="main navigation"
     >

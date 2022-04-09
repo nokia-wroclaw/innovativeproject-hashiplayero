@@ -1,32 +1,14 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Dashboard = () => (
-  <div className="start-game">
-    <ul>
-      <li>
-        <NavLink to="/singleplay">
-          <button className="button-start-game" type="button">
-            <div className="text-start-game text-center">Play</div>
-          </button>
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/createroom">
-          <button className="button-start-game" type="button">
-            <div className="text-start-game text-center">Create Room</div>
-          </button>
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/findroom">
-          <button className="button-start-game" type="button">
-            <div className="text-start-game text-center">Find a Room</div>
-          </button>
-        </NavLink>
-      </li>
-    </ul>
+const Dashboard = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="content-buttons">
+      <button className="button-primary" onClick={() => navigate("/singleplay")}>Play</button>
+      <button className="button-primary" onClick={() => navigate("/createroom")}>Create a room</button>
+      <button className="button-primary" onClick={() => navigate("/findroom")}>Find a room</button>
   </div>
-);
+  )
+};
 
 export default Dashboard;

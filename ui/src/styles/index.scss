@@ -1,0 +1,143 @@
+$light_primary_background_color: #FFFFFF;
+
+$light_primary_button_color: #5452E4;
+$light_primary_button_color-hover: #403eb4;
+
+$light_secondary_button_color: #7081A6;
+$light_secondary_button_color-hover: #374157;
+
+$light_logo-secondary-color: #8b89ec;
+
+@mixin display-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-navbar{
+  @include display-flex;
+  width: 100%;
+  height: 80px;
+  padding: 0 20px;
+  background-color: $light_primary_background_color;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.main-navbar-menu{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+@mixin button-styling ($font_color){
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+  color: $font_color;
+  padding: 8px 16px;
+  margin: 0px 8px;
+  border: none;
+}
+
+.button-secondary{
+  @include button-styling($light_secondary_button_color);
+  background-color: $light_primary_background_color;
+  transition: all 0.1s ease;
+
+  &:hover{
+    transition: all 0.5s ease;
+    color: $light_secondary_button_color-hover;
+    scale: 1.2;
+  }
+}
+
+.button-primary{
+  @include button-styling($light_primary_background_color);
+  border-radius: 4px;
+  background-color: $light_primary_button_color;
+  transition: all 0.1s ease;
+  margin-right: 24px;
+  &:hover{
+    transition: all 0.5s ease;
+    scale: 1.1;
+    background-color: $light_primary_button_color-hover;
+  }
+}
+
+.main-navbar-logo{
+  @include display-flex;
+}
+
+.button-logo{
+  @include button-styling($light_secondary_button_color);
+  background-color: $light_primary_background_color;
+  font-size: 22px;
+  .logo-text-first{
+    color: $light_primary_button_color;
+  }
+  .logo-text-second{
+    color: $light_secondary_button_color;
+  }
+  transition: all 0.5s ease;
+  margin-right: 24px;
+  &:hover{
+    transition: all 0.5s ease;
+    background-color: $light_primary_button_color-hover;
+    .logo-text-first{
+      color: $light_primary_background_color;
+    }
+    .logo-text-second{
+      color: $light_logo-secondary-color;
+    }
+  }
+}
+
+// .main{
+//   width: 100%;
+//   height: 100%;
+// // }
+.main-content{
+  // display: flex;
+  // flex-direction: column;
+  // // justify-content: center;
+  // align-items: center;
+  margin-top: 90px;
+  // height: 100%;
+  // width: 100%;
+  // padding: 0 20px;
+}
+
+.button-primary-centered{
+  @include button-styling($light_primary_background_color);
+  width: 160px;
+  
+  border-radius: 4px;
+  background-color: $light_primary_button_color;
+  transition: all 0.1s ease;
+  margin-right: 24px;
+  &:hover{
+    transition: all 0.5s ease;
+    scale: 1.1;
+    background-color: $light_primary_button_color-hover;
+  }
+}
+
+// .content-buttons{
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+//   height: 100%;
+//   button{
+//     margin-top: 20px;
+//     width: 35vw;
+//   }
+// }
