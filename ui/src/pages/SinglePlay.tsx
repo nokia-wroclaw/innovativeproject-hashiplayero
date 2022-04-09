@@ -32,22 +32,41 @@ const SinglePlay = () => {
 
   const gameId = 1;
   // https://localhost:3001/api/puzzle
-  const sendFormForData = () => {
-    axios.get("http://localhost:3001/api/puzzle")
-      .then(res => {
-        if (res.request.status === 200) {
-          let initialData: initialGameData = {
-            seed: res.data.seed,
-            timeLimit: res.data.timeLimit,
-            boardSize: res.data.boardSize,
-            difficulty: res.data.boardResult,
-            board: res.data.puzzle,
-            boardResult: res.data.boardResult,
-          }
-          dispatch(addFormData(initialData));
-        }
-      })
-      .catch(err => console.log(err))
+  // const sendFormForData = () => {
+  //   axios.get("http://localhost:3001/api/puzzle")
+  //     .then(res => {
+  //       if (res.request.status === 200) {
+  //         let initialData: initialGameData = {
+  //           seed: res.data.seed,
+  //           timeLimit: res.data.timeLimit,
+  //           boardSize: res.data.boardSize,
+  //           difficulty: res.data.boardResult,
+  //           board: res.data.puzzle,
+  //           boardResult: res.data.boardResult,
+  //         }
+  //         dispatch(addFormData(initialData));
+  //       }
+  //     })
+  //     .catch(err => console.log(err))
+    fetch("http://localhost:8080/albums", {
+      method: "GET",
+      mode: 'no-cors',
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+
+        let initialData: initialGameData = {
+          seed: data.seed,
+          timeLimit: data.timeLimit,
+          boardSize: data.boardSize,
+          difficulty: data.boardResult,
+          board: data.board,
+          boardResult: data.boardResult,
+        };
+        dispatch(addFormData(initialData));
+        
+      }); 
     navigate(`${gameId}`);
   }
 
