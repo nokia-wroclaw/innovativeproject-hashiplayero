@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addFormData, addBoard, addBoardResult } from '../store/gameSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import initialGameData from '../components/initialGameData';
-import axios from "axios"
+import initialGameData from '../components/SingleGameData';
+import axios from "axios";
+import { useAppDispatch } from "../store/hooks";
 
 const SinglePlay = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch();
   const [difficultyInput, setDifficultyInput] = useState(2);
   const [boardSizeInput, setBoardSizeInput] = useState(3);
   const [timeLimitInput, setTimeLimitInput] = useState(10);
@@ -30,9 +31,9 @@ const SinglePlay = () => {
   };
 
   const gameId = 1;
-
+  // https://localhost:3001/api/puzzle
   const sendFormForData = () => {
-    axios.get("http://localhost:8080/api/puzzle")
+    axios.get("http://localhost:3001/api/puzzle")
       .then(res => {
         if (res.request.status === 200) {
           let initialData: initialGameData = {
@@ -40,7 +41,7 @@ const SinglePlay = () => {
             timeLimit: res.data.timeLimit,
             boardSize: res.data.boardSize,
             difficulty: res.data.boardResult,
-            board: res.data.board,
+            board: res.data.puzzle,
             boardResult: res.data.boardResult,
           }
           dispatch(addFormData(initialData));

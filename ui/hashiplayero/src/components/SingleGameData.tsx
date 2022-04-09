@@ -1,4 +1,4 @@
-interface initialGameData {
+interface SingleGameData {
     difficulty: number;
     boardSize: number;
     timeLimit: number;
@@ -7,4 +7,4 @@ interface initialGameData {
     boardResult: [];
 }
 
-export default initialGameData;
+export default SingleGameData;

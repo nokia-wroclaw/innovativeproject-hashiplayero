@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import initialGameData from "../components/initialGameData";
+import SingleGameData from "../components/SingleGameData";
+import type { RootState } from "./store";
 
 export const gameSlice = createSlice({
   name: "singleGame",
@@ -12,7 +13,7 @@ export const gameSlice = createSlice({
     boardResult: [],
   },
   reducers: {
-    addFormData: (state, action: PayloadAction<initialGameData>) => {
+    addFormData: (state, action: PayloadAction<SingleGameData>) => {
       state.difficulty = action.payload.difficulty;
       state.boardSize = action.payload.boardSize;
       state.timeLimit = action.payload.timeLimit;
@@ -30,5 +31,7 @@ export const gameSlice = createSlice({
 });
 
 export const { addFormData, addBoard, addBoardResult } = gameSlice.actions;
+
+export const selectSingleGame = (state: RootState) => state.singleGame;
 
 export default gameSlice.reducer;
