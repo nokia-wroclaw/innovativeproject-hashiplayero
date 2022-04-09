@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addFormData, addBoard, addBoardResult } from '../store/gameSlice';
-import { useSelector, useDispatch } from 'react-redux';
-import initialGameData from '../components/SingleGameData';
+import { addFormData, addBoard, addBoardResult } from "../store/gameSlice";
+import { useSelector, useDispatch } from "react-redux";
+import initialGameData from "../components/SingleGameData";
 import axios from "axios";
 import { useAppDispatch } from "../store/hooks";
 
@@ -12,7 +12,7 @@ const SinglePlay = () => {
   const [boardSizeInput, setBoardSizeInput] = useState(3);
   const [timeLimitInput, setTimeLimitInput] = useState(10);
   const [seedInput, setSeedInput] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSetDifficultyInput = (event: any) => {
     setDifficultyInput(event.target.value);
@@ -32,43 +32,25 @@ const SinglePlay = () => {
 
   const gameId = 1;
   // https://localhost:3001/api/puzzle
-  // const sendFormForData = () => {
-  //   axios.get("http://localhost:3001/api/puzzle")
-  //     .then(res => {
-  //       if (res.request.status === 200) {
-  //         let initialData: initialGameData = {
-  //           seed: res.data.seed,
-  //           timeLimit: res.data.timeLimit,
-  //           boardSize: res.data.boardSize,
-  //           difficulty: res.data.boardResult,
-  //           board: res.data.puzzle,
-  //           boardResult: res.data.boardResult,
-  //         }
-  //         dispatch(addFormData(initialData));
-  //       }
-  //     })
-  //     .catch(err => console.log(err))
-    fetch("http://localhost:8080/albums", {
-      method: "GET",
-      mode: 'no-cors',
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-
-        let initialData: initialGameData = {
-          seed: data.seed,
-          timeLimit: data.timeLimit,
-          boardSize: data.boardSize,
-          difficulty: data.boardResult,
-          board: data.board,
-          boardResult: data.boardResult,
-        };
-        dispatch(addFormData(initialData));
-        
-      }); 
+  const sendFormForData = () => {
+    axios
+      .get("http://localhost:3001/api/puzzle")
+      .then((res) => {
+        if (res.request.status === 200) {
+          let initialData: initialGameData = {
+            seed: res.data.seed,
+            timeLimit: res.data.timeLimit,
+            boardSize: res.data.boardSize,
+            difficulty: res.data.boardResult,
+            board: res.data.puzzle,
+            boardResult: res.data.boardResult,
+          };
+          dispatch(addFormData(initialData));
+        }
+      })
+      .catch((err) => console.log(err));
     navigate(`${gameId}`);
-  }
+  };
 
   return (
     <div className="form-play">
@@ -132,7 +114,6 @@ const SinglePlay = () => {
         <button
           className="button-single-play m-5"
           type="button"
-
           //when onClick navigate to /singleplay/gameId
           onClick={() => {
             sendFormForData();
