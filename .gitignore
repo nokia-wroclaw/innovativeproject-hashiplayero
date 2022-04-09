@@ -208,3 +208,5 @@ sketch
 ui/hashiplayero/build
 app
 rice-box.go
+
+package-lock.json

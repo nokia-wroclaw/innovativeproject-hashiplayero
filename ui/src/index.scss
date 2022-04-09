@@ -10,8 +10,6 @@ $link: $primary; // #00b3e6; // #ff4081;
 
 $shade-light: #fafafa;
 
-@import 'bulma/bulma.sass';
-
 header {
   font-weight: bold;
   font-family: Arial;
@@ -50,4 +48,99 @@ header {
       color: greenyellow;
     }
   }
+}
+
+.start-game {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+
+  position: absolute;
+  width: 555px;
+  height: 458px;
+  left: calc(50% - 555px / 2 - 4.5px);
+  top: calc(50% - 458px / 2 - 90.5px);
+}
+
+.button-start-game {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 8px 16px;
+
+  position: static;
+  width: 555px;
+  height: 129px;
+  left: 0px;
+  top: 0px;
+
+  background: #5452e4;
+  border-radius: 12px;
+
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+  margin: 36px 0px;
+}
+
+.text-start-game {
+  position: static;
+  width: 523px;
+  height: 113px;
+  left: 20px;
+  top: 8px;
+
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 49px;
+
+  color: #ffffff;
+
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 1;
+  margin: 0px 10px;
+}
+
+.form-play {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+
+  position: absolute;
+  width: 809px;
+  height: 548px;
+  left: calc(50% - 809px / 2 + 25px);
+  top: calc(50% - 548px / 2 - 90px) - 100px;
+
+  background: #ffffff;
+  border: 1px solid #cbd4e6;
+  box-sizing: border-box;
+
+  box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1),
+    0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  border-radius: 8px;
+}
+
+.button-single-play {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+
+  width: 243px;
+  height: 81px;
+  left: 579px;
+  top: 581px;
+
+  background: #5452e4;
+  border-radius: 12px;
 }
