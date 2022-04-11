@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addFormData, addBoard, addBoardResult } from "../store/gameSlice";
-import { useSelector, useDispatch } from "react-redux";
+import { addFormData } from "../store/gameSlice";
 import initialGameData from "../components/SingleGameData";
 import axios from "axios";
 import { useAppDispatch } from "../store/hooks";
+import {
+  FormControl,
+  Grid,
+  Input,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 
 const SinglePlay = () => {
   const dispatch = useAppDispatch();
@@ -37,12 +44,12 @@ const SinglePlay = () => {
       .then((res) => {
         if (res.request.status === 200) {
           let initialData: initialGameData = {
-            seed: res.data.seed,
-            timeLimit: res.data.timeLimit,
-            boardSize: res.data.boardSize,
-            difficulty: res.data.boardResult,
+            seed: seedInput,
+            timeLimit: timeLimitInput,
+            boardSize: boardSizeInput,
+            difficulty: difficultyInput,
             board: res.data.puzzle,
-            boardResult: res.data.boardResult,
+            boardResult: [],
           };
           dispatch(addFormData(initialData));
         }
@@ -52,73 +59,81 @@ const SinglePlay = () => {
   };
 
   return (
-    <div className="content-buttons">
-        <div className="form-group">
-          <label id="difficultyLabel">Difficulty</label>
-          <input
-            type="number"
-            min="0"
-            max="10"
-            value={difficultyInput}
-            className="form-control"
-            id="difficultyInput"
-            onChange={handleSetDifficultyInput}
-          />
-          <small
-            id="difficultySmallNumber"
-            className="form-text text-muted"
-          ></small>
-        </div>
-        <div className="form-group">
-          <label id="boardSizeLabel">Board size</label>
-          <input
-            type="number"
-            min="0"
-            max="10"
-            value={boardSizeInput}
-            className="form-control"
-            id="boardSizeInput"
-            onChange={handleSetBoardSizeInput}
-          />
-          <small
-            id="boardSizeSmallSmall"
-            className="form-text text-muted"
-          ></small>
-        </div>
-        <div className="form-group">
-          <label id="timeLimitLabel">Time limit</label>
-          <input
-            type="number"
-            min="0"
-            max="10"
-            value={timeLimitInput}
-            className="form-control"
-            id="timeLimitInput"
-            onChange={handleSetTimeLimitInput}
-          />
-          <small id="timeLimitSmall" className="form-text text-muted"></small>
-        </div>
-        <div className="form-group">
-          <label id="seedLabel">Seed</label>
-          <input
-            type="text"
-            value={seedInput}
-            className="form-control"
-            id="seedInput"
-            onChange={handleSetSeedInput}
-          />
-          <small id="seedSmall" className="form-text text-muted"></small>
-        </div>
-        <button
-          className="button-primary-centered"
-          type="button"
-          onClick={() => {
-            sendFormForData();
-          }}
-        >
-          <div className="text-start-game text-center">Play!</div>
-        </button>
-    </div>
+    <>
+      <Grid
+        container
+        direction="column"
+        justifyContent="flex-start"
+        alignItems="center"
+        spacing={4}
+      >
+        <Grid item minWidth={400}>
+          <FormControl fullWidth>
+            <InputLabel id="boardSizeLabel">Board size</InputLabel>
+            <Select
+              labelId="boardSizeLabelId"
+              id="boardSizeInput"
+              value={boardSizeInput}
+              label="Boardsize"
+              defaultValue={5}
+              onChange={handleSetBoardSizeInput}
+            >
+              <MenuItem value={5}>Five</MenuItem>
+              <MenuItem value={9}>Nine</MenuItem>
+              <MenuItem value={15}>Fifteen</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item minWidth={400}>
+          <FormControl fullWidth>
+            <InputLabel id="boardSizeLabel">Difficulty</InputLabel>
+            <Input
+              id="difficultyInput"
+              type="number"
+              defaultValue="2"
+              value={difficultyInput}
+              onChange={handleSetDifficultyInput}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item minWidth={400}>
+          <FormControl fullWidth>
+            <InputLabel id="timeLimitLabel">Time limit</InputLabel>
+            <Input
+              id="timeLimitInput"
+              type="number"
+              defaultValue="10"
+              value={timeLimitInput}
+              onChange={handleSetTimeLimitInput}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item minWidth={400}>
+          <FormControl fullWidth>
+            <InputLabel id="timeLimitLabel">Seed</InputLabel>
+            <Input
+              id="seedInput"
+              type="text"
+              value={seedInput}
+              onChange={handleSetSeedInput}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item minWidth={400}>
+          <div className="content-buttons">
+            <button
+              className="button-primary-centered"
+              type="button"
+              onClick={() => {
+                sendFormForData();
+              }}
+            >
+              <div className="text-start-game text-center">Play!</div>
+            </button>
+          </div>
+        </Grid>
+      </Grid>
+    </>
   );
 };
 
