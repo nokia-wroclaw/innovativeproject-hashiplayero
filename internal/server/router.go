@@ -9,6 +9,7 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type BoardSize int
@@ -54,6 +55,33 @@ func HandleBoardData(c *gin.Context) {
 	}
 }
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func wshandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer conn.Close()
+	for {
+		mt, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+		log.Printf("recv: %s", message)
+		err = conn.WriteMessage(mt, message)
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+	}
+}
+
 func setRouter() *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
@@ -73,6 +101,13 @@ func setRouter() *gin.Engine {
 	// Create API route group
 	api := router.Group("/api")
 	api.POST("/puzzle", HandleBoardData)
+
+	// Create the websocket route group
+	ws := router.Group("/ws")
+	ws.Use(CORSMiddleware())
+	ws.GET("/", func(c *gin.Context) {
+		wshandler(c.Writer, c.Request)
+	})
 
 	router.GET("/static/", gin.WrapH(http.FileServer(appBox.HTTPBox())))
 
