@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addFormData } from "../store/gameSlice";
 import initialGameData from "../components/SingleGameData";
-import axios from "axios";
+import ky from 'ky'
 import { useAppDispatch } from "../store/hooks";
 import {
   FormControl,
@@ -39,10 +39,10 @@ const SinglePlay = () => {
 
   const gameId = 1;
   const sendFormForData = () => {
-    axios
-      .get("http://localhost:3001/api/puzzle")
-      .then((res) => {
-        if (res.request.status === 200) {
+    ky
+      .get("http://localhost:3001/api/puzzle").json()
+      .then((res: any) => {
+        if (res.status === 'success') {
           let initialData: initialGameData = {
             seed: seedInput,
             timeLimit: timeLimitInput,
