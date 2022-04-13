@@ -1,60 +1,68 @@
 package server
 
 import (
+	"fmt"
+	"innovativeproject-hashiplayero/hashi"
 	"log"
 	"net/http"
 
-	"innovativeproject-hashiplayero/hashi"
-
 	rice "github.com/GeertJohan/go.rice"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-type Puzzle struct {
-	Seed int     `json:"seed"`
-	Grid [][]int `json:"puzzle"`
+type BoardSize int
+
+const (
+	SmallSize  BoardSize = 7
+	MediumSize BoardSize = 10
+	BigSize    BoardSize = 15
+)
+
+type Difficulty int
+
+const (
+	Easy Difficulty = iota
+	Medium
+	Hard
+)
+
+type BoardSettings struct {
+	Difficulty `json:"difficulty"`
+	BoardSize  `json:"size"`
 }
 
-func PuzzleFromBoard(b hashi.Board) Puzzle {
-	p := Puzzle{}
+type BoardData struct {
+	BoardSettings `json:"settings"`
+	Array         []int `json:"array"`
+}
 
-	p.Grid = make([][]int, b.Height)
-	for y := range p.Grid {
-		p.Grid[y] = make([]int, b.Width)
-		for x := range p.Grid[y] {
-			p.Grid[y][x] = b.Nodes[y*b.Width+x].Bridges
+func HandleBoardData(c *gin.Context) {
+	bs := BoardSettings{}
+	err := c.BindJSON(&bs)
+	if err != nil {
+		text := fmt.Sprintf("Failed to read user data from request: %s", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": text})
+	} else {
+		board := hashi.GenerateBoard(int(bs.BoardSize), int(bs.BoardSize), int(bs.BoardSize/2), 0.5)
+		boardArray := make([]int, bs.BoardSize*bs.BoardSize)
+		for i, n := range board.Nodes {
+			boardArray[i] = n.Bridges
 		}
-	}
-
-	return p
-}
-
-func getBoard(c *gin.Context) {
-	board := hashi.GenerateBoard(9, 11, 25, 0.5)
-	p := PuzzleFromBoard(board)
-	c.JSON(http.StatusOK, p)
-}
-
-// https://stackoverflow.com/a/29439630/17240808
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-
-		c.Next()
+		bd := BoardData{bs, boardArray}
+		c.JSON(http.StatusOK, bd)
 	}
 }
 
 func setRouter() *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"OPTIONS", "GET", "POST"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+	}))
 
 	// Define the rice box with the frontend client static files.
 	appBox, err := rice.FindBox("../../ui/build")
@@ -64,8 +72,7 @@ func setRouter() *gin.Engine {
 
 	// Create API route group
 	api := router.Group("/api")
-	api.Use(CORSMiddleware())
-	api.GET("/puzzle", getBoard)
+	api.POST("/puzzle", HandleBoardData)
 
 	router.GET("/static/", gin.WrapH(http.FileServer(appBox.HTTPBox())))
 
