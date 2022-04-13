@@ -1,5 +1,54 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Stage, Layer, Text, Circle, Group } from "react-konva";
+import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
+
+interface Point{
+  x: number;
+  y: number;
+}
+
+const getCrossSection = (board: number[], width: number, loc: number) => {
+  const rowStart = Math.floor(loc / width) * width;
+
+  const output = [];
+
+  for(let i = loc + 1; i < rowStart + width; i++) {
+      if(board[i] === 0) {
+        continue;
+      } else if (board[i] > 0) {
+        output.push(i);
+        break;
+      }
+  }
+
+  for(let i = loc - 1; i >= rowStart; i--) {
+    if(board[i] === 0) {
+      continue;
+    } else if (board[i] > 0) {
+      output.push(i);
+      break;
+    }
+  }
+
+  for(let i = loc + width; i < board.length; i += width) {
+    if(board[i] === 0) {
+      continue;
+    } else if (board[i] > 0) {
+      output.push(i);
+      break;
+    }
+  }
+
+  for(let i = loc - width; i > 0; i -= width) {
+    if(board[i] === 0) {
+      continue;
+    } else if (board[i] > 0) {
+      output.push(i);
+      break;
+    }
+  }
+
+  return output;
+};
 
 const Game = () => {
   const [gameData, setGameData] = useState({
@@ -17,6 +66,10 @@ const Game = () => {
     ],
     boardResult: [],
   });
+
+  let arr: number[] = [];
+
+  const [hoveredNode, setHoveredNode] = useState(-1);
 
   const [width, setWidth] = useState(100);
   const [height, setHeight] = useState(100);
@@ -41,7 +94,7 @@ const Game = () => {
   const [shapes, setShapes] = useState(INITIAL_STATE);
 
   function generateShapes() {
-    const arr = gameData.board.reduce((acc, curr) => acc.concat(curr), []);
+    arr = gameData.board.reduce((acc, curr) => acc.concat(curr), []);
     const nodes = arr.map((value, index) => {
       return {
         id: index,
@@ -74,7 +127,21 @@ const Game = () => {
       >
         <Stage width={width} height={width}>
           <Layer>
-            {shapes.map((shape) =>
+          {
+              // line = {from: {x: 0, y: 0}, to: {x: 0, y: 0}}
+              // połączenie wartość: -1
+              hoveredNode >= 0 ? 
+                getCrossSection(arr, gameData.boardSize, hoveredNode).map(
+                  (node) =>     
+                  <Line
+                    points={[shapes[hoveredNode].x, shapes[hoveredNode].y, shapes[node].x, shapes[node].y ]}
+                    stroke= 'yellow'
+                    strokeWidth={20}
+                  />
+                )
+               : null
+            }
+            {shapes.map((shape, index) =>
               shape.value !== 0 ? (
                 <Group key={shape.id}>
 
@@ -85,6 +152,10 @@ const Game = () => {
                     radius={shape.radius}
                     stroke="black"
                     fill="white"
+                    onMouseOver={() => {
+                      setHoveredNode(index);
+                    }}
+                    onMouseLeave={() => {setHoveredNode(-1);}}
                   />
                   <Text text={shape.value.toString()} 
                     x={shape.x} 
@@ -92,11 +163,17 @@ const Game = () => {
                     fontSize={shape.fontSize}
                     offsetX={shape.fontSize/4}
                     offsetY={shape.fontSize/3}
-                    
+                    zIndex={1}
+                    onMouseEnter={() => {
+                      setHoveredNode(index);
+                    }}
+                    onMouseLeave={() => {setHoveredNode(-1);}}
                   />
                 </Group>
               ) : null
             )}
+
+            
           </Layer>
         </Stage>
       </div>
