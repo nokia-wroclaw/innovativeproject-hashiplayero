@@ -4,7 +4,6 @@ import { ThemeProvider } from "@emotion/react";
 import lightTheme from "./theme/lightTheme";
 
 import HeaderBar from "./components/HeaderBar";
-import NavBar from "./components/NavBar";
 import { Routes, Route } from "react-router-dom";
 import SinglePlay from "./pages/SinglePlay";
 import Dashboard from "./pages/Dashboard";
