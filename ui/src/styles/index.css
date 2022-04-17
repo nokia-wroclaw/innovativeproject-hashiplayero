@@ -133,7 +133,8 @@
 }
 
 .main-content {
-  margin-top: 90px;
+  border: black 1px solid;
+  margin: 10px;
 }
 
 .button-primary-centered {

@@ -1,6 +1,9 @@
 import React, { Component, Suspense } from "react";
+
+import { ThemeProvider } from "@emotion/react";
+import lightTheme from "./theme/lightTheme";
+
 import HeaderBar from "./components/HeaderBar";
-import NavBar from "./components/NavBar";
 import { Routes, Route } from "react-router-dom";
 import SinglePlay from "./pages/SinglePlay";
 import Dashboard from "./pages/Dashboard";
@@ -16,10 +19,10 @@ import Game from "./pages/Game";
 class App extends Component {
   render() {
     return (
+      <ThemeProvider theme={lightTheme}>
       <div className="main">
         <HeaderBar />
         <div className="main-content">
-          {/* <NavBar /> */}
           <main className="column">
             <Suspense fallback={<div>Loading...</div>}></Suspense>
             <Routes>
@@ -37,6 +40,7 @@ class App extends Component {
           </main>
         </div>
       </div>
+      </ThemeProvider>
     );
   }
 }

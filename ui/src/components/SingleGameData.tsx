@@ -3,8 +3,8 @@ interface SingleGameData {
     boardSize: number;
     timeLimit: number;
     seed: string;
-    board: [];
-    boardResult: [];
+    board: number[];
+    boardResult: number[];
 }
 
 export default SingleGameData;

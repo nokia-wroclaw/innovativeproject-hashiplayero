@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addFormData } from "../store/gameSlice";
 import initialGameData from "../components/SingleGameData";
-import ky from 'ky'
+import ky from "ky";
 import { useAppDispatch } from "../store/hooks";
 import {
   FormControl,
@@ -39,20 +39,18 @@ const SinglePlay = () => {
 
   const gameId = 1;
   const sendFormForData = () => {
-    ky
-      .get("http://localhost:3001/api/puzzle").json()
+    ky.get("http://localhost:3001/api/puzzle")
+      .json()
       .then((res: any) => {
-        if (res.status === 'success') {
-          let initialData: initialGameData = {
-            seed: seedInput,
-            timeLimit: timeLimitInput,
-            boardSize: boardSizeInput,
-            difficulty: difficultyInput,
-            board: res.data.puzzle,
-            boardResult: [],
-          };
-          dispatch(addFormData(initialData));
-        }
+        let initialData: initialGameData = {
+          seed: seedInput,
+          timeLimit: timeLimitInput,
+          boardSize: boardSizeInput,
+          difficulty: difficultyInput,
+          board: res.puzzle,
+          boardResult: [],
+        };
+        dispatch(addFormData(initialData));
       })
       .catch((err) => console.log(err));
     navigate(`${gameId}`);
