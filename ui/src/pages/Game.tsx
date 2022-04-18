@@ -5,9 +5,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 
 interface Bridge {
-  nodeFrom : number;
-  nodeTo : number;
-  value : number;
+  nodeFrom: number;
+  nodeTo: number;
+  value: number;
 }
 
 const getCrossSection = (board: number[], width: number, loc: number) => {
@@ -15,17 +15,8 @@ const getCrossSection = (board: number[], width: number, loc: number) => {
 
   const output: number[] = [];
 
-  for(let i = loc + 1; i < rowStart + width; i++) {
-      if(board[i] === 0) {
-        continue;
-      } else if (board[i] > 0) {
-        output.push(i);
-        break;
-      }
-  }
-
-  for(let i = loc - 1; i >= rowStart; i--) {
-    if(board[i] === 0) {
+  for (let i = loc + 1; i < rowStart + width; i++) {
+    if (board[i] === 0) {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
@@ -33,8 +24,8 @@ const getCrossSection = (board: number[], width: number, loc: number) => {
     }
   }
 
-  for(let i = loc + width; i < board.length; i += width) {
-    if(board[i] === 0) {
+  for (let i = loc - 1; i >= rowStart; i--) {
+    if (board[i] === 0) {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
@@ -42,8 +33,17 @@ const getCrossSection = (board: number[], width: number, loc: number) => {
     }
   }
 
-  for(let i = loc - width; i > 0; i -= width) {
-    if(board[i] === 0) {
+  for (let i = loc + width; i < board.length; i += width) {
+    if (board[i] === 0) {
+      continue;
+    } else if (board[i] > 0) {
+      output.push(i);
+      break;
+    }
+  }
+
+  for (let i = loc - width; i > 0; i -= width) {
+    if (board[i] === 0) {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
@@ -59,8 +59,7 @@ const Game = () => {
     (state: RootState) => state.singleGame
   );
 
-  const [lines, setLines] = useState([{
-  }] as Bridge[]);
+  const [lines, setLines] = useState([{}] as Bridge[]);
 
   let arr: number[] = [];
 
@@ -77,7 +76,7 @@ const Game = () => {
       setWidth(event[0].contentBoxSize[0].inlineSize);
       setHeight(event[0].contentBoxSize[0].inlineSize);
     });
-    
+
     if (stageCanvasRef.current) {
       resizeObserver.observe(stageCanvasRef.current);
     }
@@ -85,7 +84,7 @@ const Game = () => {
 
   const INITIAL_STATE = generateShapes();
   const [shapes, setShapes] = useState(INITIAL_STATE);
-  
+
   useEffect(() => {
     setShapes(INITIAL_STATE);
   }, [width, height, boardSize, board]);
@@ -108,64 +107,67 @@ const Game = () => {
       .catch((err) => console.log(err));
   };
 
-
   function generateShapes() {
     arr = board.reduce((acc: number[], curr: number) => acc.concat(curr), []);
-    const nodes = arr.map((value, index) => {
+    const nodes = board.map((value, index) => {
       return {
         id: index,
         value: value,
         radius: width / boardSize / 4,
         x: ((index % boardSize) * width) / boardSize + width / boardSize / 2,
         y:
-          (Math.floor(index / boardSize) * height) /
-            boardSize +
+          (Math.floor(index / boardSize) * height) / boardSize +
           width / boardSize / 2,
         fontSize: width / boardSize / 10,
         isSelected: false,
-        color: 'white',
+        color: "white",
       };
     });
 
     return nodes;
   }
 
-  function drawLine (index: number) {
+  function drawLine(index: number) {
     let indexToRemember = lastNode;
     if (lastNode === -1) {
       setLastNode(index);
-      shapes[index].color='red';
+      shapes[index].color = "red";
       return;
-    }
-    else if (lastNode === index) {
-      shapes[index].color='white';
+    } else if (lastNode === index) {
+      shapes[index].color = "white";
       setLastNode(-1);
       return;
     } else {
-      shapes[lastNode].color='white';
+      shapes[lastNode].color = "white";
       setLastNode(index);
-      shapes[index].color='red';
-      getCrossSection(arr, boardSize, indexToRemember).map(
-        (node) => {
-          if (node === index) {
-            console.log(node);
-            const line = lines.find((line) => line.nodeFrom === indexToRemember && line.nodeTo === node || line.nodeFrom === node && line.nodeTo === indexToRemember);
-            if (line) {
-              line.value = line.value + 1;
-              if (line.value >= 3){
-                line.value = 0;
-              }
-            } else {
-              setLines([...lines, {
+      shapes[index].color = "red";
+      getCrossSection(arr, boardSize, indexToRemember).map((node) => {
+        if (node === index) {
+          console.log(node);
+          const line = lines.find(
+            (line) =>
+              (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
+              (line.nodeFrom === node && line.nodeTo === indexToRemember)
+          );
+          if (line) {
+            line.value = line.value + 1;
+            if (line.value >= 3) {
+              line.value = 0;
+            }
+          } else {
+            setLines([
+              ...lines,
+              {
                 nodeFrom: indexToRemember,
                 nodeTo: node,
                 value: 1,
-              }]);
-          };
-        }});
+              },
+            ]);
+          }
+        }
+      });
       return;
     }
-
   }
 
   return (
@@ -174,50 +176,55 @@ const Game = () => {
         style={{ width: "100%", border: "1px solid grey" }}
         ref={stageCanvasRef}
       >
-        <Stage 
-          width={width} 
-          height={width}
-        >
+        <Stage width={width} height={width}>
           <Layer>
-          {
-              hoveredNode >= 0 ? 
-                getCrossSection(arr, boardSize, hoveredNode).map(
-                  (node) => 
-                    <Line
+            {hoveredNode >= 0
+              ? getCrossSection(arr, boardSize, hoveredNode).map((node) => (
+                  <Line
                     key={node}
-                    points={[shapes[hoveredNode].x, shapes[hoveredNode].y, shapes[node].x, shapes[node].y ]}
-                    stroke= 'yellow'
+                    points={[
+                      shapes[hoveredNode].x,
+                      shapes[hoveredNode].y,
+                      shapes[node].x,
+                      shapes[node].y,
+                    ]}
+                    stroke="yellow"
                     strokeWidth={20}
-                  />              
-                )
-               : null
-          }
-          {
-            lines.map((line: Bridge, index: number)=>{
-              if (line.value === 1){
-                return(
+                  />
+                ))
+              : null}
+            {lines.map((line: Bridge, index: number) => {
+              if (line.value === 1) {
+                return (
                   <Line
-                  key={index}
-                  points={[shapes[line.nodeFrom].x, shapes[line.nodeFrom].y, shapes[line.nodeTo].x, shapes[line.nodeTo].y ]}
-                  stroke= 'black'
-                  strokeWidth={5}
-                />  
-                )
-              }
-              else if (line.value === 2){
-                return(
+                    key={index}
+                    points={[
+                      shapes[line.nodeFrom].x,
+                      shapes[line.nodeFrom].y,
+                      shapes[line.nodeTo].x,
+                      shapes[line.nodeTo].y,
+                    ]}
+                    stroke="black"
+                    strokeWidth={5}
+                  />
+                );
+              } else if (line.value === 2) {
+                return (
                   <Line
-                  key={index}
-                  points={[shapes[line.nodeFrom].x, shapes[line.nodeFrom].y, shapes[line.nodeTo].x, shapes[line.nodeTo].y ]}
-                  stroke= 'blue'
-                  strokeWidth={10}
-                />  
-                )
+                    key={index}
+                    points={[
+                      shapes[line.nodeFrom].x,
+                      shapes[line.nodeFrom].y,
+                      shapes[line.nodeTo].x,
+                      shapes[line.nodeTo].y,
+                    ]}
+                    stroke="blue"
+                    strokeWidth={10}
+                  />
+                );
               }
-             
-            })
-          }
-            
+            })}
+
             {shapes.map((shape, index) =>
               shape.value !== 0 ? (
                 <Group key={shape.id}>
@@ -228,31 +235,32 @@ const Game = () => {
                     radius={shape.radius}
                     stroke="black"
                     fill={shape.color}
-                    
                     onMouseOver={() => {
                       setHoveredNode(index);
                     }}
-                    onMouseLeave={() => {setHoveredNode(-1);}}
-                    onMouseDown={()=>drawLine(index)}
+                    onMouseLeave={() => {
+                      setHoveredNode(-1);
+                    }}
+                    onMouseDown={() => drawLine(index)}
                   />
                   <Text
                     text={shape.value.toString()}
                     x={shape.x}
                     y={shape.y}
                     fontSize={shape.fontSize}
-                    offsetX={shape.fontSize/4}
-                    offsetY={shape.fontSize/3}
+                    offsetX={shape.fontSize / 4}
+                    offsetY={shape.fontSize / 3}
                     zIndex={1}
                     onMouseEnter={() => {
                       setHoveredNode(index);
                     }}
-                    onMouseLeave={() => {setHoveredNode(-1);}}
+                    onMouseLeave={() => {
+                      setHoveredNode(-1);
+                    }}
                   />
                 </Group>
               ) : null
             )}
-
-            
           </Layer>
         </Stage>
       </div>

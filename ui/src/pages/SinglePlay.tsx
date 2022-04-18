@@ -39,15 +39,17 @@ const SinglePlay = () => {
 
   const gameId = 1;
   const sendFormForData = () => {
-    ky.get("http://localhost:3001/api/puzzle")
+    ky.post("http://localhost:3001/api/puzzle", {
+      json: { difficulty: difficultyInput, size: boardSizeInput },
+    })
       .json()
       .then((res: any) => {
         let initialData: initialGameData = {
           seed: seedInput,
           timeLimit: timeLimitInput,
-          boardSize: boardSizeInput,
-          difficulty: difficultyInput,
-          board: res.puzzle,
+          boardSize: res.settings.size,
+          difficulty: res.settings.difficulty,
+          board: res.array,
           boardResult: [],
         };
         dispatch(addFormData(initialData));
@@ -76,8 +78,8 @@ const SinglePlay = () => {
               defaultValue={5}
               onChange={handleSetBoardSizeInput}
             >
-              <MenuItem value={5}>Five</MenuItem>
-              <MenuItem value={9}>Nine</MenuItem>
+              <MenuItem value={7}>Seven</MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
               <MenuItem value={15}>Fifteen</MenuItem>
             </Select>
           </FormControl>
