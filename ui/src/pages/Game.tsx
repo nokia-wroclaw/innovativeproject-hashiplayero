@@ -1,28 +1,22 @@
+import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
-interface Line{
-  nodeFrom : number;
-  nodeTo : number;
-  value : number;
+interface Bridge {
+  nodeFrom: number;
+  nodeTo: number;
+  value: number;
 }
 
 const getPossibleNodes = (board: number[], width: number, loc: number) => {
   const rowStart = Math.floor(loc / width) * width;
 
-  const output = [];
+  const output: number[] = [];
 
-  for(let i = loc + 1; i < rowStart + width; i++) {
-      if(board[i] === 0) {
-        continue;
-      } else if (board[i] > 0) {
-        output.push(i);
-        break;
-      }
-  }
-
-  for(let i = loc - 1; i >= rowStart; i--) {
-    if(board[i] === 0) {
+  for (let i = loc + 1; i < rowStart + width; i++) {
+    if (board[i] === 0) {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
@@ -30,8 +24,8 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
     }
   }
 
-  for(let i = loc + width; i < board.length; i += width) {
-    if(board[i] === 0) {
+  for (let i = loc - 1; i >= rowStart; i--) {
+    if (board[i] === 0) {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
@@ -39,8 +33,17 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
     }
   }
 
-  for(let i = loc - width; i > 0; i -= width) {
-    if(board[i] === 0) {
+  for (let i = loc + width; i < board.length; i += width) {
+    if (board[i] === 0) {
+      continue;
+    } else if (board[i] > 0) {
+      output.push(i);
+      break;
+    }
+  }
+
+  for (let i = loc - width; i > 0; i -= width) {
+    if (board[i] === 0) {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
@@ -52,37 +55,17 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
 };
 
 const Game = () => {
-  const [gameData, setGameData] = useState({
-    difficulty: 2,
-    boardSize: 6,
-    timeLimit: 10,
-    seed: "",
-    board: [
-      [8, 1, 1, 0, 1,2],
-      [2, 0, 0, 1, 0,1],
-      [2, 0, 1, 0, 1,1],
-      [2, 0, 1, 0, 1,1],
-      [2, 0, 1, 0, 1,1],
-      [2, 0, 1, 0, 1,1],
-    ],
-    boardResult: [],
-  });
+  const { board, boardSize, boardResult } = useSelector(
+    (state: RootState) => state.singleGame
+  );
 
-  const [lines, setLines] = useState([{
-    nodeFrom: 1,
-    nodeTo: 2,
-    value: 1,
-  }, {
-    nodeFrom: 16,
-    nodeTo: 4,
-    value: 1,
-  }] as Line[]);
+  const [lines, setLines] = useState([{}] as Bridge[]);
 
   let arr: number[] = [];
 
-  const [hoveredNode, setHoveredNode] = useState(-1);
+  const [hoveredNode, setHoveredNode] = useState<number>(-1);
 
-  const [lastNode, setLastNode] = useState(-1);
+  const [lastNode, setLastNode] = useState<number>(-1);
 
   const [width, setWidth] = useState(100);
   const [height, setHeight] = useState(100);
@@ -99,52 +82,66 @@ const Game = () => {
     }
   }, [stageCanvasRef]);
 
-  useEffect(() => {
-    setShapes(INITIAL_STATE);
-  }, [width, height]);
-
   const INITIAL_STATE = generateShapes();
   const [shapes, setShapes] = useState(INITIAL_STATE);
 
+  useEffect(() => {
+    setShapes(INITIAL_STATE);
+  }, [width, height, boardSize, board]);
+
+  const handleCheckResult = () => {
+    axios
+      .post("http://localhost:3001/api/gameresult", {
+        board: board,
+        boardResult: boardResult,
+      })
+      .then((res) => {
+        if (res.request.status === 200) {
+          if (res.data.result) {
+            console.log("WIN");
+          } else {
+            console.log("INCORRECT");
+          }
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
   function generateShapes() {
-    arr = gameData.board.reduce((acc, curr) => acc.concat(curr), []);
-    const nodes = arr.map((value, index) => {
+    arr = board.reduce((acc: number[], curr: number) => acc.concat(curr), []);
+    const nodes = board.map((value, index) => {
       return {
         id: index,
         value: value,
-        radius: width / gameData.boardSize / 4,
-        x:
-          ((index % gameData.boardSize) * width) / gameData.boardSize +
-          width / gameData.boardSize / 2,
+        radius: width / boardSize / 4,
+        x: ((index % boardSize) * width) / boardSize + width / boardSize / 2,
         y:
-          (Math.floor(index / gameData.boardSize) * height) /
-            gameData.boardSize +
-          width / gameData.boardSize / 2,
-        fontSize: width / gameData.boardSize / 10,
+          (Math.floor(index / boardSize) * height) / boardSize +
+          width / boardSize / 2,
+        fontSize: width / boardSize / 10,
         isSelected: false,
-        color: 'white',
+        color: "white",
       };
     });
 
     return nodes;
   }
 
-  function drawLine (index: number) {
+  function drawLine(index: number) {
     let indexToRemember = lastNode;
     if (lastNode === -1) {
       setLastNode(index);
-      shapes[index].color='red';
+      shapes[index].color = "red";
       return;
-    }
-    else if (lastNode === index) {
-      shapes[index].color='white';
+    } else if (lastNode === index) {
+      shapes[index].color = "white";
       setLastNode(-1);
       return;
     } else {
-      shapes[lastNode].color='white';
+      shapes[lastNode].color = "white";
       setLastNode(index);
       shapes[index].color='red';
-      getPossibleNodes(arr, gameData.boardSize, indexToRemember).map(
+      getPossibleNodes(arr, boardSize, indexToRemember).map(
         (node) => {
           if (node === index) {
             console.log(node);
@@ -177,12 +174,13 @@ const Game = () => {
                 nodeFrom: indexToRemember,
                 nodeTo: node,
                 value: 1,
-              }]);
-          };
-        }});
+              },
+            ]);
+          }
+        }
+      });
       return;
     }
-
   }
 
   return (
@@ -191,54 +189,58 @@ const Game = () => {
         style={{ width: "100%", border: "1px solid grey" }}
         ref={stageCanvasRef}
       >
-        <Stage 
-          width={width} 
-          height={width}
-        >
+        <Stage width={width} height={width}>
           <Layer>
-          {
-              hoveredNode >= 0 ? 
-                getPossibleNodes(arr, gameData.boardSize, hoveredNode).map(
-                  (node) => 
-                    <Line
+            {hoveredNode >= 0
+              ? getPossibleNodes(arr, boardSize, hoveredNode).map((node) => (
+                  <Line
                     key={node}
-                    points={[shapes[hoveredNode].x, shapes[hoveredNode].y, shapes[node].x, shapes[node].y ]}
-                    stroke= 'yellow'
+                    points={[
+                      shapes[hoveredNode].x,
+                      shapes[hoveredNode].y,
+                      shapes[node].x,
+                      shapes[node].y,
+                    ]}
+                    stroke="yellow"
                     strokeWidth={20}
-                  />              
-                )
-               : null
-          }
-          {
-            lines.map((line,index)=>{
-              if (line.value == 1){
-                return(
+                  />
+                ))
+              : null}
+            {lines.map((line: Bridge, index: number) => {
+              if (line.value === 1) {
+                return (
                   <Line
-                  key={index}
-                  points={[shapes[line.nodeFrom].x, shapes[line.nodeFrom].y, shapes[line.nodeTo].x, shapes[line.nodeTo].y ]}
-                  stroke= 'black'
-                  strokeWidth={5}
-                />  
-                )
-              }
-              else if (line.value == 2){
-                return(
+                    key={index}
+                    points={[
+                      shapes[line.nodeFrom].x,
+                      shapes[line.nodeFrom].y,
+                      shapes[line.nodeTo].x,
+                      shapes[line.nodeTo].y,
+                    ]}
+                    stroke="black"
+                    strokeWidth={5}
+                  />
+                );
+              } else if (line.value === 2) {
+                return (
                   <Line
-                  key={index}
-                  points={[shapes[line.nodeFrom].x, shapes[line.nodeFrom].y, shapes[line.nodeTo].x, shapes[line.nodeTo].y ]}
-                  stroke= 'blue'
-                  strokeWidth={10}
-                />  
-                )
+                    key={index}
+                    points={[
+                      shapes[line.nodeFrom].x,
+                      shapes[line.nodeFrom].y,
+                      shapes[line.nodeTo].x,
+                      shapes[line.nodeTo].y,
+                    ]}
+                    stroke="blue"
+                    strokeWidth={10}
+                  />
+                );
               }
-             
-            })
-          }
-            
+            })}
+
             {shapes.map((shape, index) =>
               shape.value !== 0 ? (
                 <Group key={shape.id}>
-
                   <Circle
                     key={shape.id}
                     x={shape.x}
@@ -246,30 +248,32 @@ const Game = () => {
                     radius={shape.radius}
                     stroke="black"
                     fill={shape.color}
-                    
                     onMouseOver={() => {
                       setHoveredNode(index);
                     }}
-                    onMouseLeave={() => {setHoveredNode(-1);}}
-                    onMouseDown={()=>drawLine(index)}
+                    onMouseLeave={() => {
+                      setHoveredNode(-1);
+                    }}
+                    onMouseDown={() => drawLine(index)}
                   />
-                  <Text text={shape.value.toString()} 
-                    x={shape.x} 
-                    y={shape.y} 
+                  <Text
+                    text={shape.value.toString()}
+                    x={shape.x}
+                    y={shape.y}
                     fontSize={shape.fontSize}
-                    offsetX={shape.fontSize/4}
-                    offsetY={shape.fontSize/3}
+                    offsetX={shape.fontSize / 4}
+                    offsetY={shape.fontSize / 3}
                     zIndex={1}
                     onMouseEnter={() => {
                       setHoveredNode(index);
                     }}
-                    onMouseLeave={() => {setHoveredNode(-1);}}
+                    onMouseLeave={() => {
+                      setHoveredNode(-1);
+                    }}
                   />
                 </Group>
               ) : null
             )}
-
-            
           </Layer>
         </Stage>
       </div>

@@ -205,7 +205,7 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/go,node,react,visualstudiocode
 
-ui/hashiplayero/build
+ui/build
 app
 rice-box.go
 

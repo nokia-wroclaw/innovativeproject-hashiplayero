@@ -1,29 +1,196 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
-import { Box, Grid, Paper } from "@mui/material";
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
+import React, { useState } from "react";
+import ky from 'ky'
+import {
+    Box,
+    FormGroup,
+    FormControlLabel,
+    FormControl,
+    Grid,
+    Input,
+    InputLabel,
+    Switch,
+} from "@mui/material";
 
 const CreateRoom = () => {
-  return (
-    <>
-        <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-              {Array.from(Array(3)).map((_, index) => (
-                <Grid item xs={2} sm={4} md={4} key={index}>
-                    <Item>xs=2</Item>
+    const [amountOfPlayersInput, setAmountOfPlayersInput] = useState<number>(2);
+    const [roomNameInput, setRoomNameInput] = useState<string>("");
+    const [passwordInput, setPasswordInput] = useState<string>("");
+    const [seedInput, setSeedInput] = useState<string>("");
+    const [difficultyInput, setDifficultyInput] = useState<number>(2);
+    const [boardSizeInput, setBoardSizeInput] = useState<number>(10);
+    const [timeLimitInput, setTimeLimitInput] = useState<number>(10);
+    const [enableTimeLimitInput, setEnableTimeLimitInput] = useState<boolean>(false);
+    const [isDisabled, setIsDisabled] = useState<boolean>(true);
+
+    const handleSetAmountOfPlayersInput = (event: any) => {
+        setAmountOfPlayersInput(event.target.value);
+    };
+    const handleSetRoomNameInput = (event: any) => {
+        setRoomNameInput(event.target.value);
+    };
+    const handleSetPasswordInput = (event: any) => {
+        setPasswordInput(event.target.value);
+    };
+    const handleSetSeedInput = (event: any) => {
+        setSeedInput(event.target.value);
+    };
+    const handleSetDifficultyInput = (event: any) => {
+        setDifficultyInput(event.target.value);
+    };
+    const handleSetBoardSizeInput = (event: any) => {
+        setBoardSizeInput(event.target.value);
+    };
+    const handleSetTimeLimitInput = (event: any) => {
+        setTimeLimitInput(event.target.value);
+    };
+    const handleSetEnableTimeLimitInput = (event: any) => {
+        setEnableTimeLimitInput(event.target.checked);
+        if (!event.target.checked) {
+            setIsDisabled(true);
+        }
+        else {
+            setIsDisabled(false);
+        }
+    };
+
+    const handleCreateRoom = () => {
+
+        const formData = new FormData();
+        formData.append('name', roomNameInput);
+        formData.append('password', passwordInput);
+        formData.append('seed', seedInput);
+        formData.append('players', amountOfPlayersInput.toString());
+        formData.append('difficulty', difficultyInput.toString());
+        formData.append('boardSize', boardSizeInput.toString());
+
+        if (!enableTimeLimitInput) {
+            formData.append('timeLimit', "null");
+        }
+        else {
+            formData.append('timeLimit', timeLimitInput.toString());
+        }
+
+        const response = ky.put("http://localhost:3001/api/createroom", {
+            body: formData
+        })
+    }
+
+    return (
+        <>
+            <Grid
+                container
+                direction="column"
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={4}
+            >
+                <Grid item minWidth={400}>
+                    <FormControl fullWidth>
+                        <InputLabel id="roomNameLabel">Room name</InputLabel>
+                        <Input
+                            id="roomNameInput"
+                            type="text"
+                            value={roomNameInput}
+                            onChange={handleSetRoomNameInput}
+                        />
+                    </FormControl>
                 </Grid>
-              ))}
-          </Grid>
-        </Box>
-    </>
-  );
-};
+                <Grid item minWidth={400}>
+                    <FormControl fullWidth>
+                        <InputLabel id="passwordLabel">Password</InputLabel>
+                        <Input
+                            id="passwordInput"
+                            type="Password"
+                            value={passwordInput}
+                            onChange={handleSetPasswordInput}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item minWidth={400}>
+                    <FormControl fullWidth>
+                        <InputLabel id="seedLabel">Seed</InputLabel>
+                        <Input
+                            id="seedInput"
+                            type="text"
+                            value={seedInput}
+                            onChange={handleSetSeedInput}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item minWidth={400}>
+                    <FormControl fullWidth>
+                        <InputLabel id="playersLabel">Amount Of Players</InputLabel>
+                        <Input
+                            id="playersInput"
+                            type="number"
+                            value={amountOfPlayersInput}
+                            onChange={handleSetAmountOfPlayersInput}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item minWidth={400}>
+                    <FormControl fullWidth>
+                        <InputLabel id="difficultyLabel">Difficulty</InputLabel>
+                        <Input
+                            id="diffucltyInput"
+                            type="number"
+                            value={difficultyInput}
+                            onChange={handleSetDifficultyInput}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item minWidth={400}>
+                    <FormControl fullWidth>
+                        <InputLabel id="boardSizeLabel">Board size</InputLabel>
+                        <Input
+                            id="boardSizeInput"
+                            type="number"
+                            value={boardSizeInput}
+                            onChange={handleSetBoardSizeInput}
+                        />
+                    </FormControl>
+                </Grid>
+                <FormGroup>
+                    <Box
+                        sx={{
+                            mt: 3
+                        }}>
+                        <FormControlLabel
+                            control={<Switch defaultChecked />}
+                            label="Enable Time Limit"
+                            checked={enableTimeLimitInput}
+                            onChange={handleSetEnableTimeLimitInput}
+                        />
+                    </Box>
+                </FormGroup>
+                <Grid item minWidth={400}>
+                    <FormControl fullWidth>
+                        <InputLabel id="boardSizeLabel">Time limit</InputLabel>
+                        <Input
+                            disabled={isDisabled}
+                            id="timeLimitInput"
+                            type="number"
+                            value={timeLimitInput}
+                            onChange={handleSetTimeLimitInput}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item minWidth={400}>
+                    <div className="content-buttons">
+                        <button
+                            className="button-primary-centered"
+                            type="button"
+                            onClick={() => {
+                                handleCreateRoom();
+                            }}
+                        >
+                            <div className="text-start-game text-center">Create room!</div>
+                        </button>
+                    </div>
+                </Grid>
+            </Grid>
+        </>
+    );
+}
 
 export default CreateRoom;
