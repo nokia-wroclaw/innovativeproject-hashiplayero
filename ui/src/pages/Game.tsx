@@ -7,7 +7,7 @@ interface Line{
   value : number;
 }
 
-const getCrossSection = (board: number[], width: number, loc: number) => {
+const getPossibleNodes = (board: number[], width: number, loc: number) => {
   const rowStart = Math.floor(loc / width) * width;
 
   const output = [];
@@ -144,7 +144,7 @@ const Game = () => {
       shapes[lastNode].color='white';
       setLastNode(index);
       shapes[index].color='red';
-      getCrossSection(arr, gameData.boardSize, indexToRemember).map(
+      getPossibleNodes(arr, gameData.boardSize, indexToRemember).map(
         (node) => {
           if (node === index) {
             console.log(node);
@@ -155,6 +155,24 @@ const Game = () => {
                 line.value = 0;
               }
             } else {
+              let smaller = indexToRemember;
+              let bigger = node;
+              if (bigger < smaller) {
+                [smaller, bigger] = [bigger, smaller];
+              }
+              // const rowStart = Math.floor(smaller / width) * width;
+              // const rowEnd = rowStart + width;
+              const isHorizontal = Math.floor(smaller / width) === Math.floor(bigger / width);
+              if (isHorizontal){
+                for (let i = smaller + 1; i < bigger - 1; i++) {
+                  arr[i] = -1;
+                }
+              } else {
+                for (let i = smaller + width; i < bigger - width; i += width) {
+                  arr[i] = -1;
+                }
+              }
+              console.log(arr)
               setLines([...lines, {
                 nodeFrom: indexToRemember,
                 nodeTo: node,
@@ -180,7 +198,7 @@ const Game = () => {
           <Layer>
           {
               hoveredNode >= 0 ? 
-                getCrossSection(arr, gameData.boardSize, hoveredNode).map(
+                getPossibleNodes(arr, gameData.boardSize, hoveredNode).map(
                   (node) => 
                     <Line
                     key={node}
