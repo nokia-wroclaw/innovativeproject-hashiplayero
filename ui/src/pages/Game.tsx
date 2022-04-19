@@ -1,3 +1,4 @@
+import { color } from "@mui/system";
 import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
@@ -87,7 +88,12 @@ const Game = () => {
 
   useEffect(() => {
     setShapes(INITIAL_STATE);
+    // setShapes(()=>[...shapes, ...generateShapes()]);
   }, [width, height, boardSize, board]);
+
+  useEffect(() => {
+    setShapes(shapes);
+  }, [lastNode]);
 
   const handleCheckResult = () => {
     axios
@@ -113,12 +119,12 @@ const Game = () => {
       return {
         id: index,
         value: value,
-        radius: width / boardSize / 4,
+        radius: width / boardSize / 2,
         x: ((index % boardSize) * width) / boardSize + width / boardSize / 2,
         y:
           (Math.floor(index / boardSize) * height) / boardSize +
           width / boardSize / 2,
-        fontSize: width / boardSize / 10,
+        fontSize: width / boardSize / 4,
         isSelected: false,
         color: "white",
       };
@@ -130,55 +136,58 @@ const Game = () => {
   function drawLine(index: number) {
     let indexToRemember = lastNode;
     if (lastNode === -1) {
+      shapes[index].isSelected = true;
       setLastNode(index);
-      shapes[index].color = "red";
       return;
     } else if (lastNode === index) {
-      shapes[index].color = "white";
+      shapes[index].isSelected = false;
       setLastNode(-1);
       return;
     } else {
-      shapes[lastNode].color = "white";
-      setLastNode(index);
-      shapes[index].color='red';
-      getPossibleNodes(arr, gameData.boardSize, indexToRemember).map(
-        (node) => {
-          if (node === index) {
-            console.log(node);
-            const line = lines.find((line) => line.nodeFrom === indexToRemember && line.nodeTo === node || line.nodeFrom === node && line.nodeTo === indexToRemember);
-            if (line) {
-              line.value = line.value + 1;
-              if (line.value >= 3){
-                line.value = 0;
+      shapes[lastNode].isSelected = false;
+      shapes[index].isSelected = true;
+      getPossibleNodes(arr, boardSize, indexToRemember).map((node) => {
+        if (node === index) {
+          console.log(node);
+          const line = lines.find(
+            (line) =>
+              (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
+              (line.nodeFrom === node && line.nodeTo === indexToRemember)
+          );
+          if (line) {
+            line.value = line.value + 1;
+            if (line.value >= 3) {
+              line.value = 0;
+            }
+          } else {
+            let [smaller, bigger] = [indexToRemember, node];
+            if (bigger < smaller) {
+              [smaller, bigger] = [bigger, smaller];
+            }
+            const isHorizontal =
+              Math.floor(smaller / width) === Math.floor(bigger / width);
+            if (isHorizontal) {
+              for (let i = smaller + 1; i < bigger - 1; i++) {
+                arr[i] = -1;
               }
             } else {
-              let smaller = indexToRemember;
-              let bigger = node;
-              if (bigger < smaller) {
-                [smaller, bigger] = [bigger, smaller];
+              for (let i = smaller + width; i < bigger - width; i += width) {
+                arr[i] = -1;
               }
-              // const rowStart = Math.floor(smaller / width) * width;
-              // const rowEnd = rowStart + width;
-              const isHorizontal = Math.floor(smaller / width) === Math.floor(bigger / width);
-              if (isHorizontal){
-                for (let i = smaller + 1; i < bigger - 1; i++) {
-                  arr[i] = -1;
-                }
-              } else {
-                for (let i = smaller + width; i < bigger - width; i += width) {
-                  arr[i] = -1;
-                }
-              }
-              console.log(arr)
-              setLines([...lines, {
+            }
+            setLines([
+              ...lines,
+              {
                 nodeFrom: indexToRemember,
                 nodeTo: node,
                 value: 1,
               },
             ]);
+
           }
         }
       });
+      setLastNode(index);
       return;
     }
   }
@@ -186,7 +195,7 @@ const Game = () => {
   return (
     <>
       <div
-        style={{ width: "100%", border: "1px solid grey" }}
+        style={{ width: "50%", border: "1px solid grey", margin: "auto" }}
         ref={stageCanvasRef}
       >
         <Stage width={width} height={width}>
@@ -220,22 +229,35 @@ const Game = () => {
                       shapes[line.nodeTo].y,
                     ]}
                     stroke="black"
-                    strokeWidth={5}
+                    strokeWidth={3}
                   />
                 );
               } else if (line.value === 2) {
                 return (
-                  <Line
-                    key={index}
-                    points={[
-                      shapes[line.nodeFrom].x,
-                      shapes[line.nodeFrom].y,
-                      shapes[line.nodeTo].x,
-                      shapes[line.nodeTo].y,
-                    ]}
-                    stroke="blue"
-                    strokeWidth={10}
-                  />
+                  <>
+                    <Line
+                      // key={index}
+                      points={[
+                        shapes[line.nodeFrom].x - shapes[line.nodeFrom].radius/4,
+                        shapes[line.nodeFrom].y - shapes[line.nodeFrom].radius/4,
+                        shapes[line.nodeTo].x - shapes[line.nodeFrom].radius/4,
+                        shapes[line.nodeTo].y - shapes[line.nodeFrom].radius/4,
+                      ]}
+                      stroke="black"
+                      strokeWidth={3}
+                    />
+                    <Line
+                      // key={index}
+                      points={[
+                        shapes[line.nodeFrom].x + shapes[line.nodeFrom].radius/4,
+                        shapes[line.nodeFrom].y + shapes[line.nodeFrom].radius/4,
+                        shapes[line.nodeTo].x + shapes[line.nodeFrom].radius/4,
+                        shapes[line.nodeTo].y + shapes[line.nodeFrom].radius/4,
+                      ]}
+                      stroke="black"
+                      strokeWidth={3}
+                    />
+                  </>                    
                 );
               }
             })}
@@ -249,14 +271,29 @@ const Game = () => {
                     y={shape.y}
                     radius={shape.radius}
                     stroke="black"
-                    fill={shape.color}
+                    fill={(()=>{
+                      // add different colors based on amount of bridges 
+                      const connections = lines.filter((line)=>
+                        line.nodeFrom === shape.id || line.nodeTo === shape.id
+                      ).reduce((acc, curr)=> acc + curr.value, 0);
+                      if (shape.isSelected){
+                        return "yellow";
+                      }
+                      else if (connections > shape.value) {
+                        return "red";
+                      }
+                      else if (connections === shape.value){
+                        return "green";
+                      }
+                      else return "white";
+                    })()}
                     onMouseOver={() => {
                       setHoveredNode(index);
                     }}
                     onMouseLeave={() => {
                       setHoveredNode(-1);
                     }}
-                    onMouseDown={() => drawLine(index)}
+                    onMouseUp={() => drawLine(index)}
                   />
                   <Text
                     text={shape.value.toString()}
@@ -272,6 +309,7 @@ const Game = () => {
                     onMouseLeave={() => {
                       setHoveredNode(-1);
                     }}
+                    onMouseUp={() => drawLine(index)}
                   />
                 </Group>
               ) : null
