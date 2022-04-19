@@ -44,7 +44,7 @@ func HandleBoardData(c *gin.Context) {
 		text := fmt.Sprintf("Failed to read user data from request: %s", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": text})
 	} else {
-		board := hashi.GenerateBoard(int(bs.BoardSize), int(bs.BoardSize), int(bs.BoardSize/2), 0.5)
+		board := hashi.GenerateBoard(int(bs.BoardSize), int(bs.BoardSize), int(bs.BoardSize*bs.BoardSize*0.4), 0.5)
 		boardArray := make([]int, bs.BoardSize*bs.BoardSize)
 		for i, n := range board.Nodes {
 			boardArray[i] = n.Bridges
