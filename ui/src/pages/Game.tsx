@@ -10,7 +10,7 @@ interface Bridge {
   value: number;
 }
 
-const getCrossSection = (board: number[], width: number, loc: number) => {
+const getPossibleNodes = (board: number[], width: number, loc: number) => {
   const rowStart = Math.floor(loc / width) * width;
 
   const output: number[] = [];
@@ -140,24 +140,37 @@ const Game = () => {
     } else {
       shapes[lastNode].color = "white";
       setLastNode(index);
-      shapes[index].color = "red";
-      getCrossSection(arr, boardSize, indexToRemember).map((node) => {
-        if (node === index) {
-          console.log(node);
-          const line = lines.find(
-            (line) =>
-              (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
-              (line.nodeFrom === node && line.nodeTo === indexToRemember)
-          );
-          if (line) {
-            line.value = line.value + 1;
-            if (line.value >= 3) {
-              line.value = 0;
-            }
-          } else {
-            setLines([
-              ...lines,
-              {
+      shapes[index].color='red';
+      getPossibleNodes(arr, gameData.boardSize, indexToRemember).map(
+        (node) => {
+          if (node === index) {
+            console.log(node);
+            const line = lines.find((line) => line.nodeFrom === indexToRemember && line.nodeTo === node || line.nodeFrom === node && line.nodeTo === indexToRemember);
+            if (line) {
+              line.value = line.value + 1;
+              if (line.value >= 3){
+                line.value = 0;
+              }
+            } else {
+              let smaller = indexToRemember;
+              let bigger = node;
+              if (bigger < smaller) {
+                [smaller, bigger] = [bigger, smaller];
+              }
+              // const rowStart = Math.floor(smaller / width) * width;
+              // const rowEnd = rowStart + width;
+              const isHorizontal = Math.floor(smaller / width) === Math.floor(bigger / width);
+              if (isHorizontal){
+                for (let i = smaller + 1; i < bigger - 1; i++) {
+                  arr[i] = -1;
+                }
+              } else {
+                for (let i = smaller + width; i < bigger - width; i += width) {
+                  arr[i] = -1;
+                }
+              }
+              console.log(arr)
+              setLines([...lines, {
                 nodeFrom: indexToRemember,
                 nodeTo: node,
                 value: 1,
@@ -178,9 +191,11 @@ const Game = () => {
       >
         <Stage width={width} height={width}>
           <Layer>
-            {hoveredNode >= 0
-              ? getCrossSection(arr, boardSize, hoveredNode).map((node) => (
-                  <Line
+          {
+              hoveredNode >= 0 ? 
+                getPossibleNodes(arr, gameData.boardSize, hoveredNode).map(
+                  (node) => 
+                    <Line
                     key={node}
                     points={[
                       shapes[hoveredNode].x,
