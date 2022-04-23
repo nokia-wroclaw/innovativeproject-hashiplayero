@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"innovativeproject-hashiplayero/hashi"
 	"log"
@@ -9,10 +10,14 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
 type BoardSize int
+
+var j []byte
+
+// TODO trzeba się zastanowić czy klucz ma być stringiem czy intem
+var roomsData = make(map[string]RoomJson)
 
 const (
 	SmallSize  BoardSize = 7
@@ -38,6 +43,17 @@ type BoardData struct {
 	Array         []int `json:"array"`
 }
 
+type RoomJson struct {
+	IdPokoju         string   `json:"idPokoju"`
+	NazwaPokoju      string   `json:"nazwaPokoju"`
+	Prywatny         string   `json:"prywatny"`
+	LimitCzasNaPokoj int      `json:"limitCzasNaPokoj"`
+	HasloDostepu     string   `json:"hasloDostepu"`
+	Czlonkowie       []string `json:"czlonkowie"`
+	LimitCzlonkow    int      `json:"limitCzlonkow"`
+	Rozmiar          int      `json:"rozmiar"`
+}
+
 func HandleBoardData(c *gin.Context) {
 	bs := BoardSettings{}
 	err := c.BindJSON(&bs)
@@ -55,37 +71,20 @@ func HandleBoardData(c *gin.Context) {
 	}
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
-}
-
-func wshandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer conn.Close()
-	for {
-		mt, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = conn.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
+func addRoom(message []byte, mt int) []byte {
+	var roomJson RoomJson
+	json.Unmarshal([]byte(message), &roomJson)
+	//TODO dodać funkcjonalność automatycznego dodawania indeksów
+	roomsData[roomJson.IdPokoju] = roomJson
+	j, _ = json.MarshalIndent(roomsData, "", "  ")
+	return j
 }
 
 func setRouter() *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
+	defaultRoom := newRoom()
+	go defaultRoom.run()
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"OPTIONS", "GET", "POST"},
@@ -106,7 +105,7 @@ func setRouter() *gin.Engine {
 	// Create the websocket route group
 	ws := router.Group("/ws")
 	ws.GET("/", func(c *gin.Context) {
-		wshandler(c.Writer, c.Request)
+		serveWs(defaultRoom, c.Writer, c.Request)
 	})
 
 	router.GET("/static/", gin.WrapH(http.FileServer(appBox.HTTPBox())))
