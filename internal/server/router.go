@@ -58,10 +58,10 @@ func HandleBoardData(c *gin.Context) {
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 func wshandler(w http.ResponseWriter, r *http.Request) {
-	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
@@ -105,7 +105,6 @@ func setRouter() *gin.Engine {
 
 	// Create the websocket route group
 	ws := router.Group("/ws")
-	ws.Use(CORSMiddleware())
 	ws.GET("/", func(c *gin.Context) {
 		wshandler(c.Writer, c.Request)
 	})
