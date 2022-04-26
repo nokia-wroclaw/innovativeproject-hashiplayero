@@ -11,9 +11,9 @@ import CreateRoom from "./pages/CreateRoom";
 import FindRoom from "./pages/FindRoom";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
-import Faq from "./pages/Faq";
-import Contact from "./pages/Contact";
-import Rules from "./pages/Rules";
+import Faq from "./components/Faq";
+import Contact from "./components/Contact";
+import Rules from "./components/Rules";
 import Game from "./pages/Game";
 import Websocket from "./store/Websocket";
 

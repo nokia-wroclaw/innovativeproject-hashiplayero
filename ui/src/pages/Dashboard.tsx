@@ -1,4 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../store/hooks";
+import { createUser } from "../store/userSlice";
+import Contact from "../components/Contact";
 
 import { Button } from '@mui/material';
 
@@ -37,6 +40,8 @@ const Dashboard = () => {
           ))
         }
       </div>
+
+      <Contact />
 
     </>
   );
