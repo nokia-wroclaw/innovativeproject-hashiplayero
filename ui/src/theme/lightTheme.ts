@@ -58,8 +58,14 @@ const lightTheme = createTheme({
 
                 }
             }
-
-        }   
+        }, 
+        MuiFormControl:{
+            styleOverrides:{
+                root:{
+                    width: "100%",
+                }
+            }
+        }
     }
 });
 
