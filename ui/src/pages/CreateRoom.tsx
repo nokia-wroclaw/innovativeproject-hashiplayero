@@ -9,6 +9,7 @@ import {
     Input,
     InputLabel,
     Switch,
+    Button
 } from "@mui/material";
 
 const CreateRoom = () => {
@@ -177,7 +178,7 @@ const CreateRoom = () => {
                 </Grid>
                 <Grid item minWidth={400}>
                     <div className="content-buttons">
-                        <button
+                        {/* <button
                             className="button-primary-centered"
                             type="button"
                             onClick={() => {
@@ -185,7 +186,13 @@ const CreateRoom = () => {
                             }}
                         >
                             <div className="text-start-game text-center">Create room!</div>
-                        </button>
+                        </button> */}
+                        <Button onClick={() => {
+                                handleCreateRoom();
+                            }}
+                            color="secondary">
+                            Create a room!
+                        </Button>
                     </div>
                 </Grid>
             </Grid>

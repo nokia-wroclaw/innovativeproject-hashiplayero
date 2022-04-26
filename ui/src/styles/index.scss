@@ -8,113 +8,130 @@ $light_secondary_button_color-hover: #374157;
 
 $light_logo-secondary-color: #8b89ec;
 
-@mixin display-flex {
+@mixin display-flex ($direction, $spacing){
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  flex-direction: $direction;
+  justify-content: $spacing;
 }
 
-.main-navbar{
-  @include display-flex;
-  width: 100%;
-  height: 80px;
-  padding: 0 20px;
-  background-color: $light_primary_background_color;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-.main-navbar-menu{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-}
-
-@mixin button-styling ($font_color){
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.025em;
-  color: $font_color;
-  padding: 8px 16px;
-  margin: 0px 8px;
-  border: none;
-}
-
-.button-secondary{
-  @include button-styling($light_secondary_button_color);
-  background-color: $light_primary_background_color;
-  transition: all 0.1s ease;
-
-  &:hover{
-    transition: all 0.5s ease;
-    color: $light_secondary_button_color-hover;
-    scale: 1.2;
-  }
-}
-
-.button-primary{
-  @include button-styling($light_primary_background_color);
-  border-radius: 4px;
-  background-color: $light_primary_button_color;
-  transition: all 0.1s ease;
-  margin-right: 24px;
-  &:hover{
-    transition: all 0.5s ease;
-    scale: 1.1;
-    background-color: $light_primary_button_color-hover;
-  }
-}
-
-.main-navbar-logo{
-  @include display-flex;
-}
-
-.button-logo{
-  @include button-styling($light_secondary_button_color);
-  background-color: $light_primary_background_color;
-  font-size: 22px;
-  .logo-text-first{
-    color: $light_primary_button_color;
-  }
-  .logo-text-second{
-    color: $light_secondary_button_color;
-  }
-  transition: all 0.5s ease;
-  margin-right: 24px;
-  &:hover{
-    transition: all 0.5s ease;
-    background-color: $light_primary_button_color-hover;
-    .logo-text-first{
-      color: $light_primary_background_color;
-    }
-    .logo-text-second{
-      color: $light_logo-secondary-color;
-    }
-  }
+.body{
+    width: 100%;
+    height: 100%;
 }
 
 .main-content{
-  border: black 1px solid;
-  margin: 10px;
+    margin: 60px 20px;
+    @include display-flex(column, center);
 }
 
-.button-primary-centered{
-  @include button-styling($light_primary_background_color);
-  width: 160px;
-  
-  border-radius: 4px;
-  background-color: $light_primary_button_color;
-  transition: all 0.1s ease;
-  margin-right: 24px;
-  &:hover{
-    transition: all 0.5s ease;
-    scale: 1.1;
-    background-color: $light_primary_button_color-hover;
-  }
+.main-buttons{
+    @include display-flex(column, center);
+    width: 100%;
+    button{
+        margin: 20px;
+        width: 75%;
+        height: 80px;
+        max-width: 650px;
+        font-size: 18px;
+        border-radius: 10px
+    }
+
+    @media screen and (max-width: 420px){
+        button{
+            width: 100%;
+        }
+    }
+}
+
+.logo{
+    @include display-flex(row, center);
+    padding: 8px 16px;
+    margin: 24px;
+    transition: all 0.3s ease-out;
+    border-radius: 4px;
+    flex-grow: 1;     
+    justify-content: flex-start;
+
+    background-color: #FFFFFF;
+    &:hover{
+        transition: all 0.3s ease-out;
+        // background: linear-gradient(45deg,#F17C58, #E94584, #24AADB , #27DBB1,#FFDC18, #FF3706);
+        // background-size: 600% 100%;
+        // animation: gradient 16s linear infinite;
+        // animation-direction: alternate;
+
+        .logo-first-half{
+            color: $light_secondary_button_color;
+        }
+        .logo-second-half{
+            color: $light_primary_button_color;
+        }
+    }
+}
+
+@keyframes gradient {
+    0% {background-position: 0%}
+    100% {background-position: 100%}
+}
+
+.logo-inner{
+    display: flex;
+    cursor: pointer;
+}
+
+.logo-first-half{
+    color: $light_primary_button_color;
+}
+
+.logo-second-half{
+    color: $light_secondary_button_color;
+}
+
+.form-container{
+    @include display-flex(column, center);
+    button {
+        border-radius: 12px;
+        height: 64px;
+        width: 96px;
+        font-size: 16px;
+    }
+}
+
+.paper{
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    padding: 32px 8px;
+    margin: 24px 16px;
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+    transition: all 0.5s ease-in-out;
+    &:hover{
+        // background-color: rgb(250, 250, 250);
+        box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 
+        0px 24px 60px rgba(6, 48, 125, 0.295), 
+        0px 12px 24px rgba(27, 59, 119, 0.103);
+        transition: all 0.5s ease-in;
+    }
+}
+
+.general-info{
+    @include display-flex(column, center);
+    height: 90%;
+    width: 80%;
+    box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+    margin-bottom: 24px;
+    padding: 16px;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+
+    button{
+        margin: 8px;
+        height: 36px;
+    }
+    form{
+        width: 100%;
+    }
 }

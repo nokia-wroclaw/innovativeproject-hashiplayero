@@ -1,30 +1,44 @@
 import { useNavigate } from "react-router-dom";
 
+import { Button } from '@mui/material';
+
+const buttons = [
+  {
+    label: "Play",
+    navigation: "/singleplay",
+  },
+  {
+    label: "Create a room",
+    navigation: "/createroom",
+  },
+  {
+    label: "Find a room",
+    navigation: "/findroom",
+  },
+];
+
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  const handleFindRoom = () => {
-    navigate("/findroom");
+  const handleButtonInteraction = (navigation: String, index: Number) => {
+
+    if (index == 2) dispatch(createUser());
+    navigate(`${navigation}`);
   };
 
   return (
-    <div className="content-buttons">
-      <button
-        className="button-primary"
-        onClick={() => navigate("/singleplay")}
-      >
-        Play
-      </button>
-      <button
-        className="button-primary"
-        onClick={() => navigate("/createroom")}
-      >
-        Create a room
-      </button>
-      <button className="button-primary" onClick={() => handleFindRoom()}>
-        Find a room
-      </button>
-    </div>
+    <>
+      <div className="main-buttons paper">
+        {
+          buttons.map((button, index) => (
+            <Button key={index} onClick={() => handleButtonInteraction(button.navigation, index)} color="secondary">
+              {button.label}
+            </Button>
+          ))
+        }
+      </div>
+
+    </>
   );
 };
 
