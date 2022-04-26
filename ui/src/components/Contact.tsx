@@ -6,6 +6,7 @@ interface IContactInfo {
   person: string;
   id: number;
 }
+
 const Contact = () => {
   const contactInfo: IContactInfo[] = [
     {
