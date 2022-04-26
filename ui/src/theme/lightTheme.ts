@@ -34,22 +34,25 @@ const lightTheme = createTheme({
             styleOverrides:{
                 root:{
                     padding: "8px 24px",
+                    transition: "all 0.3s ease",
                 },
                 textPrimary:{
                         color: secondaryColor,
                     '&:hover': {
                         backgroundColor: primaryColorHover,
                         color: primaryBackgroundColor,
-                        scale: "1.1",
+                        // scale: "1.1",
                         transition: "all 0.5s ease",
                     }
 
                 },
                 textSecondary:{
+                    backgroundColor: primaryColor,
+                    color: primaryBackgroundColor,
                     '&:hover': {
                         backgroundColor: secondaryColorHover,
                         color: primaryBackgroundColor,
-                        scale: "1.1",
+                        // scale: "1.05",
                         transition: "all 0.5s ease",
                     }
 

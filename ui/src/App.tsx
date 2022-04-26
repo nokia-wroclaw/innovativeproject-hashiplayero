@@ -21,11 +21,10 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={lightTheme}>
-      <div className="main">
+      <div className="body">
         <HeaderBar />
         <Websocket />
         <div className="main-content">
-          <main className="column">
             <Suspense fallback={<div>Loading...</div>}></Suspense>
             <Routes>
               <Route path="/" element={<Dashboard />} />
@@ -39,7 +38,6 @@ class App extends Component {
               <Route path="/contact" element={<Contact />} />
               <Route path="/rules" element={<Rules />} />
             </Routes>
-          </main>
         </div>
       </div>
       </ThemeProvider>
