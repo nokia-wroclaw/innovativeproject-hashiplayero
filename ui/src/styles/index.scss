@@ -21,7 +21,7 @@ $light_logo-secondary-color: #8b89ec;
 }
 
 .main-content{
-    margin: 60px 20px;
+    margin: 0px 16px;
     @include display-flex(column, center);
 }
 
@@ -119,19 +119,24 @@ $light_logo-secondary-color: #8b89ec;
 
 .general-info{
     @include display-flex(column, center);
+    //add padding between elements of the container general-info
     height: 90%;
-    width: 80%;
+    width: 85%;
     box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
     margin-bottom: 24px;
     padding: 16px;
     border-radius: 6px;
     background-color: #FFFFFF;
 
-    button{
-        margin: 8px;
-        height: 36px;
-    }
-    form{
+    div{
         width: 100%;
+        padding: 8px;
     }
+
+    @media screen and (max-width: 420px){
+        .general-info{
+            width: 95%;
+        }
+    }
+
 }
