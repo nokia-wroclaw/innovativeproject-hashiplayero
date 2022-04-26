@@ -163,6 +163,16 @@ func lobbyBroadcast() {
 	}
 }
 
+func changeRoom(data interface{}, userUuid interface{}) {
+	roomName := data.(map[string]interface{})["roomName"].(string)
+	c := clientsMap[userUuid.(string)]
+	r := roomsMap[roomName]
+	delete(c.room.clients, c)
+	r.clients[c] = true
+	c.room = r
+	updatedRoomBroadcast(r)
+}
+
 func (r *Room) run() {
 	for {
 		select {
@@ -195,6 +205,9 @@ func (r *Room) run() {
 				lobbyBroadcast()
 			case "generateBoard":
 				createBoard(payload["data"])
+			case "changeRoom":
+				changeRoom(payload["data"], payload["userUuid"])
+				lobbyBroadcast()
 			}
 		}
 	}
