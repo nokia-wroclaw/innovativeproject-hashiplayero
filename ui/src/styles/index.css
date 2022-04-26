@@ -1,27 +1,64 @@
-.main-navbar {
+.body {
+  width: 100%;
+  height: 100%;
+}
+
+.main-content {
+  margin: 60px 20px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  width: 100%;
-  height: 80px;
-  padding: 0 20px;
-  background-color: #FFFFFF;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 
-.main-navbar-menu {
+.main-buttons {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 100%;
+}
+
+.main-buttons button {
+  margin: 20px;
+  width: 75%;
+  height: 80px;
+  max-width: 650px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+@media screen and (max-width: 420px) {
+  .main-buttons button {
+    width: 100%;
+  }
+}
+
+.logo {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
@@ -29,136 +66,140 @@
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  font-size: 18px;
-}
-
-.button-secondary {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.025em;
-  color: #7081A6;
   padding: 8px 16px;
-  margin: 0px 8px;
-  border: none;
-  background-color: #FFFFFF;
-  -webkit-transition: all 0.1s ease;
-  transition: all 0.1s ease;
-}
-
-.button-secondary:hover {
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-  color: #374157;
-  scale: 1.2;
-}
-
-.button-primary {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.025em;
-  color: #FFFFFF;
-  padding: 8px 16px;
-  margin: 0px 8px;
-  border: none;
+  margin: 24px;
+  -webkit-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
   border-radius: 4px;
-  background-color: #5452E4;
-  -webkit-transition: all 0.1s ease;
-  transition: all 0.1s ease;
-  margin-right: 24px;
-}
-
-.button-primary:hover {
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-  scale: 1.1;
-  background-color: #403eb4;
-}
-
-.main-navbar-logo {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-.button-logo {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.025em;
-  color: #7081A6;
-  padding: 8px 16px;
-  margin: 0px 8px;
-  border: none;
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
   background-color: #FFFFFF;
-  font-size: 22px;
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-  margin-right: 24px;
 }
 
-.button-logo .logo-text-first {
+.logo:hover {
+  -webkit-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+}
+
+.logo:hover .logo-first-half {
+  color: #7081A6;
+}
+
+.logo:hover .logo-second-half {
   color: #5452E4;
 }
 
-.button-logo .logo-text-second {
+@-webkit-keyframes gradient {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 100%;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 100%;
+  }
+}
+
+.logo-inner {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  cursor: pointer;
+}
+
+.logo-first-half {
+  color: #5452E4;
+}
+
+.logo-second-half {
   color: #7081A6;
 }
 
-.button-logo:hover {
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-  background-color: #403eb4;
+.form-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 
-.button-logo:hover .logo-text-first {
-  color: #FFFFFF;
+.form-container button {
+  border-radius: 12px;
+  height: 64px;
+  width: 96px;
+  font-size: 16px;
 }
 
-.button-logo:hover .logo-text-second {
-  color: #8b89ec;
+.paper {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  padding: 32px 8px;
+  margin: 24px 16px;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  -webkit-box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+          box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  -webkit-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
 
-.main-content {
-  border: black 1px solid;
-  margin: 10px;
+.paper:hover {
+  -webkit-box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 0px 24px 60px rgba(6, 48, 125, 0.295), 0px 12px 24px rgba(27, 59, 119, 0.103);
+          box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 0px 24px 60px rgba(6, 48, 125, 0.295), 0px 12px 24px rgba(27, 59, 119, 0.103);
+  -webkit-transition: all 0.5s ease-in;
+  transition: all 0.5s ease-in;
 }
 
-.button-primary-centered {
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.025em;
-  color: #FFFFFF;
-  padding: 8px 16px;
-  margin: 0px 8px;
-  border: none;
-  width: 160px;
-  border-radius: 4px;
-  background-color: #5452E4;
-  -webkit-transition: all 0.1s ease;
-  transition: all 0.1s ease;
-  margin-right: 24px;
+.general-info {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  height: 90%;
+  width: 80%;
+  -webkit-box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+          box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: #FFFFFF;
 }
 
-.button-primary-centered:hover {
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-  scale: 1.1;
-  background-color: #403eb4;
+.general-info button {
+  margin: 8px;
+  height: 36px;
+}
+
+.general-info form {
+  width: 100%;
 }
 /*# sourceMappingURL=index.css.map */

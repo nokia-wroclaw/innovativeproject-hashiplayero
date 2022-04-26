@@ -120,11 +120,11 @@ const Game = () => {
         id: index,
         value: value,
         radius: width / boardSize / 2,
-        x: ((index % boardSize) * width) / boardSize + width / boardSize / 2,
+        x: (((index % boardSize) * width) / boardSize + width / boardSize / 2) ,
         y:
-          (Math.floor(index / boardSize) * height) / boardSize +
-          width / boardSize / 2,
-        fontSize: width / boardSize / 4,
+          ((Math.floor(index / boardSize) * height) / boardSize +
+          width / boardSize / 2),
+        fontSize: width / boardSize / 3,
         isSelected: false,
         color: "white",
       };
@@ -148,7 +148,6 @@ const Game = () => {
       shapes[index].isSelected = true;
       getPossibleNodes(arr, boardSize, indexToRemember).map((node) => {
         if (node === index) {
-          console.log(node);
           const line = lines.find(
             (line) =>
               (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
@@ -195,10 +194,10 @@ const Game = () => {
   return (
     <>
       <div
-        style={{ width: "50%", border: "1px solid grey", margin: "auto" }}
+        style={{ width: "75%", border: "1px solid grey", margin: "auto", maxWidth: "800px" }}
         ref={stageCanvasRef}
       >
-        <Stage width={width} height={width}>
+        <Stage width={width + 10} height={width + 10}>
           <Layer>
             {hoveredNode >= 0
               ? getPossibleNodes(arr, boardSize, hoveredNode).map((node) => (
@@ -300,7 +299,6 @@ const Game = () => {
                     fontSize={shape.fontSize}
                     offsetX={shape.fontSize / 4}
                     offsetY={shape.fontSize / 3}
-                    zIndex={1}
                     onMouseEnter={() => {
                       setHoveredNode(index);
                     }}
