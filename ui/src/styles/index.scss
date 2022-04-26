@@ -1,5 +1,6 @@
 $light_primary_background_color: #FFFFFF;
 
+$lighter_primary_button_color: #6c6af0;
 $light_primary_button_color: #5452E4;
 $light_primary_button_color-hover: #403eb4;
 
@@ -121,7 +122,7 @@ $light_logo-secondary-color: #8b89ec;
     @include boarder();    
 }
 
-.contact{
+@mixin about-pages {
     display: flex;
     flex-direction: column;
     margin: 24px;
@@ -130,6 +131,10 @@ $light_logo-secondary-color: #8b89ec;
     @media screen and (max-width: 750px){
         @include display-flex(column, center);
     }
+}
+
+.contact{
+    @include about-pages;
 }
 
 @mixin title ($color, $type, $size) {
@@ -224,5 +229,34 @@ $light_logo-secondary-color: #8b89ec;
             width: 95%;
         }
     }
+}
 
+.faq-container{
+    @include display-flex(column, center);
+    margin: 24px 36px;
+    max-width: 900px;
+    @media (max-width: 450px){
+        .faq-container{
+            width: 95%;
+            margin: 24px 0px;
+        }
+    }
+}
+
+.faq-questions{
+    width: 100%;
+    min-width: 300px;
+    h5{
+        font-size: 18px;
+        margin: 8px;
+        // make it a little bolder
+        font-weight: bold;
+    }
+
+    p{
+        font-size: 16px;
+        margin: 8px;
+        color: #7081A6;
+        text-align: justify;
+    }
 }
