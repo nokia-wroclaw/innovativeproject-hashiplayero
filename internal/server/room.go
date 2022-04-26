@@ -121,6 +121,18 @@ func roomBroadcast(room *Room, j []byte) {
 	}
 }
 
+func updatedRoomBroadcast(room *Room) {
+	var roomJson RoomForBroadcast
+	roomJson.Name = room.roomSettings.Name
+	roomJson.NumPlayers = len(room.clients)
+	roomJson.MaxPlayers = room.roomSettings.MaxPlayers
+	roomJson.IsPrivate = room.roomSettings.IsPrivate
+	roomJson.BoardSize = int(room.boardData.BoardSize)
+	roomJson.Difficulty = int(room.boardData.Difficulty)
+	j, _ := json.MarshalIndent(roomJson, "", "  ")
+	roomBroadcast(room, j)
+}
+
 // Send update about rooms to clients in lobby
 func lobbyBroadcast() {
 	var roomJson RoomForBroadcast
@@ -156,13 +168,17 @@ func (r *Room) run() {
 		select {
 		// when client wants to join this room
 		case client := <-r.register:
-			client.send <- []byte(client.name)
-			client.send <- []byte(client.uuid)
+			j, _ := json.MarshalIndent(ClientIdData{Uuid: client.uuid, Name: client.name}, "", "  ")
+			client.send <- j
 			r.clients[client] = true
 		// when client wants to quit this room
 		case client := <-r.unregister:
 			if _, ok := r.clients[client]; ok {
 				delete(r.clients, client)
+				if client.room != roomsMap["lobby"] {
+					updatedRoomBroadcast(client.room)
+				}
+				lobbyBroadcast()
 				close(client.send)
 			}
 		// when client will get the message
