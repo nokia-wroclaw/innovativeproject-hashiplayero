@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/GeertJohan/go.rice v1.0.2
 	github.com/gin-gonic/gin v1.7.7
+	github.com/google/uuid v1.3.0
 )
 
 require (
