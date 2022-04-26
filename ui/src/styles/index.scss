@@ -98,12 +98,7 @@ $light_logo-secondary-color: #8b89ec;
     }
 }
 
-.paper{
-    width: 100%;
-    max-width: 900px;
-    height: 100%;
-    padding: 32px 8px;
-    margin: 24px 16px;
+@mixin boarder (){
     background-color: #FFFFFF;
     border-radius: 6px;
     box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
@@ -114,12 +109,103 @@ $light_logo-secondary-color: #8b89ec;
         0px 24px 60px rgba(6, 48, 125, 0.295), 
         0px 12px 24px rgba(27, 59, 119, 0.103);
         transition: all 0.5s ease-in;
+  }
+}
+
+.paper{
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    padding: 32px 8px;
+    margin: 24px 16px;
+    @include boarder();    
+}
+
+.contact{
+    display: flex;
+    flex-direction: column;
+    margin: 24px;
+    padding: 8px;
+    border-radius: 6px;
+    @media screen and (max-width: 750px){
+        @include display-flex(column, center);
     }
+}
+
+@mixin title ($color, $type, $size) {
+    font-size: $size;
+    font-weight: $type;
+    color: $color;
+}
+
+.title{
+    display: flex;
+    align-items: center;
+    color: $light_secondary_button_color;
+    h1{
+        @include title($light_secondary_button_color, bold, 40px);
+        margin: 24px;
+    }
+    svg{
+        transition: all 0.6s ease-in-out;
+    }
+    svg:hover{
+        transition: all 0.6s ease-out;
+        transform: rotate(360deg) scale(1.5);
+
+        color: $light_primary_button_color;
+        cursor: pointer;
+    }
+}
+
+.contact-title{
+    @include title($light_secondary_button_color, bold, 24px);
+    margin: 24px;
+}
+
+.sub-title{
+    font-weight: bold;
+    color: $light_secondary_button_color-hover;
+    margin: 16px 24px;
+    transition: all 0.3s ease-in-out;
+    &:hover{
+        color: $light_primary_button_color-hover;
+        transition: all 0.3s ease-out;
+    }
+}
+
+.contact-people{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-person{
+    height: 100%;
+    min-width: 25%;
+    padding: 32px;
+    margin: 24px 32px;
+    border-radius: 6px;
+    @include boarder();
+    // transition: all 0.6s ease-in-out;
+    &:hover{
+    //     transition: all 0.6s ease-out;
+    //     transform: scale(1.01);
+        cursor: pointer;
+    }
+}
+
+.contact-text{
+    font-size: 16px;
+    color: $light_secondary_button_color-hover;
+    margin: 24px 36px;
+    text-align: justify;
+
 }
 
 .general-info{
     @include display-flex(column, center);
-    //add padding between elements of the container general-info
     height: 90%;
     width: 85%;
     box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
