@@ -2,10 +2,14 @@ package server
 
 import (
 	"bytes"
+	"fmt"
+	"hash/fnv"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -27,10 +31,31 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
+}
+
 type Client struct {
+	uuid string
+	name string
 	room *Room
 	conn *websocket.Conn
 	send chan []byte
+}
+
+// Create new client, generate uuid and name for him
+func NewClient(room *Room, conn *websocket.Conn, send chan []byte) *Client {
+	uuid := strings.Replace(uuid.New().String(), "-", "", -1)
+	name := "guest" + fmt.Sprint(hash(uuid))
+	return &Client{
+		uuid: uuid,
+		name: name,
+		room: room,
+		conn: conn,
+		send: make(chan []byte, 256),
+	}
 }
 
 func (c *Client) readPump() {
@@ -93,13 +118,15 @@ func (c *Client) writePump() {
 	}
 }
 
-func serveWs(room *Room, w http.ResponseWriter, r *http.Request) {
+// Upgrade connection to websocket and register client in room
+func serveWs(lobby *Room, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	client := &Client{room: room, conn: conn, send: make(chan []byte, 256)}
+	client := NewClient(lobby, conn, make(chan []byte, 256))
+	clientsMap[client.uuid] = client
 	client.room.register <- client
 
 	go client.writePump()

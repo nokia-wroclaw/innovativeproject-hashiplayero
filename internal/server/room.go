@@ -1,42 +1,184 @@
 package server
 
-import "github.com/gorilla/websocket"
+import (
+	"encoding/json"
+	"innovativeproject-hashiplayero/hashi"
+	"log"
+)
 
 type Room struct {
-	clients    map[*Client]bool
-	broadcast  chan []byte
-	register   chan *Client
-	unregister chan *Client
+	roomSettings RoomSettings
+	boardData    BoardData
+	clients      map[*Client]bool
+	broadcast    chan []byte
+	register     chan *Client
+	unregister   chan *Client
 }
 
-func newRoom() *Room {
+type RoomSettings struct {
+	Name       string `json:"name"`
+	Password   string `json:"password"`
+	MaxPlayers int    `json:"maxPlayers"`
+	IsPrivate  bool   `json:"isPrivate"`
+	TimeLimit  int    `json:"timeLimit"`
+}
+
+type RoomForBroadcast struct {
+	Name       string `json:"name"`
+	NumPlayers int    `json:"numPlayers"`
+	MaxPlayers int    `json:"maxPlayers"`
+	IsPrivate  bool   `json:"isPrivate"`
+	BoardSize  int    `json:"boardSize"`
+	Difficulty int    `json:"difficulty"`
+}
+
+type BoardSize int
+
+const (
+	SmallSize  BoardSize = 7
+	MediumSize BoardSize = 10
+	BigSize    BoardSize = 15
+)
+
+type Difficulty int
+
+const (
+	Easy Difficulty = iota
+	Medium
+	Hard
+)
+
+type BoardSettings struct {
+	Difficulty int `json:"difficulty"`
+	BoardSize  int `json:"size"`
+}
+
+type BoardData struct {
+	BoardSettings `json:"settings"`
+	Array         []int `json:"array"`
+}
+
+// Creates room with given roomSettings
+func newRoom(roomSettings RoomSettings) *Room {
 	return &Room{
-		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
+		roomSettings: roomSettings,
+		boardData:    BoardData{BoardSettings: BoardSettings{}},
+		broadcast:    make(chan []byte),
+		register:     make(chan *Client),
+		unregister:   make(chan *Client),
+		clients:      make(map[*Client]bool),
+	}
+}
+
+// Creates room with given parameters and adds client to it
+func addRoom(data interface{}, userUuid interface{}) {
+	var j []byte
+	roomSettings := RoomSettings{}
+	roomSettings.Name = data.(map[string]interface{})["name"].(string)
+	roomSettings.Password = data.(map[string]interface{})["password"].(string)
+	roomSettings.MaxPlayers = int(data.(map[string]interface{})["maxPlayers"].(float64))
+	roomSettings.IsPrivate = data.(map[string]interface{})["isPrivate"].(bool)
+	roomSettings.TimeLimit = int(data.(map[string]interface{})["timeLimit"].(float64))
+	room := newRoom(roomSettings)
+	roomsMap[roomSettings.Name] = room
+	// delete client from lobby and add to current room
+	c := clientsMap[userUuid.(string)]
+	r := roomsMap["lobby"]
+	delete(r.clients, c)
+	c.room = room
+	room.clients[c] = true
+	go room.run()
+	j, _ = json.MarshalIndent(room.roomSettings, "", "  ")
+	createBoard(data)
+	roomBroadcast(room, j)
+}
+
+// Creates board with given parameters and adds it to given room, returns json with boardData
+func createBoard(data interface{}) {
+	room := roomsMap[data.(map[string]interface{})["name"].(string)]
+	room.boardData.BoardSettings.Difficulty = int(data.(map[string]interface{})["difficulty"].(float64))
+	size := int(data.(map[string]interface{})["boardSize"].(float64))
+	room.boardData.BoardSettings.BoardSize = size
+	board := hashi.GenerateBoard(int(size), int(size), int((size*size)/2), 0.5)
+	boardArray := make([]int, size*size)
+	for i, n := range board.Nodes {
+		boardArray[i] = n.Bridges
+	}
+	room.boardData.Array = boardArray
+	j, _ := json.MarshalIndent(room.boardData, "", "  ")
+	roomBroadcast(room, j)
+}
+
+// Send given json to all clients in given room
+func roomBroadcast(room *Room, j []byte) {
+	for client := range room.clients {
+		select {
+		case client.send <- j:
+		default:
+			close(client.send)
+			delete(room.clients, client)
+		}
+	}
+}
+
+// Send update about rooms to clients in lobby
+func lobbyBroadcast() {
+	var roomJson RoomForBroadcast
+	var structTable []RoomForBroadcast
+
+	// Iterate over all keys except lobby
+	for key, val := range roomsMap {
+		if key == "lobby" {
+			continue
+		}
+		roomJson.Name = val.roomSettings.Name
+		roomJson.NumPlayers = len(val.clients)
+		roomJson.MaxPlayers = val.roomSettings.MaxPlayers
+		roomJson.IsPrivate = val.roomSettings.IsPrivate
+		roomJson.BoardSize = int(val.boardData.BoardSize)
+		roomJson.Difficulty = int(val.boardData.Difficulty)
+		structTable = append(structTable, roomJson)
+	}
+	j, _ := json.MarshalIndent(structTable, "", "  ")
+	// send json for all clients in lobby
+	for client := range roomsMap["lobby"].clients {
+		select {
+		case client.send <- j:
+		default:
+			close(client.send)
+			delete(roomsMap["lobby"].clients, client)
+		}
 	}
 }
 
 func (r *Room) run() {
 	for {
 		select {
+		// when client wants to join this room
 		case client := <-r.register:
+			client.send <- []byte(client.name)
+			client.send <- []byte(client.uuid)
 			r.clients[client] = true
+		// when client wants to quit this room
 		case client := <-r.unregister:
 			if _, ok := r.clients[client]; ok {
 				delete(r.clients, client)
 				close(client.send)
 			}
+		// when client will get the message
 		case message := <-r.broadcast:
-			j = addRoom(message, websocket.TextMessage)
-			for client := range r.clients {
-				select {
-				case client.send <- j:
-				default:
-					close(client.send)
-					delete(r.clients, client)
-				}
+			// this allows us to read json with action and user fields and arbitrary data
+			var payload map[string]interface{}
+			err := json.Unmarshal(message, &payload)
+			if err != nil {
+				log.Fatal("Error during Unmarshal(): ", err)
+			}
+			switch payload["action"] {
+			case "createRoom":
+				addRoom(payload["data"], payload["userUuid"])
+				lobbyBroadcast()
+			case "generateBoard":
+				createBoard(payload["data"])
 			}
 		}
 	}
