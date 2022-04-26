@@ -45,6 +45,11 @@ type Client struct {
 	send chan []byte
 }
 
+type ClientIdData struct {
+	Uuid string `json:"uuid"`
+	Name string `json:"name"`
+}
+
 // Create new client, generate uuid and name for him
 func NewClient(room *Room, conn *websocket.Conn, send chan []byte) *Client {
 	uuid := strings.Replace(uuid.New().String(), "-", "", -1)
