@@ -101,63 +101,67 @@ const SinglePlay = () => {
                 +
               </Button>
             </div> */}
-
-          <FormControl fullWidth>
-            <InputLabel id="timeLimitLabel">Seed</InputLabel>
-            <Input
-              id="seedInput"
-              type="text"
-              value={seedInput}
-              onChange={handleSetSeedInput}
-            />
-          </FormControl>
-
-          <FormControl fullWidth>
-            <InputLabel id="difficultyLabel">Board difficulty</InputLabel>
-            <Select
-              labelId="difficultyLabelId"
-              id="difficultyInput"
-              value={values.difficulty}
-              label="Difficulty"
-              onChange={handleChange("difficulty")}
-            >
-              <MenuItem value={1}>Easy</MenuItem>
-              <MenuItem value={2}>Medium</MenuItem>
-              <MenuItem value={3}>Hard</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth>
-            <InputLabel id="boardSizeLabel">Board size</InputLabel>
-            <Select
-              labelId="boardSizeLabelId"
-              id="boardSizeInput"
-              value={values.boardSize}
-              label="Boardsize"
-              onChange={handleChange("boardSize")}
-            >
-              <MenuItem value={7}>Seven</MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={15}>Fifteen</MenuItem>
-            </Select>
-          </FormControl>
-
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <MobileTimePicker
-              views={["minutes", "seconds"]}
-              ampm={false}
-              inputFormat="mm:ss"
-              mask="__:__"
-              label="Minutes and seconds"
-              value={values.timeLimit}
-              onChange={(newValue) => {
-                if (newValue !== null) {
-                  setValues({ ...values, timeLimit: newValue });
-                }
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
+          <div>
+            <FormControl fullWidth>
+              <InputLabel id="timeLimitLabel">Seed</InputLabel>
+              <Input
+                id="seedInput"
+                type="text"
+                value={seedInput}
+                onChange={handleSetSeedInput}
+              />
+            </FormControl>
+          </div>
+          <div>
+            <FormControl fullWidth>
+              <InputLabel id="difficultyLabel">Board difficulty</InputLabel>
+              <Select
+                labelId="difficultyLabelId"
+                id="difficultyInput"
+                value={values.difficulty}
+                label="Difficulty"
+                onChange={handleChange("difficulty")}
+              >
+                <MenuItem value={1}>Easy</MenuItem>
+                <MenuItem value={2}>Medium</MenuItem>
+                <MenuItem value={3}>Hard</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+          <div>
+            <FormControl fullWidth>
+              <InputLabel id="boardSizeLabel">Board size</InputLabel>
+              <Select
+                labelId="boardSizeLabelId"
+                id="boardSizeInput"
+                value={values.boardSize}
+                label="Boardsize"
+                onChange={handleChange("boardSize")}
+              >
+                <MenuItem value={7}>Seven</MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={15}>Fifteen</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+          <div>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <MobileTimePicker
+                views={["minutes", "seconds"]}
+                ampm={false}
+                inputFormat="mm:ss"
+                mask="__:__"
+                label="Minutes and seconds"
+                value={values.timeLimit}
+                onChange={(newValue) => {
+                  if (newValue !== null) {
+                    setValues({ ...values, timeLimit: newValue });
+                  }
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+          </div>
         </div>
 
         <Button
