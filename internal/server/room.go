@@ -23,6 +23,12 @@ type RoomSettings struct {
 	TimeLimit  int    `json:"timeLimit"`
 }
 
+type ResponeMessage struct {
+	Respone string `json:"response"`
+	Payload interface{}
+}
+
+// Message for clients in lobby
 type RoomForBroadcast struct {
 	Name       string `json:"name"`
 	NumPlayers int    `json:"numPlayers"`
@@ -30,6 +36,16 @@ type RoomForBroadcast struct {
 	IsPrivate  bool   `json:"isPrivate"`
 	BoardSize  int    `json:"boardSize"`
 	Difficulty int    `json:"difficulty"`
+}
+
+// Message for clients in room
+type RoomForMulticast struct {
+	Name       string `json:"name"`
+	Players    interface{}
+	MaxPlayers int  `json:"maxPlayers"`
+	IsPrivate  bool `json:"isPrivate"`
+	BoardSize  int  `json:"boardSize"`
+	Difficulty int  `json:"difficulty"`
 }
 
 type BoardSize int
@@ -88,7 +104,8 @@ func addRoom(data interface{}, userUuid interface{}) {
 	c.room = room
 	room.clients[c] = true
 	go room.run()
-	j, _ = json.MarshalIndent(room.roomSettings, "", "  ")
+	rm := ResponeMessage{Respone: "CreateRoom", Payload: room.roomSettings}
+	j, _ = json.MarshalIndent(rm, "", "  ")
 	createBoard(data)
 	roomBroadcast(room, j)
 }
@@ -105,7 +122,8 @@ func createBoard(data interface{}) {
 		boardArray[i] = n.Bridges
 	}
 	room.boardData.Array = boardArray
-	j, _ := json.MarshalIndent(room.boardData, "", "  ")
+	rm := ResponeMessage{Respone: "CreateBoard", Payload: room.boardData}
+	j, _ := json.MarshalIndent(rm, "", "  ")
 	roomBroadcast(room, j)
 }
 
@@ -122,14 +140,21 @@ func roomBroadcast(room *Room, j []byte) {
 }
 
 func updatedRoomBroadcast(room *Room) {
-	var roomJson RoomForBroadcast
+	var roomJson RoomForMulticast
+	var structTable []ClientIdData
+	for _, val := range clientsMap {
+		if val.room == room {
+			structTable = append(structTable, ClientIdData{val.uuid, val.name})
+		}
+	}
 	roomJson.Name = room.roomSettings.Name
-	roomJson.NumPlayers = len(room.clients)
+	roomJson.Players = structTable
 	roomJson.MaxPlayers = room.roomSettings.MaxPlayers
 	roomJson.IsPrivate = room.roomSettings.IsPrivate
 	roomJson.BoardSize = int(room.boardData.BoardSize)
 	roomJson.Difficulty = int(room.boardData.Difficulty)
-	j, _ := json.MarshalIndent(roomJson, "", "  ")
+	rm := ResponeMessage{Respone: "UpdateRoom", Payload: roomJson}
+	j, _ := json.MarshalIndent(rm, "", "  ")
 	roomBroadcast(room, j)
 }
 
@@ -151,7 +176,8 @@ func lobbyBroadcast() {
 		roomJson.Difficulty = int(val.boardData.Difficulty)
 		structTable = append(structTable, roomJson)
 	}
-	j, _ := json.MarshalIndent(structTable, "", "  ")
+	rm := ResponeMessage{Respone: "RoomsList", Payload: structTable}
+	j, _ := json.MarshalIndent(rm, "", "  ")
 	// send json for all clients in lobby
 	for client := range roomsMap["lobby"].clients {
 		select {
@@ -170,7 +196,9 @@ func changeRoom(data interface{}, userUuid interface{}) {
 	delete(c.room.clients, c)
 	r.clients[c] = true
 	c.room = r
-	updatedRoomBroadcast(r)
+	if r.roomSettings.Name != "lobby" {
+		updatedRoomBroadcast(r)
+	}
 }
 
 func (r *Room) run() {
@@ -178,7 +206,8 @@ func (r *Room) run() {
 		select {
 		// when client wants to join this room
 		case client := <-r.register:
-			j, _ := json.MarshalIndent(ClientIdData{Uuid: client.uuid, Name: client.name}, "", "  ")
+			rm := ResponeMessage{Respone: "CreateUser", Payload: ClientIdData{Uuid: client.uuid, Name: client.name}}
+			j, _ := json.MarshalIndent(rm, "", "  ")
 			client.send <- j
 			r.clients[client] = true
 		// when client wants to quit this room
