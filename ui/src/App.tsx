@@ -15,6 +15,7 @@ import Faq from "./pages/Faq";
 import Contact from "./pages/Contact";
 import Rules from "./pages/Rules";
 import Game from "./pages/Game";
+import Websocket from "./store/Websocket";
 
 class App extends Component {
   render() {
@@ -22,6 +23,7 @@ class App extends Component {
       <ThemeProvider theme={lightTheme}>
       <div className="main">
         <HeaderBar />
+        <Websocket />
         <div className="main-content">
           <main className="column">
             <Suspense fallback={<div>Loading...</div>}></Suspense>

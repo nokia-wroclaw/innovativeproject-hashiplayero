@@ -1,18 +1,20 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { DefaultUser } from "../components/User";
 import { RootState } from "./store";
+
+const initialState: DefaultUser = {
+  user: {
+    uuid: -1,
+    name: "defaultName",
+  },
+};
 
 export const userSlice = createSlice({
   name: "defaultUser",
-  initialState: {
-    uuid: 0,
-    name: "defaultUser",
-  },
+  initialState,
   reducers: {
-    createUser: (state) => {
-      if(state.uuid === 0){
-        state.uuid = Math.floor(Math.random() * 1000000);
-        state.name = "User" + Math.random().toString(36).substring(2, 7);
-      }
+    createUser: (state, action: PayloadAction<DefaultUser>) => {
+      return action.payload;
     },
   },
 });
