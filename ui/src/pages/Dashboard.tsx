@@ -1,14 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../store/hooks";
-import { createUser } from "../store/userSlice";
 
 const Dashboard = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleFindRoom = () => {
-    dispatch(createUser());
-
     navigate("/findroom");
   };
 
