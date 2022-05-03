@@ -64,6 +64,17 @@ func NewClient(room *Room, conn *websocket.Conn, send chan []byte) *Client {
 	}
 }
 
+func changeName(data interface{}, userUuid interface{}) {
+	c := clientsMap[userUuid.(string)]
+	c.name = data.(map[string]interface{})["newName"].(string)
+	cid := ClientIdData{Uuid: c.uuid, Name: c.name}
+	rm := ResponeMessage{Respone: "ChangeName", Payload: cid}
+	sendToClient(c, rm)
+	if c.room.roomSettings.Name != "lobby" {
+		updatedRoomBroadcast(c.room)
+	}
+}
+
 func (c *Client) readPump() {
 	defer func() {
 		c.room.unregister <- c
@@ -103,22 +114,7 @@ func (c *Client) writePump() {
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-
-			w, err := c.conn.NextWriter(websocket.TextMessage)
-			if err != nil {
-				return
-			}
-			w.Write(message)
-
-			n := len(c.send)
-			for i := 0; i < n; i++ {
-				w.Write(newline)
-				w.Write(<-c.send)
-			}
-
-			if err := w.Close(); err != nil {
-				return
-			}
+			c.conn.WriteMessage(websocket.TextMessage, message)
 		case <-ticker.C:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
