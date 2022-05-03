@@ -123,6 +123,34 @@ func addRoom(data interface{}, userUuid interface{}) {
 	lobbyBroadcast()
 }
 
+// Edit room with given parameters
+func editRoom(data interface{}, userUuid interface{}) {
+	c := clientsMap[userUuid.(string)]
+	room := roomsMap[c.room.roomSettings.Name]
+	roomSettings := RoomSettings{}
+	roomSettings.Name = data.(map[string]interface{})["name"].(string)
+	roomSettings.Password = data.(map[string]interface{})["password"].(string)
+	roomSettings.Admin = userUuid.(string)
+	roomSettings.MaxPlayers = int(data.(map[string]interface{})["maxPlayers"].(float64))
+	roomSettings.IsPrivate = data.(map[string]interface{})["isPrivate"].(bool)
+	roomSettings.TimeLimit = int(data.(map[string]interface{})["timeLimit"].(float64))
+	if room.roomSettings.Name != roomSettings.Name {
+		rm := ResponeMessage{Respone: "EditRoom", Error: "Wrong room name"}
+		sendToClient(c, rm)
+		return
+	}
+	if room.roomSettings.Admin != c.uuid {
+		rm := ResponeMessage{Respone: "EditRoom", Error: "Client must be admin to edit room"}
+		sendToClient(c, rm)
+		return
+	}
+	room.roomSettings = roomSettings
+	rm := ResponeMessage{Respone: "EditRoom", Payload: roomSettings}
+	createBoard(data)
+	sendToClient(c, rm)
+	lobbyBroadcast()
+}
+
 // Creates board with given parameters and adds it to given room, returns json with boardData
 func createBoard(data interface{}) {
 	room := roomsMap[data.(map[string]interface{})["name"].(string)]
@@ -264,6 +292,7 @@ func changeRoom(data interface{}, userUuid interface{}) {
 		// return to prevent double lobbyBroadcast
 		return
 	}
+	updatedRoomBroadcast(oldRoom)
 	lobbyBroadcast()
 }
 
@@ -282,11 +311,11 @@ func (r *Room) run() {
 				delete(r.clients, client)
 				if client.room.roomSettings.Admin == client.uuid {
 					deleteRoom(client.room.roomSettings.Name, client.uuid)
+				} else if client.room != roomsMap["lobby"] {
+					delete(clientsMap, client.uuid)
+					updatedRoomBroadcast(r)
+					lobbyBroadcast()
 				}
-				if client.room != roomsMap["lobby"] {
-					updatedRoomBroadcast(client.room)
-				}
-				lobbyBroadcast()
 				close(client.send)
 			}
 		// when client will get the message
@@ -317,10 +346,13 @@ func (r *Room) run() {
 				changeRoom(payload["data"], payload["userUuid"])
 			case "deleteRoom":
 				deleteRoom(payload["data"].(map[string]interface{})["roomName"].(string), payload["userUuid"])
+			case "editRoom":
+				editRoom(payload["data"], payload["userUuid"])
+			case "changeName":
+				changeName(payload["data"], payload["userUuid"])
 			default:
 				rm := ResponeMessage{Respone: "Error", Error: "Wrong response"}
 				sendToClient(clientsMap[cid.Uuid], rm)
-				break
 			}
 		}
 	}
