@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"hash/fnv"
 	"log"
@@ -79,8 +80,12 @@ func (c *Client) readPump() {
 			}
 			break
 		}
+		// send ClientIdData and message
+		cid := ClientIdData{Uuid: c.uuid}
+		j, _ := json.MarshalIndent(cid, "", "  ")
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.room.broadcast <- message
+		messageArray := [][]byte{j, message}
+		c.room.broadcast <- messageArray
 	}
 }
 

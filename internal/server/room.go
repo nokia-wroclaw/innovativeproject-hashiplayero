@@ -10,7 +10,7 @@ type Room struct {
 	roomSettings RoomSettings
 	boardData    BoardData
 	clients      map[*Client]bool
-	broadcast    chan []byte
+	broadcast    chan [][]byte
 	register     chan *Client
 	unregister   chan *Client
 }
@@ -18,6 +18,7 @@ type Room struct {
 type RoomSettings struct {
 	Name       string `json:"name"`
 	Password   string `json:"password"`
+	Admin      string `json:"admin"`
 	MaxPlayers int    `json:"maxPlayers"`
 	IsPrivate  bool   `json:"isPrivate"`
 	TimeLimit  int    `json:"timeLimit"`
@@ -25,6 +26,7 @@ type RoomSettings struct {
 
 type ResponeMessage struct {
 	Respone string `json:"response"`
+	Error   string `json:"error"`
 	Payload interface{}
 }
 
@@ -41,6 +43,7 @@ type RoomForBroadcast struct {
 // Message for clients in room
 type RoomForMulticast struct {
 	Name       string `json:"name"`
+	Admin      string `json:"admin"`
 	Players    interface{}
 	MaxPlayers int  `json:"maxPlayers"`
 	IsPrivate  bool `json:"isPrivate"`
@@ -79,7 +82,7 @@ func newRoom(roomSettings RoomSettings) *Room {
 	return &Room{
 		roomSettings: roomSettings,
 		boardData:    BoardData{BoardSettings: BoardSettings{}},
-		broadcast:    make(chan []byte),
+		broadcast:    make(chan [][]byte),
 		register:     make(chan *Client),
 		unregister:   make(chan *Client),
 		clients:      make(map[*Client]bool),
@@ -88,26 +91,36 @@ func newRoom(roomSettings RoomSettings) *Room {
 
 // Creates room with given parameters and adds client to it
 func addRoom(data interface{}, userUuid interface{}) {
-	var j []byte
+	c := clientsMap[userUuid.(string)]
+	if c.room.roomSettings.Name != "lobby" {
+		rm := ResponeMessage{Respone: "CreateRoom", Error: "Client must be in lobby to create room"}
+		sendToClient(c, rm)
+		return
+	}
 	roomSettings := RoomSettings{}
 	roomSettings.Name = data.(map[string]interface{})["name"].(string)
 	roomSettings.Password = data.(map[string]interface{})["password"].(string)
+	roomSettings.Admin = userUuid.(string)
 	roomSettings.MaxPlayers = int(data.(map[string]interface{})["maxPlayers"].(float64))
 	roomSettings.IsPrivate = data.(map[string]interface{})["isPrivate"].(bool)
 	roomSettings.TimeLimit = int(data.(map[string]interface{})["timeLimit"].(float64))
+	if _, ok := roomsMap[roomSettings.Name]; ok {
+		rm := ResponeMessage{Respone: "CreateRoom", Error: "Room exists"}
+		sendToClient(c, rm)
+		return
+	}
 	room := newRoom(roomSettings)
 	roomsMap[roomSettings.Name] = room
 	// delete client from lobby and add to current room
-	c := clientsMap[userUuid.(string)]
 	r := roomsMap["lobby"]
 	delete(r.clients, c)
 	c.room = room
 	room.clients[c] = true
 	go room.run()
 	rm := ResponeMessage{Respone: "CreateRoom", Payload: room.roomSettings}
-	j, _ = json.MarshalIndent(rm, "", "  ")
 	createBoard(data)
-	roomBroadcast(room, j)
+	sendToClient(c, rm)
+	lobbyBroadcast()
 }
 
 // Creates board with given parameters and adds it to given room, returns json with boardData
@@ -127,6 +140,28 @@ func createBoard(data interface{}) {
 	roomBroadcast(room, j)
 }
 
+// Moves clients from room to lobby and removes the room
+func deleteRoom(roomName string, userUuid interface{}) {
+	room, ok := roomsMap[roomName]
+	if !ok {
+		rm := ResponeMessage{Respone: "deleteRoom", Error: "Room does not exist"}
+		sendToClient(clientsMap[userUuid.(string)], rm)
+		return
+	}
+	lobby := roomsMap["lobby"]
+	if userUuid.(string) != room.roomSettings.Admin {
+		rm := ResponeMessage{Respone: "deleteRoom", Error: "User is not admin"}
+		sendToClient(clientsMap[userUuid.(string)], rm)
+		return
+	}
+	for client := range room.clients {
+		client.room = lobby
+		lobby.clients[client] = true
+	}
+	delete(roomsMap, room.roomSettings.Name)
+	lobbyBroadcast()
+}
+
 // Send given json to all clients in given room
 func roomBroadcast(room *Room, j []byte) {
 	for client := range room.clients {
@@ -139,6 +174,18 @@ func roomBroadcast(room *Room, j []byte) {
 	}
 }
 
+// Send given json to given client
+func sendToClient(client *Client, rm ResponeMessage) {
+	j, _ := json.MarshalIndent(rm, "", "  ")
+	select {
+	case client.send <- j:
+	default:
+		close(client.send)
+		delete(client.room.clients, client)
+	}
+}
+
+// Message with informations about room and players in room
 func updatedRoomBroadcast(room *Room) {
 	var roomJson RoomForMulticast
 	var structTable []ClientIdData
@@ -148,6 +195,7 @@ func updatedRoomBroadcast(room *Room) {
 		}
 	}
 	roomJson.Name = room.roomSettings.Name
+	roomJson.Admin = room.roomSettings.Admin
 	roomJson.Players = structTable
 	roomJson.MaxPlayers = room.roomSettings.MaxPlayers
 	roomJson.IsPrivate = room.roomSettings.IsPrivate
@@ -176,7 +224,12 @@ func lobbyBroadcast() {
 		roomJson.Difficulty = int(val.boardData.Difficulty)
 		structTable = append(structTable, roomJson)
 	}
-	rm := ResponeMessage{Respone: "RoomsList", Payload: structTable}
+	rm := ResponeMessage{Respone: "RoomsList"}
+	if len(structTable) == 0 {
+		rm.Error = "No rooms"
+	} else {
+		rm.Payload = structTable
+	}
 	j, _ := json.MarshalIndent(rm, "", "  ")
 	// send json for all clients in lobby
 	for client := range roomsMap["lobby"].clients {
@@ -189,31 +242,47 @@ func lobbyBroadcast() {
 	}
 }
 
+// moves client to given room
 func changeRoom(data interface{}, userUuid interface{}) {
 	roomName := data.(map[string]interface{})["roomName"].(string)
 	c := clientsMap[userUuid.(string)]
-	r := roomsMap[roomName]
-	delete(c.room.clients, c)
-	r.clients[c] = true
-	c.room = r
-	if r.roomSettings.Name != "lobby" {
-		updatedRoomBroadcast(r)
+	oldRoom := c.room
+	newRoom, ok := roomsMap[roomName]
+	if !ok {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Room does not exist"}
+		sendToClient(clientsMap[userUuid.(string)], rm)
+		return
 	}
+	delete(oldRoom.clients, c)
+	newRoom.clients[c] = true
+	c.room = newRoom
+	if newRoom.roomSettings.Name != "lobby" {
+		updatedRoomBroadcast(newRoom)
+	}
+	if oldRoom.roomSettings.Admin == c.uuid {
+		deleteRoom(oldRoom.roomSettings.Name, c.uuid)
+		// return to prevent double lobbyBroadcast
+		return
+	}
+	lobbyBroadcast()
 }
 
 func (r *Room) run() {
 	for {
 		select {
-		// when client wants to join this room
+		// when the client connected to the server
 		case client := <-r.register:
 			rm := ResponeMessage{Respone: "CreateUser", Payload: ClientIdData{Uuid: client.uuid, Name: client.name}}
 			j, _ := json.MarshalIndent(rm, "", "  ")
 			client.send <- j
 			r.clients[client] = true
-		// when client wants to quit this room
+		// when the client disconnected to the server
 		case client := <-r.unregister:
 			if _, ok := r.clients[client]; ok {
 				delete(r.clients, client)
+				if client.room.roomSettings.Admin == client.uuid {
+					deleteRoom(client.room.roomSettings.Name, client.uuid)
+				}
 				if client.room != roomsMap["lobby"] {
 					updatedRoomBroadcast(client.room)
 				}
@@ -222,21 +291,36 @@ func (r *Room) run() {
 			}
 		// when client will get the message
 		case message := <-r.broadcast:
+			cid := ClientIdData{}
+			json.Unmarshal(message[0], &cid)
 			// this allows us to read json with action and user fields and arbitrary data
 			var payload map[string]interface{}
-			err := json.Unmarshal(message, &payload)
+			err := json.Unmarshal(message[1], &payload)
 			if err != nil {
-				log.Fatal("Error during Unmarshal(): ", err)
+				log.Print("Error during Unmarshal(): ", err)
+				rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+				sendToClient(clientsMap[cid.Uuid], rm)
+				break
+			}
+			// check if user uuid from frontend is valid
+			if cid.Uuid != payload["userUuid"] {
+				rm := ResponeMessage{Respone: "Error", Error: "Wrong user uuid"}
+				sendToClient(clientsMap[cid.Uuid], rm)
+				break
 			}
 			switch payload["action"] {
 			case "createRoom":
 				addRoom(payload["data"], payload["userUuid"])
-				lobbyBroadcast()
 			case "generateBoard":
 				createBoard(payload["data"])
 			case "changeRoom":
 				changeRoom(payload["data"], payload["userUuid"])
-				lobbyBroadcast()
+			case "deleteRoom":
+				deleteRoom(payload["data"].(map[string]interface{})["roomName"].(string), payload["userUuid"])
+			default:
+				rm := ResponeMessage{Respone: "Error", Error: "Wrong response"}
+				sendToClient(clientsMap[cid.Uuid], rm)
+				break
 			}
 		}
 	}
