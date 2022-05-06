@@ -6,27 +6,44 @@ import { RootState } from "./store";
 import { createUser } from "./userSlice";
 import { setInitialRoomsList, updateRooms } from "./RoomsListSlice";
 import { Room, Rooms } from "../components/Room";
-import { setInitialRoomBoard, updateAsAdmin, updateRoomGame } from "./RoomGameSlice";
-import { DefaultRoomAndBoard } from "../components/RoomAndBoard";
+import {
+  setInitialRoomBoard,
+  updateAsAdmin,
+  updateCreateBoard,
+  updateCreateRoom,
+  updateRoomGame,
+} from "./RoomGameSlice";
+import {
+  DefaultRoomAndBoard,
+  CreateBoard,
+  CreateRoom,
+} from "../components/RoomAndBoard";
 
 const Websocket = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { rooms } = useSelector((state: RootState) => state.RoomsList);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const dispatch = useAppDispatch();
-  const socket = new WebSocket("ws://localhost:8080/ws/");
   const [roomName, setRoomName] = useState("");
+  const [socket, setSocketClient] = useState<WebSocket>();
 
   const handleSetRoomId = (event: any) => {
     setRoomName(event.target.value);
     console.log(roomName);
   };
 
-  socket.onopen = () => {
-    consoleLogWebSocket("Connect");
-  };
-
   useEffect(() => {
+    if (user.uuid === -1) {
+      const socket = new WebSocket("ws://localhost:8080/ws/");
+      socket.onopen = () => {
+        consoleLogWebSocket("New Socket Type - Connect");
+      };
+      setSocketClient(socket);
+      console.log(socket !== undefined);
+    }
+  }, []);
+
+  if (socket !== undefined) {
     socket.onmessage = (e) => {
       if (e?.data !== null) {
         let json = null;
@@ -57,7 +74,8 @@ const Websocket = () => {
         //     console.log(e.data);
         //     break;
         // }
-        if (json?.response === "CreateUser") { // Dodanie playera
+        if (json?.response === "CreateUser") {
+          // Dodanie playera
           consoleLogWebSocket("Adding new User");
           let newUser: DefaultUser = {
             user: {
@@ -66,47 +84,54 @@ const Websocket = () => {
             },
           };
           dispatch(createUser(newUser));
-        } else if (e.data.toString().indexOf("CreateBoard") > -1) { // Create room
-          consoleLogWebSocket("Create Room");
-          var sanitized =
-            "[" +
-            e.data
-              .replace(/[\r\n]/gm, "")
-              .toString()
-              .replace(/}{/g, "},{") +
-            "]";
-          var rows = JSON.parse(sanitized);
-          let newRoomGame: DefaultRoomAndBoard = {
-            roomAndBoard: {
-              name: rows[1].Payload.name,
-              maxPlayers: rows[1].Payload.maxPlayers,
-              isPrivate: rows[1].Payload.isPrivate,
-              password: rows[1].Payload.password,
-              timeLimit: rows[1].Payload.timeLimit,
-              array: rows[0].Payload.array,
-              isAdmin: user.uuid,
-              settings: {
-                difficulty: rows[0].Payload.settings.difficulty,
-                size: rows[0].Payload.settings.size,
-              },
-              members: [],
+        } else if (json?.response === "CreateBoard") {
+          // Create board
+          consoleLogWebSocket("Create Board");
+          dispatch(setInitialRoomBoard());
+
+          let createBoard: CreateBoard = {
+            array: json.Payload.array,
+            settings: {
+              difficulty: json.Payload.settings.difficulty,
+              size: json.Payload.settings.size,
             },
           };
-          dispatch(updateRoomGame(newRoomGame));
+
+          dispatch(updateCreateBoard(createBoard));
+
           // usun liste pokoi - lobby, bo juz ich nie sprawda i nie odswieza
-         dispatch(setInitialRoomsList());
-        } else if (json?.response === "RoomsList") { // lista pokoji w pokoju default 0
+          dispatch(setInitialRoomsList());
+        } else if (json?.response === "CreateRoom") {
+          // Create room
+          consoleLogWebSocket("Create Room");
+
+          let createRoom: CreateRoom = {
+            admin: json.Payload.admin,
+            isPrivate: json.Payload.isPrivate,
+            maxPlayers: json.Payload.maxPlayers,
+            name: json.Payload.name,
+            password: json.Payload.password,
+            timeLimit: json.Payload.timeLimit,
+          };
+
+          dispatch(updateCreateRoom(createRoom));
+
+          // usun liste pokoi - lobby, bo juz ich nie sprawda i nie odswieza
+          dispatch(setInitialRoomsList());
+        } else if (json?.response === "RoomsList") {
+          // lista pokoji w pokoju default 0
           consoleLogWebSocket("Refresh rooms");
           let newRooms: Rooms = {
             rooms: json.Payload,
           };
           dispatch(updateRooms(newRooms));
           //dispatch(setInitialRoomBoard());
-        } else if (json?.response === "UpdateRoom") { // wejscie do pokoju lub aktualizacja nowych danych dla wszystkich
+        } else if (json?.response === "UpdateRoom") {
+          // wejscie do pokoju lub aktualizacja nowych danych dla wszystkich
           consoleLogWebSocket("Update Room");
-          
+
           // if admin
-          if(user.uuid === json.Payload.name.replace("Pokoj-", "")){
+          if (user.uuid === json.Payload.name.replace("Pokoj-", "")) {
             console.log("ADMIN");
             let updateAdminRoom: DefaultRoomAndBoard = {
               roomAndBoard: {
@@ -116,7 +141,7 @@ const Websocket = () => {
                 password: "",
                 timeLimit: -1,
                 array: [],
-                isAdmin: user.uuid,
+                admin: user.name,
                 settings: {
                   difficulty: -1,
                   size: -1,
@@ -125,7 +150,7 @@ const Websocket = () => {
               },
             };
             dispatch(updateAsAdmin(updateAdminRoom));
-          }else{
+          } else {
             // Nie admin
             console.log("NIE - ADMIN");
             let updateUserRoom: DefaultRoomAndBoard = {
@@ -136,7 +161,7 @@ const Websocket = () => {
                 password: "",
                 timeLimit: -1,
                 array: [],
-                isAdmin: -1,
+                admin: "",
                 settings: {
                   difficulty: -1,
                   size: -1,
@@ -147,62 +172,107 @@ const Websocket = () => {
             dispatch(updateRoomGame(updateUserRoom));
           }
           dispatch(setInitialRoomsList());
+        } else if (json?.response === "?") {
+          // narazie puste do dopisania jak bedzie sie grało
         } else {
           consoleLogWebSocket("Incorrect");
           console.log(e.data);
         }
       }
     };
-  }, []);
+  }
 
-  socket.onclose = (e) => {
-    consoleLogWebSocket("Disconnect");
-  };
+  if (socket !== undefined) {
+    socket.onclose = (e) => {
+      consoleLogWebSocket("Disconnect");
+    };
+  }
 
   const handleCreateRoom = () => {
     let nameOfRoom = "Pokoj-" + user.uuid;
-    socket.send(
-      JSON.stringify({
-        action: "createRoom",
-        userUuid: user.uuid,
-        data: {
-          name: nameOfRoom,
-          password: "haslo",
-          maxPlayers: 10,
-          isPrivate: true,
-          timeLimit: 60,
-          difficulty: 1,
-          boardSize: 10,
-        },
-      })
-    );
+    if (socket !== undefined) {
+      socket.send(
+        JSON.stringify({
+          action: "createRoom",
+          userUuid: user.uuid,
+          data: {
+            name: nameOfRoom,
+            password: "haslo",
+            maxPlayers: 10,
+            isPrivate: true,
+            timeLimit: 60,
+            difficulty: 1,
+            boardSize: 10,
+          },
+        })
+      );
+    }
     consoleLogWebSocket("Create Room");
   };
 
   const handleChangeRoom = () => {
-    socket.send(
-      JSON.stringify({
-        action: "changeRoom",
-        userUuid: user.uuid,
-        data: {
-          roomName: roomName,
-        },
-      })
-    );
-    consoleLogWebSocket("Change Room");
+    if (socket !== undefined) {
+      socket.send(
+        JSON.stringify({
+          action: "changeRoom",
+          userUuid: user.uuid,
+          data: {
+            roomName: roomName,
+          },
+        })
+      );
+      consoleLogWebSocket("Change Room");
+    }
   };
 
   const handleDisconnectRoom = () => {
-    socket.send(
-      JSON.stringify({
-        action: "changeRoom",
-        userUuid: user.uuid,
-        data: {
-          roomName: "lobby",
-        },
-      })
-    );
-    consoleLogWebSocket("Change Room");
+    if (socket !== undefined) {
+      socket.send(
+        JSON.stringify({
+          action: "changeRoom",
+          userUuid: user.uuid,
+          data: {
+            roomName: "lobby",
+          },
+        })
+      );
+      dispatch(setInitialRoomBoard());
+      consoleLogWebSocket("Change Room");
+    }
+  };
+
+  const handleEditRoom = () => {
+    if (socket !== undefined) {
+      socket.send(
+        JSON.stringify({
+          action: "editRoom",
+          userUuid: user.uuid,
+          data: {
+            name: "pokoj1",
+            password: "haslo",
+            maxPlayers: 10,
+            isPrivate: true,
+            timeLimit: 60,
+            difficulty: 1,
+            boardSize: 10,
+          },
+        })
+      );
+    }
+  };
+
+  const handleChangeNameUser = () => {
+    if (socket !== undefined) {
+      socket.send(
+        JSON.stringify({
+          action: "changeName",
+          userUuid: user.uuid,
+          data: {
+            newName: "nowaNazwa",
+          },
+        })
+      );
+    }
   };
 
   const consoleLogWebSocket = (mess: string) => {
@@ -214,16 +284,20 @@ const Websocket = () => {
       <div>{user.uuid}</div>
       <div>{user.name}</div>
       <br />
-      {rooms != null && rooms.length > 0 ? rooms.map((room: Room, index: number) => (
-        <div>
-          {room.name} -- {room.numPlayers}
-        </div>
-      )) : <div>Nie ma pokoji</div>}
+      {rooms != null && rooms.length > 0 ? (
+        rooms.map((room: Room, index: number) => (
+          <div>
+            {room.name} -- {room.numPlayers}
+          </div>
+        ))
+      ) : (
+        <div>No Rooms</div>
+      )}
       <br />
       <div>
         POKOJ:
-        {roomAndBoard.name} - { }
-        {roomAndBoard.members.length} 
+        {roomAndBoard.name} - {}
+        {roomAndBoard.members.length}
       </div>
       <button type="submit" onClick={handleCreateRoom}>
         Create Room
@@ -234,7 +308,12 @@ const Websocket = () => {
       <button type="submit" onClick={handleChangeRoom}>
         Connect Room
       </button>
-      <button type="submit" onClick={handleDisconnectRoom}>Disconnect Room</button>
+      <button type="submit" onClick={handleDisconnectRoom}>
+        Disconnect Room
+      </button>
+      <button type="submit" onClick={handleChangeNameUser}>
+        Change my Name
+      </button>
     </>
   );
 };
