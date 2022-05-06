@@ -5,7 +5,7 @@ export interface RoomAndBoard {
   password: string;
   timeLimit: number;
   members: [];
-  isAdmin: number,
+  admin: string;
   array: [];
   settings: {
     difficulty: number;
@@ -15,4 +15,21 @@ export interface RoomAndBoard {
 
 export interface DefaultRoomAndBoard {
   roomAndBoard: RoomAndBoard;
+}
+
+export interface CreateBoard {
+  array: [];
+  settings: {
+    difficulty: number;
+    size: number;
+  };
+}
+
+export interface CreateRoom {
+  admin: string;
+  isPrivate: boolean;
+  maxPlayers: number;
+  name: string;
+  password: string;
+  timeLimit: number;
 }
