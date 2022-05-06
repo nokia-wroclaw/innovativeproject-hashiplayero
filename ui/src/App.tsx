@@ -13,7 +13,7 @@ import Faq from "./components/Faq";
 import Contact from "./components/Contact";
 import Rules from "./components/Rules";
 import Game from "./pages/Game";
-import Websocket from "./store/Websocket";
+import WebSocketComp from "./store/WebSocketComp";
 
 class App extends Component {
   render() {
@@ -21,7 +21,7 @@ class App extends Component {
       <ThemeProvider theme={lightTheme}>
       <div className="body">
         <HeaderBar />
-        <Websocket />
+        <WebSocketComp />
         <div className="main-content">
             <Suspense fallback={<div>Loading...</div>}></Suspense>
             <Routes>
