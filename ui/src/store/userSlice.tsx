@@ -16,10 +16,18 @@ export const userSlice = createSlice({
     createUser: (state, action: PayloadAction<DefaultUser>) => {
       return action.payload;
     },
+    updateUserName: (state, action: PayloadAction<string>) => {
+      return {
+        user: {
+          uuid: state.user.uuid,
+          name: action.payload
+        }
+      }
+    },
   },
 });
 
-export const { createUser } = userSlice.actions;
+export const { createUser, updateUserName } = userSlice.actions;
 
 export const selectDefaultUser = (state: RootState) => state.defaultUser;
 
