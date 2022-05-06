@@ -1,4 +1,4 @@
-export interface RoomAndBoard {
+export interface IRoomAndBoard {
   name: string;
   maxPlayers: number;
   isPrivate: boolean;
@@ -13,11 +13,11 @@ export interface RoomAndBoard {
   };
 }
 
-export interface DefaultRoomAndBoard {
-  roomAndBoard: RoomAndBoard;
+export interface IDefaultRoomAndBoard {
+  roomAndBoard: IRoomAndBoard;
 }
 
-export interface CreateBoard {
+export interface ICreateBoard {
   array: [];
   settings: {
     difficulty: number;
@@ -25,7 +25,7 @@ export interface CreateBoard {
   };
 }
 
-export interface CreateRoom {
+export interface ICreateRoom {
   admin: string;
   isPrivate: boolean;
   maxPlayers: number;

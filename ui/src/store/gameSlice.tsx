@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import SingleGameData from "../components/SingleGameData";
+import SingleGameData from "../interfaces/ISingleGameData";
 import type { RootState } from "./store";
 
 const initialState: SingleGameData = {

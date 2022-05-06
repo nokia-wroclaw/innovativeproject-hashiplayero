@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CreateBoard, CreateRoom, DefaultRoomAndBoard } from "../components/RoomAndBoard";
+import { ICreateBoard, ICreateRoom, IDefaultRoomAndBoard } from "../interfaces/IRoomAndBoard";
 import { RootState } from "./store";
 
-const initialState: DefaultRoomAndBoard = {
+const initialState: IDefaultRoomAndBoard = {
   roomAndBoard: {
     name: "name",
     maxPlayers: -1,
@@ -23,10 +23,10 @@ export const RoomBoardSlice = createSlice({
   name: "RoomGame",
   initialState,
   reducers: {
-    updateRoomGame: (state, action: PayloadAction<DefaultRoomAndBoard>) => {
+    updateRoomGame: (state, action: PayloadAction<IDefaultRoomAndBoard>) => {
       return action.payload;
     },
-    updateCreateBoard: (state, action: PayloadAction<CreateBoard>) => {
+    updateCreateBoard: (state, action: PayloadAction<ICreateBoard>) => {
       return {
         roomAndBoard: {
           name: state.roomAndBoard.name,
@@ -41,7 +41,7 @@ export const RoomBoardSlice = createSlice({
         }
       }
     },
-    updateCreateRoom: (state, action: PayloadAction<CreateRoom>) => {
+    updateCreateRoom: (state, action: PayloadAction<ICreateRoom>) => {
       return {
         roomAndBoard: {
           name: action.payload.name,
@@ -59,7 +59,7 @@ export const RoomBoardSlice = createSlice({
     setInitialRoomBoard: () => {
       return initialState;
     },
-    updateAsAdmin: (state, action: PayloadAction<DefaultRoomAndBoard>) => {
+    updateAsAdmin: (state, action: PayloadAction<IDefaultRoomAndBoard>) => {
       return {
         roomAndBoard: {
           name: state.roomAndBoard.name,
