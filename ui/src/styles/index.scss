@@ -1,5 +1,6 @@
 $light_primary_background_color: #FFFFFF;
 
+$lighter_primary_button_color: #6c6af0;
 $light_primary_button_color: #5452E4;
 $light_primary_button_color-hover: #403eb4;
 
@@ -8,113 +9,254 @@ $light_secondary_button_color-hover: #374157;
 
 $light_logo-secondary-color: #8b89ec;
 
-@mixin display-flex {
+@mixin display-flex ($direction, $spacing){
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  flex-direction: $direction;
+  justify-content: $spacing;
 }
 
-.main-navbar{
-  @include display-flex;
-  width: 100%;
-  height: 80px;
-  padding: 0 20px;
-  background-color: $light_primary_background_color;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-.main-navbar-menu{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-}
-
-@mixin button-styling ($font_color){
-  font-family: 'Nunito';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.025em;
-  color: $font_color;
-  padding: 8px 16px;
-  margin: 0px 8px;
-  border: none;
-}
-
-.button-secondary{
-  @include button-styling($light_secondary_button_color);
-  background-color: $light_primary_background_color;
-  transition: all 0.1s ease;
-
-  &:hover{
-    transition: all 0.5s ease;
-    color: $light_secondary_button_color-hover;
-    scale: 1.2;
-  }
-}
-
-.button-primary{
-  @include button-styling($light_primary_background_color);
-  border-radius: 4px;
-  background-color: $light_primary_button_color;
-  transition: all 0.1s ease;
-  margin-right: 24px;
-  &:hover{
-    transition: all 0.5s ease;
-    scale: 1.1;
-    background-color: $light_primary_button_color-hover;
-  }
-}
-
-.main-navbar-logo{
-  @include display-flex;
-}
-
-.button-logo{
-  @include button-styling($light_secondary_button_color);
-  background-color: $light_primary_background_color;
-  font-size: 22px;
-  .logo-text-first{
-    color: $light_primary_button_color;
-  }
-  .logo-text-second{
-    color: $light_secondary_button_color;
-  }
-  transition: all 0.5s ease;
-  margin-right: 24px;
-  &:hover{
-    transition: all 0.5s ease;
-    background-color: $light_primary_button_color-hover;
-    .logo-text-first{
-      color: $light_primary_background_color;
-    }
-    .logo-text-second{
-      color: $light_logo-secondary-color;
-    }
-  }
+.body{
+    width: 100%;
+    height: 100%;
 }
 
 .main-content{
-  border: black 1px solid;
-  margin: 10px;
+    margin: 0px 16px;
+    @include display-flex(column, center);
 }
 
-.button-primary-centered{
-  @include button-styling($light_primary_background_color);
-  width: 160px;
-  
-  border-radius: 4px;
-  background-color: $light_primary_button_color;
-  transition: all 0.1s ease;
-  margin-right: 24px;
-  &:hover{
-    transition: all 0.5s ease;
-    scale: 1.1;
-    background-color: $light_primary_button_color-hover;
+.main-buttons{
+    @include display-flex(column, center);
+    width: 100%;
+    button{
+        margin: 20px;
+        width: 75%;
+        height: 80px;
+        max-width: 650px;
+        font-size: 18px;
+        border-radius: 10px
+    }
+
+    @media screen and (max-width: 420px){
+        button{
+            width: 100%;
+        }
+    }
+}
+
+.logo{
+    @include display-flex(row, center);
+    padding: 8px 16px;
+    margin: 24px;
+    transition: all 0.3s ease-out;
+    border-radius: 4px;
+    flex-grow: 1;     
+    justify-content: flex-start;
+
+    background-color: #FFFFFF;
+    &:hover{
+        transition: all 0.3s ease-out;
+        // background: linear-gradient(45deg,#F17C58, #E94584, #24AADB , #27DBB1,#FFDC18, #FF3706);
+        // background-size: 600% 100%;
+        // animation: gradient 16s linear infinite;
+        // animation-direction: alternate;
+
+        .logo-first-half{
+            color: $light_secondary_button_color;
+        }
+        .logo-second-half{
+            color: $light_primary_button_color;
+        }
+    }
+}
+
+@keyframes gradient {
+    0% {background-position: 0%}
+    100% {background-position: 100%}
+}
+
+.logo-inner{
+    display: flex;
+    cursor: pointer;
+}
+
+.logo-first-half{
+    color: $light_primary_button_color;
+}
+
+.logo-second-half{
+    color: $light_secondary_button_color;
+}
+
+.form-container{
+    @include display-flex(column, center);
+    button {
+        border-radius: 12px;
+        height: 64px;
+        width: 96px;
+        font-size: 16px;
+    }
+}
+
+@mixin boarder (){
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+    transition: all 0.5s ease-in-out;
+    &:hover{
+        // background-color: rgb(250, 250, 250);
+        box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 
+        0px 24px 60px rgba(6, 48, 125, 0.295), 
+        0px 12px 24px rgba(27, 59, 119, 0.103);
+        transition: all 0.5s ease-in;
   }
+}
+
+.paper{
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    padding: 32px 8px;
+    margin: 24px 16px;
+    @include boarder();    
+}
+
+@mixin about-pages {
+    display: flex;
+    flex-direction: column;
+    margin: 24px;
+    padding: 8px;
+    border-radius: 6px;
+    @media screen and (max-width: 750px){
+        @include display-flex(column, center);
+    }
+}
+
+.contact{
+    @include about-pages;
+}
+
+@mixin title ($color, $type, $size) {
+    font-size: $size;
+    font-weight: $type;
+    color: $color;
+}
+
+.title{
+    display: flex;
+    align-items: center;
+    color: $light_secondary_button_color;
+    h1{
+        @include title($light_secondary_button_color, bold, 40px);
+        margin: 24px;
+    }
+    svg{
+        transition: all 0.6s ease-in-out;
+    }
+    svg:hover{
+        transition: all 0.6s ease-out;
+        transform: rotate(360deg) scale(1.5);
+
+        color: $light_primary_button_color;
+        cursor: pointer;
+    }
+}
+
+.contact-title{
+    @include title($light_secondary_button_color, bold, 24px);
+    margin: 24px;
+}
+
+.sub-title{
+    font-weight: bold;
+    color: $light_secondary_button_color-hover;
+    margin: 16px 24px;
+    transition: all 0.3s ease-in-out;
+    &:hover{
+        color: $light_primary_button_color-hover;
+        transition: all 0.3s ease-out;
+    }
+}
+
+.contact-people{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-person{
+    height: 100%;
+    min-width: 25%;
+    padding: 32px;
+    margin: 24px 32px;
+    border-radius: 6px;
+    @include boarder();
+    // transition: all 0.6s ease-in-out;
+    &:hover{
+    //     transition: all 0.6s ease-out;
+    //     transform: scale(1.01);
+        cursor: pointer;
+    }
+}
+
+.contact-text{
+    font-size: 16px;
+    color: $light_secondary_button_color-hover;
+    margin: 24px 36px;
+    text-align: justify;
+
+}
+
+.general-info{
+    @include display-flex(column, center);
+    height: 90%;
+    width: 85%;
+    box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+    margin-bottom: 24px;
+    padding: 16px;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+
+    div{
+        width: 100%;
+        padding: 8px;
+    }
+
+    @media screen and (max-width: 420px){
+        .general-info{
+            width: 95%;
+        }
+    }
+}
+
+.faq-container{
+    @include display-flex(column, center);
+    margin: 24px 36px;
+    max-width: 900px;
+    @media (max-width: 450px){
+        .faq-container{
+            width: 95%;
+            margin: 24px 0px;
+        }
+    }
+}
+
+.faq-questions{
+    width: 100%;
+    min-width: 300px;
+    h5{
+        font-size: 18px;
+        margin: 8px;
+        // make it a little bolder
+        font-weight: bold;
+    }
+
+    p{
+        font-size: 16px;
+        margin: 8px;
+        color: #7081A6;
+        text-align: justify;
+    }
 }
