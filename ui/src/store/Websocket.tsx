@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { DefaultUser } from "../components/User";
+import { IDefaultUser } from "../interfaces/IUser";
 import { useAppDispatch } from "./hooks";
 import { RootState } from "./store";
 import { createUser, updateUserName } from "./userSlice";
 import { setInitialRoomsList, updateRooms } from "./RoomsListSlice";
-import { Room, Rooms } from "../components/Room";
+import { IRoom, IRooms } from "../interfaces/IRoom";
 import {
   setInitialRoomBoard,
   updateAsAdmin,
@@ -14,23 +14,23 @@ import {
   updateRoomGame,
 } from "./RoomGameSlice";
 import {
-  DefaultRoomAndBoard,
-  CreateBoard,
-  CreateRoom,
-} from "../components/RoomAndBoard";
+  IDefaultRoomAndBoard,
+  ICreateBoard,
+  ICreateRoom,
+} from "../interfaces/IRoomAndBoard";
 
 const Websocket = () => {
+  const [socket, setSocketClient] = useState<WebSocket>();
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { rooms } = useSelector((state: RootState) => state.RoomsList);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const dispatch = useAppDispatch();
-  const [roomName, setRoomName] = useState("");
-  const [socket, setSocketClient] = useState<WebSocket>();
+  // const [roomName, setRoomName] = useState("");
 
-  const handleSetRoomId = (event: any) => {
-    setRoomName(event.target.value);
-    console.log(roomName);
-  };
+  // const handleSetRoomId = (event: any) => {
+  //   setRoomName(event.target.value);
+  //   console.log(roomName);
+  // };
 
   useEffect(() => {
     if (user.uuid === -1) {
@@ -49,35 +49,13 @@ const Websocket = () => {
         let json = null;
         try {
           json = JSON.parse(e.data);
-        } catch {}
-        console.log("JSON: ");
-        console.log(json);
-        // switch (json?.response) {
-        //   case "CreateUser":
-        //     consoleLogWebSocket("Adding new User");
-        //     let newUser: DefaultUser = {
-        //       user: {
-        //         uuid: json.Payload.uuid,
-        //         name: json.Payload.name,
-        //       },
-        //     };
-        //     dispatch(createUser(newUser));
-        //     break;
-        //   case "s":
-        //     break;
-        //   case "s":
-        //     break;
-        //   case "s":
-        //     break;
-        //   default:
-        //     consoleLogWebSocket("Incorrect");
-        //     console.log(e.data);
-        //     break;
-        // }
+        } catch {
+          consoleLogWebSocket("There is unidentified error has occurred - contact the administration");
+        }
         if (json?.response === "CreateUser") {
           // Dodanie playera
           consoleLogWebSocket("Adding new User");
-          let newUser: DefaultUser = {
+          let newUser: IDefaultUser = {
             user: {
               uuid: json.Payload.uuid,
               name: json.Payload.name,
@@ -89,7 +67,7 @@ const Websocket = () => {
           consoleLogWebSocket("Create Board");
           dispatch(setInitialRoomBoard());
 
-          let createBoard: CreateBoard = {
+          let createBoard: ICreateBoard = {
             array: json.Payload.array,
             settings: {
               difficulty: json.Payload.settings.difficulty,
@@ -105,7 +83,7 @@ const Websocket = () => {
           // Create room
           consoleLogWebSocket("Create Room");
 
-          let createRoom: CreateRoom = {
+          let createRoom: ICreateRoom = {
             admin: json.Payload.admin,
             isPrivate: json.Payload.isPrivate,
             maxPlayers: json.Payload.maxPlayers,
@@ -121,7 +99,7 @@ const Websocket = () => {
         } else if (json?.response === "RoomsList") {
           // lista pokoji w pokoju default 0
           consoleLogWebSocket("Refresh rooms");
-          let newRooms: Rooms = {
+          let newRooms: IRooms = {
             rooms: json.Payload,
           };
           dispatch(updateRooms(newRooms));
@@ -133,7 +111,7 @@ const Websocket = () => {
           // if admin
           if (user.uuid === json.Payload.name.replace("Pokoj-", "")) {
             console.log("ADMIN");
-            let updateAdminRoom: DefaultRoomAndBoard = {
+            let updateAdminRoom: IDefaultRoomAndBoard = {
               roomAndBoard: {
                 name: json.Payload.name,
                 maxPlayers: json.Payload.maxPlayers,
@@ -153,7 +131,7 @@ const Websocket = () => {
           } else {
             // Nie admin
             console.log("NIE - ADMIN");
-            let updateUserRoom: DefaultRoomAndBoard = {
+            let updateUserRoom: IDefaultRoomAndBoard = {
               roomAndBoard: {
                 name: json.Payload.name,
                 maxPlayers: json.Payload.maxPlayers,
@@ -212,7 +190,7 @@ const Websocket = () => {
     consoleLogWebSocket("Create Room");
   };
 
-  const handleChangeRoom = () => {
+  const handleChangeRoom = (roomName: string) => {
     if (socket !== undefined) {
       socket.send(
         JSON.stringify({
@@ -288,7 +266,7 @@ const Websocket = () => {
       <div>{user.name}</div>
       <br />
       {rooms != null && rooms.length > 0 ? (
-        rooms.map((room: Room, index: number) => (
+        rooms.map((room: IRoom, index: number) => (
           <div>
             {room.name} -- {room.numPlayers}
           </div>
@@ -307,10 +285,10 @@ const Websocket = () => {
       </button>
       <br />
       <br />
-      <input type="text" onChange={handleSetRoomId} />
+      {/* <input type="text" onChange={handleSetRoomId} />
       <button type="submit" onClick={handleChangeRoom}>
         Connect Room
-      </button>
+      </button> */}
       <button type="submit" onClick={handleDisconnectRoom}>
         Disconnect Room
       </button>

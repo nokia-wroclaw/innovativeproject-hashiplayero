@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Rooms } from "../components/Room";
+import { IRooms } from "../interfaces/IRoom";
 import { RootState } from "./store";
 
-const initialState: Rooms = {
+const initialState: IRooms = {
   rooms: [
     {
       name: "name",
@@ -19,7 +19,7 @@ export const RoomsListSlice = createSlice({
   name: "RoomsList",
   initialState,
   reducers: {
-    updateRooms: (state, action: PayloadAction<Rooms>) => {
+    updateRooms: (state, action: PayloadAction<IRooms>) => {
       return action.payload;
     },
     setInitialRoomsList: () => {

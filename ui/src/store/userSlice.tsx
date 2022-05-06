@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { DefaultUser } from "../components/User";
+import { IDefaultUser } from "../interfaces/IUser";
 import { RootState } from "./store";
 
-const initialState: DefaultUser = {
+const initialState: IDefaultUser = {
   user: {
     uuid: -1,
     name: "defaultName",
@@ -13,7 +13,7 @@ export const userSlice = createSlice({
   name: "defaultUser",
   initialState,
   reducers: {
-    createUser: (state, action: PayloadAction<DefaultUser>) => {
+    createUser: (state, action: PayloadAction<IDefaultUser>) => {
       return action.payload;
     },
     updateUserName: (state, action: PayloadAction<string>) => {

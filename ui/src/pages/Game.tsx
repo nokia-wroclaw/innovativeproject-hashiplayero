@@ -115,7 +115,7 @@ const Game = () => {
 
   function generateShapes() {
     arr = board.reduce((acc: number[], curr: number) => acc.concat(curr), []);
-    const nodes = board.map((value, index) => {
+    const nodes = board.map((value:any, index:number) => {
       return {
         id: index,
         value: value,
@@ -259,7 +259,7 @@ const Game = () => {
               }
             })}
 
-            {shapes.map((shape, index) =>
+            {shapes.map((shape:any, index:number) =>
               shape.value !== 0 ? (
                 <Group key={shape.id}>
                   <Circle
