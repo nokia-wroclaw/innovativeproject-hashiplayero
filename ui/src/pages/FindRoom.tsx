@@ -1,47 +1,35 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import Room from "../components/Room";
+import { IRoom } from "../interfaces/IRoom";
+
+import { Button, TextField } from "@mui/material";
+
+
 
 const FindRoom = () => {
-  // const socket = new WebSocket("ws://localhost:3001/ws/");
-
-  // const [message, setMessage] = useState<string[]>([]);
-  // const [input, setInput] = useState("");
-
-  // const handleMessage = () => {
-  //     socket.send(JSON.stringify({
-  //         message: input
-  //     }))
-  // };
-
-  // const handleSetInput = () => {
-  //   setInput(input);
-  // };
-
-  // useEffect(() => {
-  //   socket.onopen = () => {
-  //     console.log("Connect");
-  //   };
-
-  //   socket.onmessage = (e) => {
-  //     let mess = [...message];
-  //     mess.push("Message: " + e.data);
-  //     setMessage(mess);
-  //   };
-
-  //   return () => {
-  //     socket.close();
-  //   };
-  // });
+  const { rooms } = useSelector((state: RootState) => state.RoomsList);
 
   return (
-    <div>
-      {/* <input type="text"  onChange={handleSetInput} />
-    <button onClick={handleMessage}>SEND</button>
+    <>
       <div>
-        {message.map((value) => {
-          return <div> {value} </div>;
-        })}
-      </div> */}
-    </div>
+        <div>
+          <TextField>
+            
+          </TextField>
+        </div>
+        {rooms != null && rooms.length > 0 ? (
+          rooms.map((room: IRoom, index: number) => (
+            <div className="room" key={room.name}>
+              <Room room={room}/>
+            </div>
+          ))
+        ) : (
+          <div>No Rooms</div>
+        )}
+      </div>
+    </>
   );
 };
 

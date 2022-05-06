@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addFormData } from "../store/gameSlice";
-import initialGameData from "../components/SingleGameData";
+import initialGameData from "../interfaces/ISingleGameData";
 import ky from "ky";
 import { useAppDispatch } from "../store/hooks";
 import {

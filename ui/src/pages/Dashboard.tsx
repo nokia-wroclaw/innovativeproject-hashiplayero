@@ -25,7 +25,7 @@ const buttons: IButtonsInfo[] = [
   {
     label: "Find a room",
     navigation: "/findroom",
-    isDisabled: true,
+    isDisabled: false,
   },
 ];
 
