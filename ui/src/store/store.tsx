@@ -3,6 +3,7 @@ import gameReducer from "./gameSlice";
 import userReducer from "./userSlice";
 import RoomsListReducer from "./RoomsListSlice";
 import RoomGameReducer from "./RoomGameSlice";
+import WebSocketReducer from "./WebSocketSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,7 +11,12 @@ export const store = configureStore({
     defaultUser: userReducer,
     RoomsList: RoomsListReducer,
     RoomGame: RoomGameReducer,
+    webSocket: WebSocketReducer,
   },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

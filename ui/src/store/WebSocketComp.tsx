@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { IDefaultUser } from "../interfaces/IUser";
 import { useAppDispatch } from "./hooks";
@@ -19,32 +19,17 @@ import {
   ICreateRoom,
 } from "../interfaces/IRoomAndBoard";
 
-const Websocket = () => {
-  const [socket, setSocketClient] = useState<WebSocket>();
+const WebSocketComp = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { rooms } = useSelector((state: RootState) => state.RoomsList);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
+
+  // websocket
+  const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const dispatch = useAppDispatch();
-  // const [roomName, setRoomName] = useState("");
 
-  // const handleSetRoomId = (event: any) => {
-  //   setRoomName(event.target.value);
-  //   console.log(roomName);
-  // };
-
-  useEffect(() => {
-    if (user.uuid === -1) {
-      const socket = new WebSocket("ws://localhost:8080/ws/");
-      socket.onopen = () => {
-        consoleLogWebSocket("New Socket Type - Connect");
-      };
-      setSocketClient(socket);
-      console.log(socket !== undefined);
-    }
-  }, []);
-
-  if (socket !== undefined) {
-    socket.onmessage = (e) => {
+  if (webSocket !== undefined) {
+    webSocket.onmessage = (e) => {
       if (e?.data !== null) {
         let json = null;
         try {
@@ -52,6 +37,8 @@ const Websocket = () => {
         } catch {
           consoleLogWebSocket("There is unidentified error has occurred - contact the administration");
         }
+        console.log(json);
+
         if (json?.response === "CreateUser") {
           // Dodanie playera
           consoleLogWebSocket("Adding new User");
@@ -103,7 +90,6 @@ const Websocket = () => {
             rooms: json.Payload,
           };
           dispatch(updateRooms(newRooms));
-          //dispatch(setInitialRoomBoard());
         } else if (json?.response === "UpdateRoom") {
           // wejscie do pokoju lub aktualizacja nowych danych dla wszystkich
           consoleLogWebSocket("Update Room");
@@ -162,16 +148,16 @@ const Websocket = () => {
     };
   }
 
-  if (socket !== undefined) {
-    socket.onclose = (e) => {
+  if (webSocket !== undefined) {
+    webSocket.onclose = (e) => {
       consoleLogWebSocket("Disconnect");
     };
   }
 
   const handleCreateRoom = () => {
     let nameOfRoom = "Pokoj-" + user.uuid;
-    if (socket !== undefined) {
-      socket.send(
+    if (webSocket !== undefined) {
+      webSocket.send(
         JSON.stringify({
           action: "createRoom",
           userUuid: user.uuid,
@@ -190,41 +176,10 @@ const Websocket = () => {
     consoleLogWebSocket("Create Room");
   };
 
-  const handleChangeRoom = (roomName: string) => {
-    if (socket !== undefined) {
-      socket.send(
-        JSON.stringify({
-          action: "changeRoom",
-          userUuid: user.uuid,
-          data: {
-            roomName: roomName,
-          },
-        })
-      );
-      consoleLogWebSocket("Change Room");
-    }
-  };
-
-  const handleDisconnectRoom = () => {
-    if (socket !== undefined) {
-      socket.send(
-        JSON.stringify({
-          action: "changeRoom",
-          userUuid: user.uuid,
-          data: {
-            roomName: "lobby",
-          },
-        })
-      );
-      dispatch(setInitialRoomBoard());
-      consoleLogWebSocket("Change Room");
-    }
-  };
-
   // mają istnieć wszystkie wartości, jeśli nie chce zmieniać to ma być wysłane to samo co było
   const handleEditRoom = () => {
-    if (socket !== undefined) {
-      socket.send(
+    if (webSocket !== undefined) {
+      webSocket.send(
         JSON.stringify({
           action: "editRoom",
           userUuid: user.uuid,
@@ -243,8 +198,8 @@ const Websocket = () => {
   };
 
   const handleChangeNameUser = () => {
-    if (socket !== undefined) {
-      socket.send(
+    if (webSocket !== undefined) {
+      webSocket.send(
         JSON.stringify({
           action: "changeName",
           userUuid: user.uuid,
@@ -284,14 +239,6 @@ const Websocket = () => {
         Create Room
       </button>
       <br />
-      <br />
-      {/* <input type="text" onChange={handleSetRoomId} />
-      <button type="submit" onClick={handleChangeRoom}>
-        Connect Room
-      </button> */}
-      <button type="submit" onClick={handleDisconnectRoom}>
-        Disconnect Room
-      </button>
       <button type="submit" onClick={handleChangeNameUser}>
         Change my Name
       </button>
@@ -299,4 +246,4 @@ const Websocket = () => {
   );
 };
 
-export default Websocket;
+export default WebSocketComp;
