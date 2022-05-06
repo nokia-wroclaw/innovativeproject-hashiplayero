@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { DefaultUser } from "../components/User";
 import { useAppDispatch } from "./hooks";
 import { RootState } from "./store";
-import { createUser } from "./userSlice";
+import { createUser, updateUserName } from "./userSlice";
 import { setInitialRoomsList, updateRooms } from "./RoomsListSlice";
 import { Room, Rooms } from "../components/Room";
 import {
@@ -172,8 +172,10 @@ const Websocket = () => {
             dispatch(updateRoomGame(updateUserRoom));
           }
           dispatch(setInitialRoomsList());
-        } else if (json?.response === "?") {
-          // narazie puste do dopisania jak bedzie sie grało
+        } else if (json?.response === "ChangeName") {
+          // Zmiana nazwy pokoju
+          consoleLogWebSocket("Change User Name");
+          dispatch(updateUserName(json.Payload.name));
         } else {
           consoleLogWebSocket("Incorrect");
           console.log(e.data);
@@ -241,6 +243,7 @@ const Websocket = () => {
     }
   };
 
+  // mają istnieć wszystkie wartości, jeśli nie chce zmieniać to ma być wysłane to samo co było
   const handleEditRoom = () => {
     if (socket !== undefined) {
       socket.send(
@@ -248,7 +251,7 @@ const Websocket = () => {
           action: "editRoom",
           userUuid: user.uuid,
           data: {
-            name: "pokoj1",
+            name: roomAndBoard.name,
             password: "haslo",
             maxPlayers: 10,
             isPrivate: true,
