@@ -120,6 +120,7 @@ func addRoom(data interface{}, userUuid interface{}) {
 	rm := ResponeMessage{Respone: "CreateRoom", Payload: room.roomSettings}
 	createBoard(data)
 	sendToClient(c, rm)
+	updatedRoomBroadcast(room)
 	lobbyBroadcast()
 }
 
@@ -148,6 +149,7 @@ func editRoom(data interface{}, userUuid interface{}) {
 	rm := ResponeMessage{Respone: "EditRoom", Payload: roomSettings}
 	createBoard(data)
 	sendToClient(c, rm)
+	updatedRoomBroadcast(room)
 	lobbyBroadcast()
 }
 
@@ -188,6 +190,24 @@ func deleteRoom(roomName string, userUuid interface{}) {
 	}
 	delete(roomsMap, room.roomSettings.Name)
 	lobbyBroadcast()
+}
+
+// give admin to another user in this room if exist, if not then delete room
+// return false if room is deleted
+func changeAdmin(roomName string, userUuid interface{}) bool {
+	room := roomsMap[roomName]
+	if len(room.clients) == 0 {
+		deleteRoom(roomName, userUuid)
+		return false
+	}
+	for client := range room.clients {
+		if client.uuid == room.roomSettings.Admin {
+			continue
+		}
+		room.roomSettings.Admin = client.uuid
+		break
+	}
+	return true
 }
 
 // Send given json to all clients in given room
@@ -236,6 +256,20 @@ func updatedRoomBroadcast(room *Room) {
 
 // Send update about rooms to clients in lobby
 func lobbyBroadcast() {
+	rm := collectDataForLobbyBroadcast()
+	j, _ := json.MarshalIndent(rm, "", "  ")
+	// send json for all clients in lobby
+	for client := range roomsMap["lobby"].clients {
+		select {
+		case client.send <- j:
+		default:
+			close(client.send)
+			delete(roomsMap["lobby"].clients, client)
+		}
+	}
+}
+
+func collectDataForLobbyBroadcast() ResponeMessage {
 	var roomJson RoomForBroadcast
 	var structTable []RoomForBroadcast
 
@@ -258,27 +292,29 @@ func lobbyBroadcast() {
 	} else {
 		rm.Payload = structTable
 	}
-	j, _ := json.MarshalIndent(rm, "", "  ")
-	// send json for all clients in lobby
-	for client := range roomsMap["lobby"].clients {
-		select {
-		case client.send <- j:
-		default:
-			close(client.send)
-			delete(roomsMap["lobby"].clients, client)
-		}
-	}
+	return rm
 }
 
 // moves client to given room
 func changeRoom(data interface{}, userUuid interface{}) {
 	roomName := data.(map[string]interface{})["roomName"].(string)
 	c := clientsMap[userUuid.(string)]
+	if c.room.roomSettings.Name == roomName {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Client already is in this room"}
+		sendToClient(c, rm)
+		return
+	}
+	if c.room.roomSettings.Name != "lobby" && roomName != "lobby" {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Client must be in lobby to enter to the room"}
+		sendToClient(c, rm)
+		return
+	}
 	oldRoom := c.room
+	var oldRoomExist bool = true
 	newRoom, ok := roomsMap[roomName]
 	if !ok {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Room does not exist"}
-		sendToClient(clientsMap[userUuid.(string)], rm)
+		sendToClient(c, rm)
 		return
 	}
 	delete(oldRoom.clients, c)
@@ -288,11 +324,14 @@ func changeRoom(data interface{}, userUuid interface{}) {
 		updatedRoomBroadcast(newRoom)
 	}
 	if oldRoom.roomSettings.Admin == c.uuid {
-		deleteRoom(oldRoom.roomSettings.Name, c.uuid)
-		// return to prevent double lobbyBroadcast
-		return
+		oldRoomExist = changeAdmin(oldRoom.roomSettings.Name, c.uuid)
 	}
-	updatedRoomBroadcast(oldRoom)
+	if !oldRoomExist {
+		// return to prevent double lobbyBroadcast because it is called in deleteRoom
+		return
+	} else if oldRoom.roomSettings.Name != "lobby" {
+		updatedRoomBroadcast(oldRoom)
+	}
 	lobbyBroadcast()
 }
 
@@ -302,15 +341,15 @@ func (r *Room) run() {
 		// when the client connected to the server
 		case client := <-r.register:
 			rm := ResponeMessage{Respone: "CreateUser", Payload: ClientIdData{Uuid: client.uuid, Name: client.name}}
-			j, _ := json.MarshalIndent(rm, "", "  ")
-			client.send <- j
+			sendToClient(client, rm)
+			sendToClient(client, collectDataForLobbyBroadcast())
 			r.clients[client] = true
 		// when the client disconnected to the server
 		case client := <-r.unregister:
 			if _, ok := r.clients[client]; ok {
 				delete(r.clients, client)
 				if client.room.roomSettings.Admin == client.uuid {
-					deleteRoom(client.room.roomSettings.Name, client.uuid)
+					changeRoom(client.room.roomSettings.Name, client.uuid)
 				} else if client.room != roomsMap["lobby"] {
 					delete(clientsMap, client.uuid)
 					updatedRoomBroadcast(r)
