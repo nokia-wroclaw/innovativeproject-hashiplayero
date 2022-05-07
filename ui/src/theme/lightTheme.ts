@@ -65,6 +65,7 @@ const lightTheme = createTheme({
             styleOverrides:{
                 root:{
                     width: "100%",
+                    padding: "0px",
                 }
             }
         },
