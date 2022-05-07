@@ -1,5 +1,5 @@
 export interface IRoom {
-  name: string | null;
+  name: string;
   numPlayers: number;
   maxPlayers: number;
   isPrivate: boolean;
