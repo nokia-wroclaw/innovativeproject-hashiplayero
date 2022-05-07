@@ -1,5 +1,3 @@
-import { color } from "@mui/system";
-import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
 import { useSelector } from "react-redux";
@@ -56,9 +54,7 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
 };
 
 const Game = () => {
-  const { board, boardSize, boardResult } = useSelector(
-    (state: RootState) => state.singleGame
-  );
+  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
   const [lines, setLines] = useState([{}] as Bridge[]);
 
@@ -89,42 +85,24 @@ const Game = () => {
   useEffect(() => {
     setShapes(INITIAL_STATE);
     // setShapes(()=>[...shapes, ...generateShapes()]);
-  }, [width, height, boardSize, board]);
+  }, [width, height, roomAndBoard.settings.size, roomAndBoard.array, INITIAL_STATE]);
 
   useEffect(() => {
     setShapes(shapes);
-  }, [lastNode]);
-
-  const handleCheckResult = () => {
-    axios
-      .post("http://localhost:3001/api/gameresult", {
-        board: board,
-        boardResult: boardResult,
-      })
-      .then((res) => {
-        if (res.request.status === 200) {
-          if (res.data.result) {
-            console.log("WIN");
-          } else {
-            console.log("INCORRECT");
-          }
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [lastNode, shapes]);
 
   function generateShapes() {
-    arr = board.reduce((acc: number[], curr: number) => acc.concat(curr), []);
-    const nodes = board.map((value:any, index:number) => {
+    arr = roomAndBoard.array.reduce((acc: number[], curr: number) => acc.concat(curr), []);
+    const nodes = roomAndBoard.array.map((value:any, index:number) => {
       return {
         id: index,
         value: value,
-        radius: width / boardSize / 2,
-        x: (((index % boardSize) * width) / boardSize + width / boardSize / 2) ,
+        radius: width / roomAndBoard.settings.size / 2,
+        x: (((index % roomAndBoard.settings.size) * width) / roomAndBoard.settings.size + width / roomAndBoard.settings.size / 2) ,
         y:
-          ((Math.floor(index / boardSize) * height) / boardSize +
-          width / boardSize / 2),
-        fontSize: width / boardSize / 3,
+          ((Math.floor(index / roomAndBoard.settings.size) * height) / roomAndBoard.settings.size +
+          width / roomAndBoard.settings.size / 2),
+        fontSize: width / roomAndBoard.settings.size / 3,
         isSelected: false,
         color: "white",
       };
@@ -146,7 +124,7 @@ const Game = () => {
     } else {
       shapes[lastNode].isSelected = false;
       shapes[index].isSelected = true;
-      getPossibleNodes(arr, boardSize, indexToRemember).map((node) => {
+      getPossibleNodes(arr, roomAndBoard.settings.size, indexToRemember).map((node) => {
         if (node === index) {
           const line = lines.find(
             (line) =>
@@ -200,7 +178,7 @@ const Game = () => {
         <Stage width={width + 10} height={width + 10}>
           <Layer>
             {hoveredNode >= 0
-              ? getPossibleNodes(arr, boardSize, hoveredNode).map((node) => (
+              ? getPossibleNodes(arr, roomAndBoard.settings.size, hoveredNode).map((node) => (
                   <Line
                     key={node}
                     points={[
