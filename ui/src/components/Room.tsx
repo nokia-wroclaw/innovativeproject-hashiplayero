@@ -5,6 +5,8 @@ import { RootState } from "../store/store";
 import { useAppDispatch } from "../store/hooks";
 import { useSelector } from "react-redux";
 import { setInitialRoomBoard } from "../store/RoomGameSlice";
+import { LockOpen, Lock }  from '@mui/icons-material';
+import { HouseSvg, BoardSvg, DifficultySvg, PersonSvg } from "./svg/VectorGraphics";
 
 const Room = ({ room }: { room: IRoom }) => {
   const navigate = useNavigate();
@@ -49,37 +51,53 @@ const Room = ({ room }: { room: IRoom }) => {
   };
 
     return (
-        <div className="paper">  
+        <div className="room">  
 
-            <div className="paper-element">
+            <div className="room-element">
+              <HouseSvg/>              
               {room.name}
             </div>
 
-            <div className="paper-element">
+            <div className="room-element">
               {
-                room.isPrivate ? "Private" : "Public"
+                room.isPrivate ? 
+                  <div>
+                    <Lock color="info"/>
+                    "Private" 
+                  </div>
+                     : 
+                  <div>
+                    
+                    <LockOpen color="info"/>
+                    "Public"
+                  </div>   
               }
             </div>
 
-            <div className="paper-element">
+            <div className="room-element">
+              <BoardSvg/>
               {room.boardSize}
             </div>
 
-            <div className="paper-element">
+            <div className="room-element">
+              <DifficultySvg/>
               {room.difficulty}
             </div>
 
-            <div className="paper-element">
+            <div className="room-element">
+              <PersonSvg/>
               {room.numPlayers}
             </div>
 
-            <div className="paper-element">
+            <div className="room-element">
 
               <Button
                 color="secondary"
                 onClick={() => {
                   handleButtonInteraction(`/room/${room.name}`);
-                  handleChangeRoom(room.name);
+                  if (room.name !== null){
+                    handleChangeRoom(room.name);
+                  }
                 }}
               >
                   Join
