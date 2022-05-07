@@ -5,8 +5,7 @@ import Room from "../components/Room";
 import { IRoom } from "../interfaces/IRoom";
 
 import { Button, InputBase, Grid } from "@mui/material";
-import { HotelSvg, BoardSvg, PersonSvg } from "../components/svg/VectorGraphics";
-
+import {GridOn, Groups, ScreenSearchDesktop, Search} from '@mui/icons-material';
 
 const FindRoom = () => {
   const { rooms } = useSelector((state: RootState) => state.RoomsList);
@@ -17,30 +16,30 @@ const FindRoom = () => {
 
         <Grid container className="header filter">
             <Grid item xs={12} sm={6} md={3} className="header-element element">
-                <HotelSvg />
+                <ScreenSearchDesktop />
                 <InputBase
                   id="room-name"
                   placeholder="Room name"
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={3} className="header-element element">
-                <BoardSvg />
+                <GridOn />
                 <InputBase
                   id="board-size" 
                   placeholder="Board size"
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={3} className="header-element element">
-                <PersonSvg />
+                <Groups />
                 <InputBase
                   id="room-people-number"
                   placeholder="Numbers of players" 
                 />
             </Grid>
-            <Grid item xs className="header-element but"
-              style={{flexBasis: 200}}>
+            <Grid item xs className="header-element but">
               <Button
                 color="secondary"
+                endIcon={<Search fontSize="large"/>}
               >
                 Search
               </Button>
