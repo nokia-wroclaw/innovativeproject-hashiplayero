@@ -48,7 +48,7 @@ const HeaderBar = () => {
   ];
 
   return (
-    <AppBar position="static" sx={{ height: 80 }}>
+    <AppBar position="static" sx={{ height: 100 }} style={{background:"white"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ height: 80 }}>
 

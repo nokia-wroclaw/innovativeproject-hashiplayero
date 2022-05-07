@@ -88,7 +88,6 @@ const Game = () => {
 
   useEffect(() => {
     setShapes(INITIAL_STATE);
-    // setShapes(()=>[...shapes, ...generateShapes()]);
   }, [width, height, boardSize, board]);
 
   useEffect(() => {
@@ -274,7 +273,8 @@ const Game = () => {
                         line.nodeFrom === shape.id || line.nodeTo === shape.id
                       ).reduce((acc, curr)=> acc + curr.value, 0);
                       if (shape.isSelected){
-                        return "yellow";
+                        shape.color = "blue";
+                        return "blue";
                       }
                       else if (connections > shape.value) {
                         return "red";
