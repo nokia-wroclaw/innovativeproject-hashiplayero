@@ -6,7 +6,9 @@ import { useSelector } from "react-redux";
 import { setInitialRoomBoard } from "../store/RoomGameSlice";
 import { LockOpen, Lock }  from '@mui/icons-material';
 import { HouseSvg, BoardSvg, DifficultySvg, PersonSvg } from "./svg/VectorGraphics";
-import { Button, InputBase, Grid } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
+
+import { Analytics, GridOn, PeopleAlt, TempleBuddhist, Villa, TempleHindu, Synagogue, Stadium} from '@mui/icons-material';
 
 const Room = ({ room }: { room: IRoom }) => {
   const navigate = useNavigate();
@@ -51,78 +53,49 @@ const Room = ({ room }: { room: IRoom }) => {
   };
 
     return (
-        // <div className="header">  
-        //     <div className="room-element">
-        //       <HouseSvg/>              
-        //       {room.name}
-        //     </div>
-
-        //     <div className="header-element">
-
-        //     </div>
-
-        //     <div className="header-element">
-        //       <BoardSvg/>
-        //       {room.boardSize}
-        //     </div>
-
-        //     <div className="header-element">
-        //       <DifficultySvg/>
-        //       {room.difficulty}
-        //     </div>
-
-        //     <div className="header-element">
-        //       <PersonSvg/>
-        //       {room.numPlayers}
-        //     </div>
-
-   
-        // </div>
-
-    <Grid container className="header">
-      <Grid item xs={12} sm={4}>
-        <div className="header-element">
-          <HouseSvg />
-          <h4>{room.name}</h4>
-        </div>
-      </Grid>
-      <Grid item xs className="header-element">
-          {
-            room.isPrivate ? 
-              <div>
-                <Lock color="info"/>
-                "Private" 
-              </div>
-                  : 
-              <div>
-                
-                <LockOpen color="info"/>
-                "Public"
-              </div>   
-          }
-      </Grid>
-      <Grid item sm={12} md={3} className="header-element">
-          <PersonSvg />
-          <InputBase
-            id="room-people-number"
-            placeholder="Numbers of players" 
-          />
-      </Grid>
-      <Grid item xs className="header-element but"
-        style={{flexBasis: 1}}>
-         <Button
-              color="secondary"
-              onClick={() => {
-                handleButtonInteraction(`/room/${room.name}`);
-                if (room.name !== null){
-                  handleChangeRoom(room.name);
-                }
-              }}
-            >
-                Join
+      <Grid container className="header">
+        <Grid item xs={12} sm={8} md={4} wrap="nowrap">
+          <div className="header-element">
+            <HouseSvg />
+            <Typography noWrap>{room.name}</Typography>
+          </div>
+        </Grid>
+        <Grid item xs={6} sm={4} md={1} className="header-element">
+            {
+              room.isPrivate ? 
+                  <Lock color="info"/>
+                    : 
+                  <LockOpen color="info"/>
+            }
+        </Grid>
+        <Grid item xs={6} sm={4} md={2} className="header-element">
+            <GridOn/>
+            {
+              room.boardSize === 7 ? <Typography noWrap>Small size"</Typography>: room.difficulty === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
+            }
+        </Grid>
+        <Grid item xs={6} sm={4} md={2} className="header-element">
+            <Analytics/>
+            {
+              room.difficulty === 1 ? "Easy" : room.difficulty === 2 ? "Medium" : "Hard"
+            }
+        </Grid>
+        <Grid item xs={6} sm={4} md={1} className="header-element">
+            <PeopleAlt />
+            {room.numPlayers} 
+        </Grid>
+        <Grid item xs className="header-element but">
+          <Button
+            color="secondary"
+            onClick={() => {
+              handleButtonInteraction(`/room/${room.name}`);
+              if (room.name !== null){
+                handleChangeRoom(room.name);
+              }}}>
+            Join
           </Button>
+        </Grid>
       </Grid>
-    </Grid>
     )
 }
 

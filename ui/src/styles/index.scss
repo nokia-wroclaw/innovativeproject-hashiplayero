@@ -57,11 +57,6 @@ $light_logo-secondary-color: #8b89ec;
     background-color: #FFFFFF;
     &:hover{
         transition: all 0.3s ease-out;
-        // background: linear-gradient(45deg,#F17C58, #E94584, #24AADB , #27DBB1,#FFDC18, #FF3706);
-        // background-size: 600% 100%;
-        // animation: gradient 16s linear infinite;
-        // animation-direction: alternate;
-
         .logo-first-half{
             color: $light_secondary_button_color;
         }
@@ -193,10 +188,7 @@ $light_logo-secondary-color: #8b89ec;
     margin: 24px 32px;
     border-radius: 6px;
     @include boarder();
-    // transition: all 0.6s ease-in-out;
     &:hover{
-    //     transition: all 0.6s ease-out;
-    //     transform: scale(1.01);
         cursor: pointer;
     }
 }
@@ -273,6 +265,7 @@ $light_logo-secondary-color: #8b89ec;
     @include boarder();
     .header-element {
         box-shadow: -2px 0px rgba(6, 4, 146, 0.041);
+
     }
     .header-element:first-child {
         box-shadow: none;
@@ -287,10 +280,21 @@ $light_logo-secondary-color: #8b89ec;
         margin: 8px;
         padding-bottom: 4px;
     }
+
+
 }
 
 .filter{
     max-width: 70%;
+    @media screen and (max-width: 1430px){
+        max-width: 90%;
+        .rooms{
+            width: 95%;
+        }
+        // .header-element {
+        //     box-shadow: none;
+        // }
+    }
 }
 
 .header-element{

@@ -443,6 +443,15 @@
   max-width: 70%;
 }
 
+@media screen and (max-width: 1430px) {
+  .filter {
+    max-width: 90%;
+  }
+  .filter .rooms {
+    width: 95%;
+  }
+}
+
 .header-element {
   display: -webkit-box;
   display: -ms-flexbox;
