@@ -8,7 +8,7 @@ const secondaryColorHover = "#374157";
 
 const primaryBackgroundColor = "#FFFFFF";
 
-const primarySvgColor = "#CBD4E6";
+const primarySvgColor = "#9ca9c3";
 
 const lightTheme = createTheme({
     palette: {
@@ -74,7 +74,7 @@ const lightTheme = createTheme({
                     color: primarySvgColor,
                 }
             }
-        }
+        },
     }
 });
 
