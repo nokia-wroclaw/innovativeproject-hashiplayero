@@ -5,7 +5,7 @@ import { RootState } from "./store";
 const initialState: IRooms = {
   rooms: [
     {
-      name: null,
+      name: "",
       numPlayers: -1,
       maxPlayers: -1,
       isPrivate: false,
