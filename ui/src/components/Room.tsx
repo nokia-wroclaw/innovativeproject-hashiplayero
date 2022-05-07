@@ -1,5 +1,4 @@
 import { IRoom } from "../interfaces/IRoom";
-import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useAppDispatch } from "../store/hooks";
@@ -7,6 +6,7 @@ import { useSelector } from "react-redux";
 import { setInitialRoomBoard } from "../store/RoomGameSlice";
 import { LockOpen, Lock }  from '@mui/icons-material';
 import { HouseSvg, BoardSvg, DifficultySvg, PersonSvg } from "./svg/VectorGraphics";
+import { Button, InputBase, Grid } from "@mui/material";
 
 const Room = ({ room }: { room: IRoom }) => {
   const navigate = useNavigate();
@@ -51,59 +51,78 @@ const Room = ({ room }: { room: IRoom }) => {
   };
 
     return (
-        <div className="room">  
+        // <div className="header">  
+        //     <div className="room-element">
+        //       <HouseSvg/>              
+        //       {room.name}
+        //     </div>
 
-            <div className="room-element">
-              <HouseSvg/>              
-              {room.name}
-            </div>
+        //     <div className="header-element">
 
-            <div className="room-element">
-              {
-                room.isPrivate ? 
-                  <div>
-                    <Lock color="info"/>
-                    "Private" 
-                  </div>
-                     : 
-                  <div>
-                    
-                    <LockOpen color="info"/>
-                    "Public"
-                  </div>   
-              }
-            </div>
+        //     </div>
 
-            <div className="room-element">
-              <BoardSvg/>
-              {room.boardSize}
-            </div>
+        //     <div className="header-element">
+        //       <BoardSvg/>
+        //       {room.boardSize}
+        //     </div>
 
-            <div className="room-element">
-              <DifficultySvg/>
-              {room.difficulty}
-            </div>
+        //     <div className="header-element">
+        //       <DifficultySvg/>
+        //       {room.difficulty}
+        //     </div>
 
-            <div className="room-element">
-              <PersonSvg/>
-              {room.numPlayers}
-            </div>
+        //     <div className="header-element">
+        //       <PersonSvg/>
+        //       {room.numPlayers}
+        //     </div>
 
-            <div className="room-element">
+   
+        // </div>
 
-              <Button
-                color="secondary"
-                onClick={() => {
-                  handleButtonInteraction(`/room/${room.name}`);
-                  if (room.name !== null){
-                    handleChangeRoom(room.name);
-                  }
-                }}
-              >
-                  Join
-              </Button>
-            </div>
+    <Grid container className="header">
+      <Grid item xs={12} sm={4}>
+        <div className="header-element">
+          <HouseSvg />
+          <h4>{room.name}</h4>
         </div>
+      </Grid>
+      <Grid item xs className="header-element">
+          {
+            room.isPrivate ? 
+              <div>
+                <Lock color="info"/>
+                "Private" 
+              </div>
+                  : 
+              <div>
+                
+                <LockOpen color="info"/>
+                "Public"
+              </div>   
+          }
+      </Grid>
+      <Grid item sm={12} md={3} className="header-element">
+          <PersonSvg />
+          <InputBase
+            id="room-people-number"
+            placeholder="Numbers of players" 
+          />
+      </Grid>
+      <Grid item xs className="header-element but"
+        style={{flexBasis: 1}}>
+         <Button
+              color="secondary"
+              onClick={() => {
+                handleButtonInteraction(`/room/${room.name}`);
+                if (room.name !== null){
+                  handleChangeRoom(room.name);
+                }
+              }}
+            >
+                Join
+          </Button>
+      </Grid>
+    </Grid>
     )
 }
 

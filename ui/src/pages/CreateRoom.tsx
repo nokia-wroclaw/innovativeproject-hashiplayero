@@ -95,7 +95,7 @@ const CreateRoom = () => {
                 password: values.passwordInput,
                 maxPlayers: values.amountOfPlayersInput,
                 isPrivate: values.isDisabled,
-                timeLimit: values.timeLimitInput,
+                timeLimit: values.timeLimitInput.getMinutes(),
                 difficulty: values.difficultyInput,
                 boardSize: values.boardSizeInput,
               },
@@ -129,45 +129,51 @@ const CreateRoom = () => {
             <div className="form-container paper">
                 <div className="general-info">
 
-                    <div>
-                        <FormControl fullWidth>
-                            <InputLabel id="roomNameLabel">Room name</InputLabel>
-                            <Input
+                    <div className="form-element">
+                        {/* <FormControl fullWidth>
+                            <InputLabel id="roomNameLabel">Room name</InputLabel> */}
+                            <TextField
                                 id="roomNameInput"
                                 type="text"
                                 value={values.roomNameInput}
+                                variant="outlined"
+                                label="Room name"
                                 onChange={handleChange("roomNameInput")}
                             />
-                        </FormControl>
+                        {/* </FormControl> */}
                     </div>
 
-                    <div>
-                        <FormControl fullWidth>
-                            <InputLabel id="passwordLabel">Password</InputLabel>
-                            <Input
+                    <div className="form-element">
+                        {/* <FormControl fullWidth>
+                            <InputLabel id="passwordLabel">Password</InputLabel> */}
+                            <TextField
                                 id="passwordInput"
                                 type="Password"
+                                variant="outlined"
+                                label="Password"
                                 value={values.passwordInput}
                                 onChange={handleChange("passwordInput")}
                             />
-                        </FormControl>
+                        {/* </FormControl> */}
                     </div>
 
-                    <div>
-                        <FormControl fullWidth>
-                        <InputLabel id="timeLimitLabel">Seed</InputLabel>
-                        <Input
+                    <div className="form-element">
+                        {/* <FormControl fullWidth>
+                        <InputLabel id="timeLimitLabel">Seed</InputLabel> */}
+                        <TextField
                             id="seedInput"
                             type="text"
+                            variant="outlined"
+                            label="Seed"
                             value={values.seedInput}
                             onChange={handleChange("seedInput")}
                         />
-                        </FormControl>
+                        {/* </FormControl> */}
                     </div>
 
                     <Grid item minWidth={400}>
                         <FormControl fullWidth>
-                            <InputLabel id="playersLabel">Amount Of Players</InputLabel>
+                            <InputLabel id="playersLabel">Number Of Players</InputLabel>
                             <Input
                                 value={value}
                                 size="small"
@@ -196,7 +202,7 @@ const CreateRoom = () => {
                         max={10} 
                     />
 
-                    <div>
+                    <div className="form-element">
                         <FormControl fullWidth>
                             <InputLabel id="difficultyLabel">Board size</InputLabel>
                             <Select
@@ -212,7 +218,8 @@ const CreateRoom = () => {
                             </Select>
                         </FormControl>
                     </div>
-                    <div>
+                    
+                    <div className="form-element">
                         <FormControl fullWidth>
                             <InputLabel id="boardSizeLabel">Board size</InputLabel>
                             <Select
@@ -236,7 +243,8 @@ const CreateRoom = () => {
                             inputProps={{ 'aria-label': 'controlled' }}
                         />
                     </div>
-                    <div >
+
+                    <div className="form-element">
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <MobileTimePicker
                             views={["minutes", "seconds"]}
