@@ -54,13 +54,13 @@ const Room = ({ room }: { room: IRoom }) => {
 
     return (
       <Grid container className="header">
-        <Grid item xs={12} sm={8} md={4} wrap="nowrap">
+        <Grid item xs={12} sm={8} md={4}>
           <div className="header-element">
             <HouseSvg />
             <Typography noWrap>{room.name}</Typography>
           </div>
         </Grid>
-        <Grid item xs={6} sm={4} md={1} className="header-element">
+        <Grid item xs={6} sm={4} md={1} className="header-element center">
             {
               room.isPrivate ? 
                   <Lock color="info"/>
@@ -68,21 +68,21 @@ const Room = ({ room }: { room: IRoom }) => {
                   <LockOpen color="info"/>
             }
         </Grid>
-        <Grid item xs={6} sm={4} md={2} className="header-element">
+        <Grid item xs={6} sm={4} md={1} className="header-element center">
+            <PeopleAlt />
+            {room.numPlayers} 
+        </Grid>
+        <Grid item xs={6} sm={4} md={2} className="header-element center">
             <GridOn/>
             {
-              room.boardSize === 7 ? <Typography noWrap>Small size"</Typography>: room.difficulty === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
+              room.boardSize === 7 ? <Typography noWrap>Small size</Typography>: room.difficulty === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
             }
         </Grid>
-        <Grid item xs={6} sm={4} md={2} className="header-element">
+        <Grid item xs={6} sm={4} md={2} className="header-element center">
             <Analytics/>
             {
               room.difficulty === 1 ? "Easy" : room.difficulty === 2 ? "Medium" : "Hard"
             }
-        </Grid>
-        <Grid item xs={6} sm={4} md={1} className="header-element">
-            <PeopleAlt />
-            {room.numPlayers} 
         </Grid>
         <Grid item xs className="header-element but">
           <Button
