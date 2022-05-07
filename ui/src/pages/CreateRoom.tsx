@@ -11,6 +11,9 @@ import {
     Switch,
     Button
 } from "@mui/material";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { useAppDispatch } from "../store/hooks";
 
 const CreateRoom = () => {
     const [amountOfPlayersInput, setAmountOfPlayersInput] = useState<number>(2);
@@ -54,27 +57,31 @@ const CreateRoom = () => {
         }
     };
 
+    const { user } = useSelector((state: RootState) => state.defaultUser);
+    const { webSocket } = useSelector((state: RootState) => state.webSocket);
+    const dispatch = useAppDispatch();
+
     const handleCreateRoom = () => {
-
-        const formData = new FormData();
-        formData.append('name', roomNameInput);
-        formData.append('password', passwordInput);
-        formData.append('seed', seedInput);
-        formData.append('players', amountOfPlayersInput.toString());
-        formData.append('difficulty', difficultyInput.toString());
-        formData.append('boardSize', boardSizeInput.toString());
-
-        if (!enableTimeLimitInput) {
-            formData.append('timeLimit', "null");
+        let nameOfRoom = "Pokoj-" + user.uuid;
+        if (webSocket !== undefined) {
+          webSocket.send(
+            JSON.stringify({
+              action: "createRoom",
+              userUuid: user.uuid,
+              data: {
+                name: roomNameInput,
+                password: passwordInput,
+                maxPlayers: amountOfPlayersInput,
+                isPrivate: isDisabled,
+                timeLimit: timeLimitInput,
+                difficulty: difficultyInput,
+                boardSize: boardSizeInput,
+              },
+            })
+          );
         }
-        else {
-            formData.append('timeLimit', timeLimitInput.toString());
-        }
-
-        const response = ky.put("http://localhost:3001/api/createroom", {
-            body: formData
-        })
-    }
+        console.log("WebSocket-> Create Room");
+      };
 
     return (
         <>

@@ -20,7 +20,7 @@ const buttons: IButtonsInfo[] = [
   {
     label: "Create a room",
     navigation: "/createroom",
-    isDisabled: true,
+    isDisabled: false,
   },
   {
     label: "Find a room",

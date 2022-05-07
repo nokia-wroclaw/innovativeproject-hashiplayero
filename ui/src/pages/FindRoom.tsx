@@ -16,17 +16,15 @@ const FindRoom = () => {
       <div>
         <div>
           <TextField>
-            
+
           </TextField>
         </div>
-        {rooms != null && rooms.length > 0 ? (
-          rooms.map((room: IRoom, index: number) => (
-            <div className="room" key={room.name}>
-              <Room room={room}/>
-            </div>
-          ))
-        ) : (
-          <div>No Rooms</div>
+        {rooms != null && rooms.length > 0 
+          ? (rooms.map((room: IRoom, index: number) => (
+              <Room room={room} key={room.name}/>
+            ))
+          ) : (
+            <div>No Rooms</div>
         )}
       </div>
     </>
