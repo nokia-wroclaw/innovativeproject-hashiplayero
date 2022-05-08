@@ -34,7 +34,7 @@ class App extends Component {
               <Route path="/faq" element={<Faq />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/rules" element={<Rules />} />
-              <Route path="/waitingroom" element={<WaitingRoom />} />
+              <Route path="/waitingroom/:waitingroomId" element={<WaitingRoom />} />
             </Routes>
         </div>
       </div>

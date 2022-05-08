@@ -4,7 +4,7 @@ import { RootState } from "./store";
 
 const initialState: IDefaultUser = {
   user: {
-    uuid: -1,
+    uuid: "defaultUuid",
     name: "defaultName",
   },
 };
