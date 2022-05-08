@@ -63,14 +63,17 @@ export const RoomBoardSlice = createSlice({
       return {
         roomAndBoard: {
           name: state.roomAndBoard.name,
-          maxPlayers: state.roomAndBoard.maxPlayers,
+          maxPlayers: action.payload.roomAndBoard.maxPlayers,
           isPrivate: state.roomAndBoard.isPrivate,
           password: state.roomAndBoard.password,
           timeLimit: state.roomAndBoard.timeLimit,
           members: action.payload.roomAndBoard.members,
           array: state.roomAndBoard.array,
           admin: state.roomAndBoard.admin,
-          settings: state.roomAndBoard.settings,
+          settings: {
+            difficulty:  action.payload.roomAndBoard.settings.difficulty,
+            size:  action.payload.roomAndBoard.settings.size,
+          },
         }
       }
     },

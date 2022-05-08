@@ -80,7 +80,6 @@ const SinglePlay = () => {
   };
 
   useEffect(() => {
-    console.log(roomAndBoard)
     if (roomAndBoard.name !== "name" && roomAndBoard.array.length !== 0 && roomAndBoard.settings.size !== null) {
       navigate(`${roomAndBoard.name}`);
     }
