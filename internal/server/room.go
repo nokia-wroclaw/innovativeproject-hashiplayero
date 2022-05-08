@@ -348,8 +348,8 @@ func (r *Room) run() {
 		case client := <-r.unregister:
 			if _, ok := r.clients[client]; ok {
 				delete(r.clients, client)
-				if client.room.roomSettings.Admin == client.uuid {
-					changeRoom(client.room.roomSettings.Name, client.uuid)
+				if client.room.roomSettings.Admin == client.uuid && client.room.roomSettings.Name != "lobby" {
+					changeAdmin(client.room.roomSettings.Name, client.uuid)
 				} else if client.room != roomsMap["lobby"] {
 					delete(clientsMap, client.uuid)
 					updatedRoomBroadcast(r)
