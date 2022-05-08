@@ -43,19 +43,19 @@ const Faq = () => {
 
   return (
     <>
-      <div className="faq-container">
+      <div className="faq-container" data-testid='faq-container'>
         <div className="title">
           <h1>FAQ</h1>
           <QuizIcon />
         </div>
-        <div className="faq-questions">
+        <div className="faq-questions" data-testid='faq-questions'>
             {faq.map((item) => (
             <Accordion key={item.id}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} data-testid='faq-subtitle'>
                     <h5 className="sub-title">{item.question}</h5>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <p>{item.answer}</p>
+                    <p data-testid='faq-answer'>{item.answer}</p>
                 </AccordionDetails>
             </Accordion>
             ))}
