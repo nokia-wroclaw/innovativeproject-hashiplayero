@@ -36,22 +36,6 @@ const Room = ({ room }: { room: IRoom }) => {
     }
   };
 
-  const handleDisconnectRoom = () => {
-    if (webSocket !== undefined) {
-      webSocket.send(
-        JSON.stringify({
-          action: "changeRoom",
-          userUuid: user.uuid,
-          data: {
-            roomName: "lobby",
-          },
-        })
-      );
-      dispatch(setInitialRoomBoard());
-      console.log("WebSocket-> Change Room");
-    }
-  };
-
     return (
       <Grid container className="header">
         <Grid item xs={12} sm={8} md={4}>
@@ -70,7 +54,7 @@ const Room = ({ room }: { room: IRoom }) => {
         </Grid>
         <Grid item xs={6} sm={4} md={1} className="header-element center">
             <PeopleAlt />
-            {room.numPlayers} 
+            {room.numPlayers}/{room.maxPlayers}
         </Grid>
         <Grid item xs={6} sm={4} md={2} className="header-element center">
             <GridOn/>
