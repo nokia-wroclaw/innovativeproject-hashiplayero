@@ -71,7 +71,7 @@ func changeName(data interface{}, userUuid interface{}) {
 	rm := ResponeMessage{Respone: "ChangeName", Payload: cid}
 	sendToClient(c, rm)
 	if c.room.roomSettings.Name != "lobby" {
-		updatedRoomBroadcast(c.room)
+		updatedRoomMulticast(c.room)
 	}
 }
 
