@@ -1,6 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../store/hooks";
-import { createUser } from "../store/userSlice";
 import Contact from "../components/Contact";
 import Faq from "../components/Faq";
 import { Button } from '@mui/material';
@@ -33,8 +31,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleButtonInteraction = (navigation: String, index: Number) => {
-
-    if (index == 2) dispatch(createUser());
     navigate(`${navigation}`);
   };
 
