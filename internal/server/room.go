@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"innovativeproject-hashiplayero/hashi"
 	"log"
 )
 
@@ -10,6 +9,8 @@ type Room struct {
 	roomSettings RoomSettings
 	boardData    BoardData
 	clients      map[*Client]bool
+	gameOn       bool
+	gameData     map[string]UserGameState
 	broadcast    chan [][]byte
 	register     chan *Client
 	unregister   chan *Client
@@ -38,6 +39,7 @@ type RoomForBroadcast struct {
 	IsPrivate  bool   `json:"isPrivate"`
 	BoardSize  int    `json:"boardSize"`
 	Difficulty int    `json:"difficulty"`
+	GameOn     bool   `json:"gameOn"`
 }
 
 // Message for clients in room
@@ -49,32 +51,7 @@ type RoomForMulticast struct {
 	IsPrivate  bool `json:"isPrivate"`
 	BoardSize  int  `json:"boardSize"`
 	Difficulty int  `json:"difficulty"`
-}
-
-type BoardSize int
-
-const (
-	SmallSize  BoardSize = 7
-	MediumSize BoardSize = 10
-	BigSize    BoardSize = 15
-)
-
-type Difficulty int
-
-const (
-	Easy Difficulty = iota
-	Medium
-	Hard
-)
-
-type BoardSettings struct {
-	Difficulty int `json:"difficulty"`
-	BoardSize  int `json:"size"`
-}
-
-type BoardData struct {
-	BoardSettings `json:"settings"`
-	Array         []int `json:"array"`
+	GameOn     bool `json:"gameOn"`
 }
 
 // Creates room with given roomSettings
@@ -82,6 +59,8 @@ func newRoom(roomSettings RoomSettings) *Room {
 	return &Room{
 		roomSettings: roomSettings,
 		boardData:    BoardData{BoardSettings: BoardSettings{}},
+		gameOn:       false,
+		gameData:     nil,
 		broadcast:    make(chan [][]byte),
 		register:     make(chan *Client),
 		unregister:   make(chan *Client),
@@ -110,6 +89,8 @@ func addRoom(data interface{}, userUuid interface{}) {
 		return
 	}
 	room := newRoom(roomSettings)
+	room.boardData.BoardSettings.BoardSize = int(data.(map[string]interface{})["boardSize"].(float64))
+	room.boardData.BoardSettings.Difficulty = int(data.(map[string]interface{})["difficulty"].(float64))
 	roomsMap[roomSettings.Name] = room
 	// delete client from lobby and add to current room
 	r := roomsMap["lobby"]
@@ -118,9 +99,12 @@ func addRoom(data interface{}, userUuid interface{}) {
 	room.clients[c] = true
 	go room.run()
 	rm := ResponeMessage{Respone: "CreateRoom", Payload: room.roomSettings}
-	createBoard(data)
+	// if it is singleplayer game
+	if room.roomSettings.MaxPlayers == 1 {
+		startGame(data, userUuid)
+	}
 	sendToClient(c, rm)
-	updatedRoomBroadcast(room)
+	updatedRoomMulticast(room)
 	lobbyBroadcast()
 }
 
@@ -146,28 +130,12 @@ func editRoom(data interface{}, userUuid interface{}) {
 		return
 	}
 	room.roomSettings = roomSettings
-	rm := ResponeMessage{Respone: "EditRoom", Payload: roomSettings}
-	createBoard(data)
-	sendToClient(c, rm)
-	updatedRoomBroadcast(room)
-	lobbyBroadcast()
-}
-
-// Creates board with given parameters and adds it to given room, returns json with boardData
-func createBoard(data interface{}) {
-	room := roomsMap[data.(map[string]interface{})["name"].(string)]
+	room.boardData.BoardSettings.BoardSize = int(data.(map[string]interface{})["boardSize"].(float64))
 	room.boardData.BoardSettings.Difficulty = int(data.(map[string]interface{})["difficulty"].(float64))
-	size := int(data.(map[string]interface{})["boardSize"].(float64))
-	room.boardData.BoardSettings.BoardSize = size
-	board := hashi.GenerateBoard(int(size), int(size), int((size*size)/2), 0.5)
-	boardArray := make([]int, size*size)
-	for i, n := range board.Nodes {
-		boardArray[i] = n.Bridges
-	}
-	room.boardData.Array = boardArray
-	rm := ResponeMessage{Respone: "CreateBoard", Payload: room.boardData}
-	j, _ := json.MarshalIndent(rm, "", "  ")
-	roomBroadcast(room, j)
+	rm := ResponeMessage{Respone: "EditRoom", Payload: roomSettings}
+	sendToClient(c, rm)
+	updatedRoomMulticast(room)
+	lobbyBroadcast()
 }
 
 // Moves clients from room to lobby and removes the room
@@ -211,7 +179,8 @@ func changeAdmin(roomName string, userUuid interface{}) bool {
 }
 
 // Send given json to all clients in given room
-func roomBroadcast(room *Room, j []byte) {
+func roomBroadcast(room *Room, rm ResponeMessage) {
+	j, _ := json.MarshalIndent(rm, "", "  ")
 	for client := range room.clients {
 		select {
 		case client.send <- j:
@@ -234,7 +203,7 @@ func sendToClient(client *Client, rm ResponeMessage) {
 }
 
 // Message with informations about room and players in room
-func updatedRoomBroadcast(room *Room) {
+func updatedRoomMulticast(room *Room) {
 	var roomJson RoomForMulticast
 	var structTable []ClientIdData
 	for _, val := range clientsMap {
@@ -249,9 +218,9 @@ func updatedRoomBroadcast(room *Room) {
 	roomJson.IsPrivate = room.roomSettings.IsPrivate
 	roomJson.BoardSize = int(room.boardData.BoardSize)
 	roomJson.Difficulty = int(room.boardData.Difficulty)
+	roomJson.GameOn = room.gameOn
 	rm := ResponeMessage{Respone: "UpdateRoom", Payload: roomJson}
-	j, _ := json.MarshalIndent(rm, "", "  ")
-	roomBroadcast(room, j)
+	roomBroadcast(room, rm)
 }
 
 // Send update about rooms to clients in lobby
@@ -274,16 +243,17 @@ func collectDataForLobbyBroadcast() ResponeMessage {
 	var structTable []RoomForBroadcast
 
 	// Iterate over all keys except lobby
-	for key, val := range roomsMap {
-		if key == "lobby" {
+	for roomName, room := range roomsMap {
+		if roomName == "lobby" || room.roomSettings.MaxPlayers == 1 {
 			continue
 		}
-		roomJson.Name = val.roomSettings.Name
-		roomJson.NumPlayers = len(val.clients)
-		roomJson.MaxPlayers = val.roomSettings.MaxPlayers
-		roomJson.IsPrivate = val.roomSettings.IsPrivate
-		roomJson.BoardSize = int(val.boardData.BoardSize)
-		roomJson.Difficulty = int(val.boardData.Difficulty)
+		roomJson.Name = room.roomSettings.Name
+		roomJson.NumPlayers = len(room.clients)
+		roomJson.MaxPlayers = room.roomSettings.MaxPlayers
+		roomJson.IsPrivate = room.roomSettings.IsPrivate
+		roomJson.BoardSize = int(room.boardData.BoardSize)
+		roomJson.Difficulty = int(room.boardData.Difficulty)
+		roomJson.GameOn = room.gameOn
 		structTable = append(structTable, roomJson)
 	}
 	rm := ResponeMessage{Respone: "RoomsList"}
@@ -321,7 +291,7 @@ func changeRoom(data interface{}, userUuid interface{}) {
 	newRoom.clients[c] = true
 	c.room = newRoom
 	if newRoom.roomSettings.Name != "lobby" {
-		updatedRoomBroadcast(newRoom)
+		updatedRoomMulticast(newRoom)
 	}
 	if oldRoom.roomSettings.Admin == c.uuid {
 		oldRoomExist = changeAdmin(oldRoom.roomSettings.Name, c.uuid)
@@ -330,7 +300,7 @@ func changeRoom(data interface{}, userUuid interface{}) {
 		// return to prevent double lobbyBroadcast because it is called in deleteRoom
 		return
 	} else if oldRoom.roomSettings.Name != "lobby" {
-		updatedRoomBroadcast(oldRoom)
+		updatedRoomMulticast(oldRoom)
 	}
 	lobbyBroadcast()
 }
@@ -352,7 +322,7 @@ func (r *Room) run() {
 					changeAdmin(client.room.roomSettings.Name, client.uuid)
 				} else if client.room != roomsMap["lobby"] {
 					delete(clientsMap, client.uuid)
-					updatedRoomBroadcast(r)
+					updatedRoomMulticast(r)
 					lobbyBroadcast()
 				}
 				close(client.send)
@@ -380,7 +350,7 @@ func (r *Room) run() {
 			case "createRoom":
 				addRoom(payload["data"], payload["userUuid"])
 			case "generateBoard":
-				createBoard(payload["data"])
+				createBoard(payload["data"], payload["userUuid"])
 			case "changeRoom":
 				changeRoom(payload["data"], payload["userUuid"])
 			case "deleteRoom":
@@ -389,6 +359,8 @@ func (r *Room) run() {
 				editRoom(payload["data"], payload["userUuid"])
 			case "changeName":
 				changeName(payload["data"], payload["userUuid"])
+			case "startGame":
+				startGame(payload["data"], payload["userUuid"])
 			default:
 				rm := ResponeMessage{Respone: "Error", Error: "Wrong response"}
 				sendToClient(clientsMap[cid.Uuid], rm)
