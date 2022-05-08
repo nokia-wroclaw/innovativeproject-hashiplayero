@@ -1,9 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addFormData } from "../store/gameSlice";
-import initialGameData from "../interfaces/ISingleGameData";
-import ky from "ky";
-import { useAppDispatch } from "../store/hooks";
 import {
   FormControl,
   Input,
@@ -11,11 +7,14 @@ import {
   MenuItem,
   Select,
   Button,
+  TextField,
+  Checkbox,
 } from "@mui/material";
 
-import TextField from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 interface State {
   difficulty: number;
@@ -24,14 +23,16 @@ interface State {
   showTimeLimit: boolean;
   seedInput: string;
   showSeedInput: boolean;
+  enableTimeLimit: boolean;
 }
 
 const SinglePlay = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { webSocket } = useSelector((state: RootState) => state.webSocket);
+  const { user } = useSelector((state: RootState) => state.defaultUser);
+  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
   const [seedInput, setSeedInput] = useState("");
-
   const handleSetSeedInput = (event: any) => {
     setSeedInput(event.target.value);
   };
@@ -43,64 +44,54 @@ const SinglePlay = () => {
     seedInput: "",
     showTimeLimit: false,
     showSeedInput: false,
+    enableTimeLimit: false
   });
 
   const handleChange = (prop: keyof State) => (event: any) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
-
-  const handleClickShowTime = () => {
-    setValues({
-      ...values,
-      showTimeLimit: !values.showTimeLimit,
-    });
-  };
-
-  const gameId = 1;
-  const sendFormForData = () => {
-    ky.post("http://localhost:3001/api/puzzle", {
-      json: { difficulty: values.difficulty, size: values.boardSize },
-    })
-      .json()
-      .then((res: any) => {
-        let initialData: initialGameData = {
-          seed: seedInput,
-          timeLimit: values.timeLimit.getTime(),
-          boardSize: res.settings.size,
-          difficulty: res.settings.difficulty,
-          board: res.array,
-          boardResult: [],
-        };
-        dispatch(addFormData(initialData));
-      })
-      .catch((err) => console.log(err));
-    navigate(`${gameId}`);
-  };
-
-  const changeValue = (change: number, value: any, setValue: any) => {
-    if (value + change >= 1 && value + change <= 3) {
-      setValues({ ...values, difficulty: value + change });
+    if (prop === "enableTimeLimit"){
+      setValues({ ...values, [prop]: event.target.checked });
+    } else {
+        setValues({ ...values, [prop]: event.target.value });   
     }
   };
+
+  const handleCreateSingleGame = () => {
+    let nameOfRoom = "Pokoj-" + user.uuid;
+    if (webSocket !== undefined) {
+      webSocket.send(
+        JSON.stringify({
+          action: "createRoom",
+          userUuid: user.uuid,
+          data: {
+            name: nameOfRoom,
+            password: "haslos",
+            maxPlayers: 1,
+            isPrivate: true,
+            timeLimit: values.timeLimit.getMinutes(),
+            difficulty: values.difficulty,
+            boardSize: values.boardSize,
+          },
+        })
+      );
+    }
+    console.log("WebSocket -> Create Single Game");
+  };
+
+  useEffect(() => {
+    console.log(roomAndBoard)
+    if (roomAndBoard.array.length !== 0 && roomAndBoard.settings.size !== null) {
+      navigate(`${roomAndBoard.name}`);
+    }
+
+    // unmount
+    // return () => {
+    // }
+  }, [roomAndBoard, navigate]);
 
   return (
     <>
       <div className="form-container paper">
         <div className="general-info">
-          {/* <div>
-              Difficulty
-              <Button 
-              onClick={() => changeValue(-1, values.difficulty, setValues)}
-              color="secondary">
-                -
-              </Button>
-              <span>{values.difficulty}</span>
-              <Button 
-              onClick={() => changeValue(1, values.difficulty, setValues)}
-              color="secondary">
-                +
-              </Button>
-            </div> */}
           <div>
             <FormControl fullWidth>
               <InputLabel id="timeLimitLabel">Seed</InputLabel>
@@ -144,6 +135,14 @@ const SinglePlay = () => {
               </Select>
             </FormControl>
           </div>
+          <div style={{display: "flex", flexDirection: "row"}}>
+              <h5>Enable Time Limit</h5>
+              <Checkbox
+                  checked={values.enableTimeLimit}
+                  onChange={handleChange("enableTimeLimit")}
+                  inputProps={{ 'aria-label': 'controlled' }}
+              />
+          </div>
           <div>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <MobileTimePicker
@@ -153,6 +152,7 @@ const SinglePlay = () => {
                 mask="__:__"
                 label="Minutes and seconds"
                 value={values.timeLimit}
+                disabled={values.enableTimeLimit}
                 onChange={(newValue) => {
                   if (newValue !== null) {
                     setValues({ ...values, timeLimit: newValue });
@@ -167,7 +167,7 @@ const SinglePlay = () => {
         <Button
           color="secondary"
           onClick={() => {
-            sendFormForData();
+            handleCreateSingleGame();
           }}
         >
           Play!
