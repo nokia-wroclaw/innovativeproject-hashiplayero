@@ -8,7 +8,7 @@ import { LockOpen, Lock }  from '@mui/icons-material';
 import { HouseSvg, BoardSvg, DifficultySvg, PersonSvg } from "./svg/VectorGraphics";
 import { Button, Grid, Typography } from "@mui/material";
 
-import { Analytics, GridOn, PeopleAlt, TempleBuddhist, Villa, TempleHindu, Synagogue, Stadium} from '@mui/icons-material';
+import { Analytics, GridOn, PeopleAlt} from '@mui/icons-material';
 
 const Room = ({ room }: { room: IRoom }) => {
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ const Room = ({ room }: { room: IRoom }) => {
         <Grid item xs={6} sm={4} md={2} className="header-element center">
             <GridOn/>
             {
-              room.boardSize === 7 ? <Typography noWrap>Small size</Typography>: room.difficulty === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
+              room.boardSize === 7 ? <Typography noWrap>Small size</Typography>: room.boardSize === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
             }
         </Grid>
         <Grid item xs={6} sm={4} md={2} className="header-element center">
