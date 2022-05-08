@@ -35,7 +35,9 @@ const WebSocketComp = () => {
         try {
           json = JSON.parse(e.data);
         } catch {
-          consoleLogWebSocket("There is unidentified error has occurred - contact the administration");
+          consoleLogWebSocket(
+            "There is unidentified error has occurred - contact the administration"
+          );
         }
         console.log(json);
 
@@ -95,7 +97,7 @@ const WebSocketComp = () => {
           consoleLogWebSocket("Update Room");
 
           // if admin
-          if (user.uuid === json.Payload.name.replace("Pokoj-", "")) {
+          if (user.uuid === json.Payload.admin) {
             console.log("ADMIN");
             let updateAdminRoom: IDefaultRoomAndBoard = {
               roomAndBoard: {
@@ -107,8 +109,8 @@ const WebSocketComp = () => {
                 array: [],
                 admin: user.name,
                 settings: {
-                  difficulty: -1,
-                  size: -1,
+                  difficulty: json.Payload.difficulty,
+                  size: json.Payload.boardSize,
                 },
                 members: json.Payload.Players,
               },
@@ -127,8 +129,8 @@ const WebSocketComp = () => {
                 array: [],
                 admin: "",
                 settings: {
-                  difficulty: -1,
-                  size: -1,
+                  difficulty: json.Payload.difficulty,
+                  size: json.Payload.boardSize,
                 },
                 members: json.Payload.Players,
               },
@@ -154,48 +156,62 @@ const WebSocketComp = () => {
     };
   }
 
-  const handleCreateRoom = () => {
-    let nameOfRoom = "Pokoj-" + user.uuid;
+  // const handleCreateRoom = () => {
+  //   let nameOfRoom = "Pokoj-" + user.uuid;
+  //   if (webSocket !== undefined) {
+  //     webSocket.send(
+  //       JSON.stringify({
+  //         action: "createRoom",
+  //         userUuid: user.uuid,
+  //         data: {
+  //           name: nameOfRoom,
+  //           password: "haslo",
+  //           maxPlayers: 10,
+  //           isPrivate: true,
+  //           timeLimit: 60,
+  //           difficulty: 1,
+  //           boardSize: 10,
+  //         },
+  //       })
+  //     );
+  //   }
+  //   consoleLogWebSocket("Create Room");
+  // };
+
+  const handleChangeUserName = () => {
     if (webSocket !== undefined) {
       webSocket.send(
         JSON.stringify({
-          action: "createRoom",
+          action: "changeName",
           userUuid: user.uuid,
           data: {
-            name: nameOfRoom,
-            password: "haslo",
-            maxPlayers: 10,
-            isPrivate: true,
-            timeLimit: 60,
-            difficulty: 1,
-            boardSize: 10,
+            roomName: "YourNewName",
           },
         })
       );
     }
-    consoleLogWebSocket("Create Room");
   };
 
   // mają istnieć wszystkie wartości, jeśli nie chce zmieniać to ma być wysłane to samo co było
-  const handleEditRoom = () => {
-    if (webSocket !== undefined) {
-      webSocket.send(
-        JSON.stringify({
-          action: "editRoom",
-          userUuid: user.uuid,
-          data: {
-            name: roomAndBoard.name,
-            password: "haslo",
-            maxPlayers: 10,
-            isPrivate: true,
-            timeLimit: 60,
-            difficulty: 1,
-            boardSize: 10,
-          },
-        })
-      );
-    }
-  };
+  // const handleEditRoom = () => {
+  //   if (webSocket !== undefined) {
+  //     webSocket.send(
+  //       JSON.stringify({
+  //         action: "editRoom",
+  //         userUuid: user.uuid,
+  //         data: {
+  //           name: roomAndBoard.name,
+  //           password: "haslo",
+  //           maxPlayers: 10,
+  //           isPrivate: true,
+  //           timeLimit: 60,
+  //           difficulty: 1,
+  //           boardSize: 10,
+  //         },
+  //       })
+  //     );
+  //   }
+  // };
 
   const handleChangeNameUser = () => {
     if (webSocket !== undefined) {
