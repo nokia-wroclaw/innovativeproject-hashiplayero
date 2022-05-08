@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { IRoomAndBoard } from "../interfaces/IRoomAndBoard";
+import { Analytics, GridOn, PeopleAlt, LockOpen, Lock } from '@mui/icons-material';
+import { HouseSvg } from "./svg/VectorGraphics";
+
 import { IState } from "../interfaces/IState";
 import {
     Slider,
@@ -10,43 +13,39 @@ import {
     Select,
     Button,
     TextField,
-    Checkbox
+    Checkbox,
+    Typography
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { useAppDispatch } from "../store/hooks";
-import createMarks from "../components/functions/Marks";
+import createMarks from "./functions/Marks";
+import { useState } from "react";
 
 function valueLabelFormat(value: number) {
     const marks = createMarks();
     return marks.findIndex((mark) => mark.value === value) + 2;
 }
 
-const CreateRoom = () => {
+const RoomData = ({ room, isAdmin }: { room: IRoomAndBoard, isAdmin:boolean }) => {
     const marks = createMarks();
+
     const [values, setValues] = useState<IState>({
         amountOfPlayersInput: 2,
-        roomNameInput: "",
-        passwordInput: "",
+        roomNameInput: room.name,
+        passwordInput: room.password,
         seedInput: "",
-        difficultyInput: 2,
-        boardSizeInput: 10,
+        difficultyInput: room.settings.difficulty,
+        boardSizeInput: room.settings.size,
         timeLimitInput: new Date(0),
         enableTimeLimitInput: false,
         isDisabled: true,
-      });
+    });
 
-    const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-    const navigate = useNavigate();
-    useEffect(() => {
-        console.log(roomAndBoard)
-        if (roomAndBoard.name !== "name" && roomAndBoard.name.length > 0) {
-          navigate(`/waitingroom/${roomAndBoard.name}`);
-        }
-      }, [roomAndBoard, navigate]);
+    console.log(room);
+
+    const handleSliderChange = (event: Event, newValue: number | number[]) => {
+        setValues({ ...values, "amountOfPlayersInput": Number(newValue) });
+    };
 
     const handleChange = (prop: keyof IState) => (event: any) => {
         if (prop === "enableTimeLimitInput"){
@@ -56,43 +55,48 @@ const CreateRoom = () => {
         }    
       };
 
-    const { user } = useSelector((state: RootState) => state.defaultUser);
-    const { webSocket } = useSelector((state: RootState) => state.webSocket);
-    const dispatch = useAppDispatch();
-
-    const handleCreateRoom = () => {
-        let nameOfRoom = values.roomNameInput + user.uuid;
-        if (webSocket !== undefined) {
-          webSocket.send(
-            JSON.stringify({
-              action: "createRoom",
-              userUuid: user.uuid,
-              data: {
-                name: nameOfRoom,
-                password: values.passwordInput,
-                maxPlayers: values.amountOfPlayersInput,
-                isPrivate: values.isDisabled,
-                timeLimit: values.timeLimitInput.getMinutes(),
-                difficulty: values.difficultyInput,
-                boardSize: values.boardSizeInput,
-              },
-            })
-          );
-        }
-        console.log("WebSocket-> Create Room");
-    };
-
-    const handleSliderChange = (event: Event, newValue: number | number[]) => {
-        setValues({ ...values, "amountOfPlayersInput": Number(newValue)});
-    };
 
     return (
         <>
+            <Grid container className="header">
+                <Grid item xs={12} sm={8} md={4}>
+                    <div className="header-element">
+                        <HouseSvg />
+                        <Typography noWrap>{room.name}</Typography>
+                    </div>
+                </Grid>
+                <Grid item xs={6} sm={4} md={1} className="header-element center">
+                    {
+                        room.isPrivate ?
+                            <Lock color="info" />
+                            :
+                            <LockOpen color="info" />
+                    }
+                </Grid>
+                <Grid item xs={6} sm={4} md={1} className="header-element center">
+                    <PeopleAlt />
+                    {room.maxPlayers}
+                </Grid>
+                <Grid item xs={6} sm={4} md={2} className="header-element center">
+                    <GridOn />
+                    {
+                        room.settings.size === 7 ? <Typography noWrap>Small size</Typography> : room.settings.size === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
+                    }
+                </Grid>
+                <Grid item xs={6} sm={4} md={2} className="header-element center">
+                    <Analytics />
+                    {
+                        room.settings.difficulty === 1 ? "Easy" : room.settings.difficulty === 2 ? "Medium" : "Hard"
+                    }
+                </Grid>
+            </Grid>
+
             <div className="form-container paper">
                 <div className="general-info">
 
                     <div className="form-element">
                         <TextField
+                            disabled={!isAdmin}
                             id="roomNameInput"
                             type="text"
                             value={values.roomNameInput}
@@ -104,6 +108,7 @@ const CreateRoom = () => {
 
                     <div className="form-element">
                         <TextField
+                            disabled={!isAdmin}
                             id="passwordInput"
                             type="Password"
                             variant="outlined"
@@ -133,6 +138,7 @@ const CreateRoom = () => {
                     </Grid> */}
 
                     <Slider
+                        disabled={!isAdmin}
                         aria-label="Custom marks"
                         marks={marks}
                         valueLabelDisplay="auto"
@@ -148,6 +154,7 @@ const CreateRoom = () => {
                         <FormControl fullWidth>
                             <InputLabel id="difficultyLabel">Difficulty</InputLabel>
                             <Select
+                                disabled={!isAdmin}
                                 labelId="difficultyLabelId"
                                 id="difficultyInput"
                                 value={values.difficultyInput}
@@ -165,6 +172,7 @@ const CreateRoom = () => {
                         <FormControl fullWidth>
                             <InputLabel id="boardSizeLabel">Board size</InputLabel>
                             <Select
+                                disabled={!isAdmin}
                                 labelId="boardSizeLabelId"
                                 id="boardSizeInput"
                                 value={values.boardSizeInput}
@@ -181,6 +189,7 @@ const CreateRoom = () => {
                     <div style={{display: "flex", flexDirection: "row"}}>
                         <h5>Enable Time Limit</h5>
                         <Checkbox
+                            disabled={!isAdmin}
                             checked={values.enableTimeLimitInput}
                             onChange={handleChange("enableTimeLimitInput")}
                             inputProps={{ 'aria-label': 'controlled' }}
@@ -207,16 +216,9 @@ const CreateRoom = () => {
                         </LocalizationProvider>
                     </div>
                 </div>
-
-                <Button onClick={() => {
-                        handleCreateRoom();
-                    }}
-                    color="secondary">
-                    Create!
-                </Button>
             </div>
         </>
-    );
+    )
 }
 
-export default CreateRoom;
+export default RoomData;
