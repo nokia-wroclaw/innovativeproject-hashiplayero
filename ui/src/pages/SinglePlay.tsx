@@ -1,9 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addFormData } from "../store/gameSlice";
-import initialGameData from "../interfaces/ISingleGameData";
-import ky from "ky";
-import { useAppDispatch } from "../store/hooks";
 import {
   FormControl,
   Input,
@@ -17,6 +13,8 @@ import {
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 interface State {
   difficulty: number;
@@ -29,11 +27,12 @@ interface State {
 }
 
 const SinglePlay = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { webSocket } = useSelector((state: RootState) => state.webSocket);
+  const { user } = useSelector((state: RootState) => state.defaultUser);
+  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
   const [seedInput, setSeedInput] = useState("");
-
   const handleSetSeedInput = (event: any) => {
     setSeedInput(event.target.value);
   };
@@ -56,58 +55,43 @@ const SinglePlay = () => {
     }
   };
 
-  const handleClickShowTime = () => {
-    setValues({
-      ...values,
-      showTimeLimit: !values.showTimeLimit,
-    });
-  };
-
-  const gameId = 1;
-  const sendFormForData = () => {
-    ky.post("http://localhost:3001/api/puzzle", {
-      json: { difficulty: values.difficulty, size: values.boardSize },
-    })
-      .json()
-      .then((res: any) => {
-        let initialData: initialGameData = {
-          seed: seedInput,
-          timeLimit: values.timeLimit.getTime(),
-          boardSize: res.settings.size,
-          difficulty: res.settings.difficulty,
-          board: res.array,
-          boardResult: [],
-        };
-        dispatch(addFormData(initialData));
-      })
-      .catch((err) => console.log(err));
-    navigate(`${gameId}`);
-  };
-
-  const changeValue = (change: number, value: any, setValue: any) => {
-    if (value + change >= 1 && value + change <= 3) {
-      setValues({ ...values, difficulty: value + change });
+  const handleCreateSingleGame = () => {
+    let nameOfRoom = "Pokoj-" + user.uuid;
+    if (webSocket !== undefined) {
+      webSocket.send(
+        JSON.stringify({
+          action: "createRoom",
+          userUuid: user.uuid,
+          data: {
+            name: nameOfRoom,
+            password: "haslos",
+            maxPlayers: 1,
+            isPrivate: true,
+            timeLimit: values.timeLimit.getMinutes(),
+            difficulty: values.difficulty,
+            boardSize: values.boardSize,
+          },
+        })
+      );
     }
+    console.log("WebSocket -> Create Single Game");
   };
+
+  useEffect(() => {
+    console.log(roomAndBoard)
+    if (roomAndBoard.array.length !== 0 && roomAndBoard.settings.size !== null) {
+      navigate(`${roomAndBoard.name}`);
+    }
+
+    // unmount
+    // return () => {
+    // }
+  }, [roomAndBoard, navigate]);
 
   return (
     <>
       <div className="form-container paper">
         <div className="general-info">
-          {/* <div>
-              Difficulty
-              <Button 
-              onClick={() => changeValue(-1, values.difficulty, setValues)}
-              color="secondary">
-                -
-              </Button>
-              <span>{values.difficulty}</span>
-              <Button 
-              onClick={() => changeValue(1, values.difficulty, setValues)}
-              color="secondary">
-                +
-              </Button>
-            </div> */}
           <div>
             <FormControl fullWidth>
               <InputLabel id="timeLimitLabel">Seed</InputLabel>
@@ -183,7 +167,7 @@ const SinglePlay = () => {
         <Button
           color="secondary"
           onClick={() => {
-            sendFormForData();
+            handleCreateSingleGame();
           }}
         >
           Play!
