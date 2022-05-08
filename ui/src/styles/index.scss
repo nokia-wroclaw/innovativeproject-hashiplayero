@@ -57,11 +57,6 @@ $light_logo-secondary-color: #8b89ec;
     background-color: #FFFFFF;
     &:hover{
         transition: all 0.3s ease-out;
-        // background: linear-gradient(45deg,#F17C58, #E94584, #24AADB , #27DBB1,#FFDC18, #FF3706);
-        // background-size: 600% 100%;
-        // animation: gradient 16s linear infinite;
-        // animation-direction: alternate;
-
         .logo-first-half{
             color: $light_secondary_button_color;
         }
@@ -193,10 +188,7 @@ $light_logo-secondary-color: #8b89ec;
     margin: 24px 32px;
     border-radius: 6px;
     @include boarder();
-    // transition: all 0.6s ease-in-out;
     &:hover{
-    //     transition: all 0.6s ease-out;
-    //     transform: scale(1.01);
         cursor: pointer;
     }
 }
@@ -218,17 +210,17 @@ $light_logo-secondary-color: #8b89ec;
     padding: 16px;
     border-radius: 6px;
     background-color: #FFFFFF;
-
-    div{
-        width: 100%;
-        padding: 8px;
-    }
-
     @media screen and (max-width: 420px){
         .general-info{
             width: 95%;
         }
     }
+}
+
+.form-element{
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
 }
 
 .faq-container{
@@ -249,7 +241,6 @@ $light_logo-secondary-color: #8b89ec;
     h5{
         font-size: 18px;
         margin: 8px;
-        // make it a little bolder
         font-weight: bold;
     }
 
@@ -259,4 +250,64 @@ $light_logo-secondary-color: #8b89ec;
         color: #7081A6;
         text-align: justify;
     }
+}
+
+.rooms{
+    @include display-flex(column, center);
+    height: 100%;
+    width: 80%;
+}
+
+.header{
+    display:flex;
+    margin: 8px;
+    min-height: 40px;
+    @include boarder();
+    .header-element {
+        box-shadow: -2px 0px rgba(6, 4, 146, 0.041);
+
+    }
+    .header-element:first-child {
+        box-shadow: none;
+    }
+    .but {
+        text-align: center;
+        justify-content: center;
+        button{
+            width: 100%;
+            height: 100%;
+        }
+    }
+    svg{
+        margin: 8px;
+        padding-bottom: 4px;
+    }
+
+
+}
+
+.filter{
+    max-width: 70%;
+    @media screen and (max-width: 1430px){
+        max-width: 100%;
+        .rooms{
+            width: 95%;
+        }
+        // .header-element {
+        //     box-shadow: none;
+        // }
+    }
+}
+
+.header-element{
+    display: flex;
+    align-items: center;
+    margin: 16px;
+}
+.element{
+    padding: 16px 8px;
+}
+.center{
+    text-align: center;
+    justify-content: center;
 }

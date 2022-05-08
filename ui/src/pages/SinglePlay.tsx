@@ -7,9 +7,10 @@ import {
   MenuItem,
   Select,
   Button,
+  TextField,
+  Checkbox,
 } from "@mui/material";
 
-import TextField from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { RootState } from "../store/store";
@@ -22,6 +23,7 @@ interface State {
   showTimeLimit: boolean;
   seedInput: string;
   showSeedInput: boolean;
+  enableTimeLimit: boolean;
 }
 
 const SinglePlay = () => {
@@ -42,10 +44,15 @@ const SinglePlay = () => {
     seedInput: "",
     showTimeLimit: false,
     showSeedInput: false,
+    enableTimeLimit: false
   });
 
   const handleChange = (prop: keyof State) => (event: any) => {
-    setValues({ ...values, [prop]: event.target.value });
+    if (prop === "enableTimeLimit"){
+      setValues({ ...values, [prop]: event.target.checked });
+    } else {
+        setValues({ ...values, [prop]: event.target.value });   
+    }
   };
 
   const handleCreateSingleGame = () => {
@@ -128,6 +135,14 @@ const SinglePlay = () => {
               </Select>
             </FormControl>
           </div>
+          <div style={{display: "flex", flexDirection: "row"}}>
+              <h5>Enable Time Limit</h5>
+              <Checkbox
+                  checked={values.enableTimeLimit}
+                  onChange={handleChange("enableTimeLimit")}
+                  inputProps={{ 'aria-label': 'controlled' }}
+              />
+          </div>
           <div>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <MobileTimePicker
@@ -137,6 +152,7 @@ const SinglePlay = () => {
                 mask="__:__"
                 label="Minutes and seconds"
                 value={values.timeLimit}
+                disabled={values.enableTimeLimit}
                 onChange={(newValue) => {
                   if (newValue !== null) {
                     setValues({ ...values, timeLimit: newValue });

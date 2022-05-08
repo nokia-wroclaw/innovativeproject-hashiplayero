@@ -1,201 +1,277 @@
 import React, { useState } from "react";
 import ky from 'ky'
 import {
-    Box,
-    FormGroup,
-    FormControlLabel,
+    Slider,
+    MenuItem,
     FormControl,
     Grid,
     Input,
     InputLabel,
-    Switch,
-    Button
+    Select,
+    Button,
+    TextField,
+    Checkbox
 } from "@mui/material";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
+
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { useAppDispatch } from "../store/hooks";
+
+interface State {
+    amountOfPlayersInput: number;
+    roomNameInput: string;
+    passwordInput: string;
+    seedInput: string;
+    difficultyInput: number;
+    boardSizeInput: number;
+    timeLimitInput: Date;
+    enableTimeLimitInput: boolean;
+    isDisabled: boolean;
+}
+
+interface IMark{
+    value: number;
+    label: string;
+}
+
+function createMarks() {
+    const marks: IMark[] = [];
+    for (let i = 1; i <= 10; i++) {
+        marks.push({
+            value: i,
+            label: i.toString(),
+        });
+    }
+    return marks;
+}
+
+
+function valueLabelFormat(value: number) {
+    const marks = createMarks();
+    return marks.findIndex((mark) => mark.value === value) + 1;
+}
+  
 
 const CreateRoom = () => {
-    const [amountOfPlayersInput, setAmountOfPlayersInput] = useState<number>(2);
-    const [roomNameInput, setRoomNameInput] = useState<string>("");
-    const [passwordInput, setPasswordInput] = useState<string>("");
-    const [seedInput, setSeedInput] = useState<string>("");
-    const [difficultyInput, setDifficultyInput] = useState<number>(2);
-    const [boardSizeInput, setBoardSizeInput] = useState<number>(10);
-    const [timeLimitInput, setTimeLimitInput] = useState<number>(10);
-    const [enableTimeLimitInput, setEnableTimeLimitInput] = useState<boolean>(false);
-    const [isDisabled, setIsDisabled] = useState<boolean>(true);
+    const marks = createMarks();
+    const [values, setValues] = useState<State>({
+        amountOfPlayersInput: 2,
+        roomNameInput: "",
+        passwordInput: "",
+        seedInput: "",
+        difficultyInput: 2,
+        boardSizeInput: 10,
+        timeLimitInput: new Date(0),
+        enableTimeLimitInput: false,
+        isDisabled: true,
+      });
 
-    const handleSetAmountOfPlayersInput = (event: any) => {
-        setAmountOfPlayersInput(event.target.value);
-    };
-    const handleSetRoomNameInput = (event: any) => {
-        setRoomNameInput(event.target.value);
-    };
-    const handleSetPasswordInput = (event: any) => {
-        setPasswordInput(event.target.value);
-    };
-    const handleSetSeedInput = (event: any) => {
-        setSeedInput(event.target.value);
-    };
-    const handleSetDifficultyInput = (event: any) => {
-        setDifficultyInput(event.target.value);
-    };
-    const handleSetBoardSizeInput = (event: any) => {
-        setBoardSizeInput(event.target.value);
-    };
-    const handleSetTimeLimitInput = (event: any) => {
-        setTimeLimitInput(event.target.value);
-    };
-    const handleSetEnableTimeLimitInput = (event: any) => {
-        setEnableTimeLimitInput(event.target.checked);
-        if (!event.target.checked) {
-            setIsDisabled(true);
+    const [value, setValue] = React.useState<number | string | Array<number | string>>(2);
+
+    const handleChange = (prop: keyof State) => (event: any) => {
+        if (prop === "enableTimeLimitInput"){
+            setValues({ ...values, [prop]: event.target.checked });
+        } else {
+            setValues({ ...values, [prop]: event.target.value });   
         }
-        else {
-            setIsDisabled(false);
-        }
-    };
+        
+      };
+
+    const { user } = useSelector((state: RootState) => state.defaultUser);
+    const { webSocket } = useSelector((state: RootState) => state.webSocket);
+    const dispatch = useAppDispatch();
 
     const handleCreateRoom = () => {
-
-        const formData = new FormData();
-        formData.append('name', roomNameInput);
-        formData.append('password', passwordInput);
-        formData.append('seed', seedInput);
-        formData.append('players', amountOfPlayersInput.toString());
-        formData.append('difficulty', difficultyInput.toString());
-        formData.append('boardSize', boardSizeInput.toString());
-
-        if (!enableTimeLimitInput) {
-            formData.append('timeLimit', "null");
+        let nameOfRoom = "Pokoj-" + user.uuid;
+        if (webSocket !== undefined) {
+          webSocket.send(
+            JSON.stringify({
+              action: "createRoom",
+              userUuid: user.uuid,
+              data: {
+                name: values.roomNameInput,
+                password: values.passwordInput,
+                maxPlayers: values.amountOfPlayersInput,
+                isPrivate: values.isDisabled,
+                timeLimit: values.timeLimitInput.getMinutes(),
+                difficulty: values.difficultyInput,
+                boardSize: values.boardSizeInput,
+              },
+            })
+          );
         }
-        else {
-            formData.append('timeLimit', timeLimitInput.toString());
-        }
+        console.log("WebSocket-> Create Room");
+    };
 
-        const response = ky.put("http://localhost:3001/api/createroom", {
-            body: formData
-        })
-    }
+    const handleSliderChange = (event: Event, newValue: number | number[]) => {
+        setValue(newValue);
+        setValues({ ...values, "amountOfPlayersInput": Number(newValue)});
+    };
+    
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value === '' ? '' : Number(event.target.value));
+        setValues({ ...values, "amountOfPlayersInput": event.target.value === '' ? 0 : Number(event.target.value)});
+
+    };
+
+    const handleBlur = () => {
+        if (value < 0) {
+          setValue(0);
+        } else if (value > 10) {
+          setValue(10);
+        }
+    };
 
     return (
         <>
-            <Grid
-                container
-                direction="column"
-                justifyContent="flex-start"
-                alignItems="center"
-                spacing={4}
-            >
-                <Grid item minWidth={400}>
-                    <FormControl fullWidth>
-                        <InputLabel id="roomNameLabel">Room name</InputLabel>
-                        <Input
-                            id="roomNameInput"
-                            type="text"
-                            value={roomNameInput}
-                            onChange={handleSetRoomNameInput}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid item minWidth={400}>
-                    <FormControl fullWidth>
-                        <InputLabel id="passwordLabel">Password</InputLabel>
-                        <Input
-                            id="passwordInput"
-                            type="Password"
-                            value={passwordInput}
-                            onChange={handleSetPasswordInput}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid item minWidth={400}>
-                    <FormControl fullWidth>
-                        <InputLabel id="seedLabel">Seed</InputLabel>
-                        <Input
+            <div className="form-container paper">
+                <div className="general-info">
+
+                    <div className="form-element">
+                        {/* <FormControl fullWidth>
+                            <InputLabel id="roomNameLabel">Room name</InputLabel> */}
+                            <TextField
+                                id="roomNameInput"
+                                type="text"
+                                value={values.roomNameInput}
+                                variant="outlined"
+                                label="Room name"
+                                onChange={handleChange("roomNameInput")}
+                            />
+                        {/* </FormControl> */}
+                    </div>
+
+                    <div className="form-element">
+                        {/* <FormControl fullWidth>
+                            <InputLabel id="passwordLabel">Password</InputLabel> */}
+                            <TextField
+                                id="passwordInput"
+                                type="Password"
+                                variant="outlined"
+                                label="Password"
+                                value={values.passwordInput}
+                                onChange={handleChange("passwordInput")}
+                            />
+                        {/* </FormControl> */}
+                    </div>
+
+                    <div className="form-element">
+                        {/* <FormControl fullWidth>
+                        <InputLabel id="timeLimitLabel">Seed</InputLabel> */}
+                        <TextField
                             id="seedInput"
                             type="text"
-                            value={seedInput}
-                            onChange={handleSetSeedInput}
+                            variant="outlined"
+                            label="Seed"
+                            value={values.seedInput}
+                            onChange={handleChange("seedInput")}
                         />
-                    </FormControl>
-                </Grid>
-                <Grid item minWidth={400}>
-                    <FormControl fullWidth>
-                        <InputLabel id="playersLabel">Amount Of Players</InputLabel>
-                        <Input
-                            id="playersInput"
-                            type="number"
-                            value={amountOfPlayersInput}
-                            onChange={handleSetAmountOfPlayersInput}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid item minWidth={400}>
-                    <FormControl fullWidth>
-                        <InputLabel id="difficultyLabel">Difficulty</InputLabel>
-                        <Input
-                            id="diffucltyInput"
-                            type="number"
-                            value={difficultyInput}
-                            onChange={handleSetDifficultyInput}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid item minWidth={400}>
-                    <FormControl fullWidth>
-                        <InputLabel id="boardSizeLabel">Board size</InputLabel>
-                        <Input
-                            id="boardSizeInput"
-                            type="number"
-                            value={boardSizeInput}
-                            onChange={handleSetBoardSizeInput}
-                        />
-                    </FormControl>
-                </Grid>
-                <FormGroup>
-                    <Box
-                        sx={{
-                            mt: 3
-                        }}>
-                        <FormControlLabel
-                            control={<Switch defaultChecked />}
-                            label="Enable Time Limit"
-                            checked={enableTimeLimitInput}
-                            onChange={handleSetEnableTimeLimitInput}
-                        />
-                    </Box>
-                </FormGroup>
-                <Grid item minWidth={400}>
-                    <FormControl fullWidth>
-                        <InputLabel id="boardSizeLabel">Time limit</InputLabel>
-                        <Input
-                            disabled={isDisabled}
-                            id="timeLimitInput"
-                            type="number"
-                            value={timeLimitInput}
-                            onChange={handleSetTimeLimitInput}
-                        />
-                    </FormControl>
-                </Grid>
-                <Grid item minWidth={400}>
-                    <div className="content-buttons">
-                        {/* <button
-                            className="button-primary-centered"
-                            type="button"
-                            onClick={() => {
-                                handleCreateRoom();
-                            }}
-                        >
-                            <div className="text-start-game text-center">Create room!</div>
-                        </button> */}
-                        <Button onClick={() => {
-                                handleCreateRoom();
-                            }}
-                            color="secondary">
-                            Create a room!
-                        </Button>
+                        {/* </FormControl> */}
                     </div>
-                </Grid>
-            </Grid>
+
+                    <Grid item minWidth={400}>
+                        <FormControl fullWidth>
+                            <InputLabel id="playersLabel">Number Of Players</InputLabel>
+                            <Input
+                                value={value}
+                                size="small"
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                inputProps={{
+                                    step: 1,
+                                    min: 0,
+                                    max: 10,
+                                    type: 'number',
+                                    'aria-labelledby': 'input-slider',
+                                }}
+                            />
+                        </FormControl>
+                    </Grid>
+
+                    <Slider
+                        aria-label="Custom marks"
+                        marks={marks}
+                        valueLabelDisplay="auto"
+                        valueLabelFormat={valueLabelFormat}
+                        value={typeof value === 'number' ? value : 0}
+                        onChange={handleSliderChange}
+                        min={1}
+                        step={1}
+                        max={10} 
+                    />
+
+                    <div className="form-element">
+                        <FormControl fullWidth>
+                            <InputLabel id="difficultyLabel">Board size</InputLabel>
+                            <Select
+                                labelId="difficultyLabelId"
+                                id="difficultyInput"
+                                value={values.difficultyInput}
+                                label="Difficulty"
+                                onChange={handleChange("difficultyInput")}
+                            >
+                                <MenuItem value={1}>Easy</MenuItem>
+                                <MenuItem value={2}>Medium</MenuItem>
+                                <MenuItem value={3}>Hard</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                    
+                    <div className="form-element">
+                        <FormControl fullWidth>
+                            <InputLabel id="boardSizeLabel">Board size</InputLabel>
+                            <Select
+                                labelId="boardSizeLabelId"
+                                id="boardSizeInput"
+                                value={values.boardSizeInput}
+                                label="Boardsize"
+                                onChange={handleChange("boardSizeInput")}
+                            >
+                                <MenuItem value={7}>Seven</MenuItem>
+                                <MenuItem value={10}>Ten</MenuItem>
+                                <MenuItem value={15}>Fifteen</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div style={{display: "flex", flexDirection: "row"}}>
+                        <h5>Enable Time Limit</h5>
+                        <Checkbox
+                            checked={values.enableTimeLimitInput}
+                            onChange={handleChange("enableTimeLimitInput")}
+                            inputProps={{ 'aria-label': 'controlled' }}
+                        />
+                    </div>
+
+                    <div className="form-element">
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileTimePicker
+                            views={["minutes", "seconds"]}
+                            ampm={false}
+                            inputFormat="mm:ss"
+                            mask="__:__"
+                            label="Minutes and seconds"
+                            value={values.timeLimitInput}
+                            disabled={values.enableTimeLimitInput}
+                            onChange={(newValue) => {
+                            if (newValue !== null) {
+                                setValues({ ...values, timeLimitInput: newValue });
+                            }
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                        </LocalizationProvider>
+                    </div>
+                </div>
+
+                <Button onClick={() => {
+                        handleCreateRoom();
+                    }}
+                    color="secondary">
+                    Create!
+                </Button>
+            </div>
         </>
     );
 }

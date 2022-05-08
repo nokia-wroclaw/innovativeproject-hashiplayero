@@ -1,10 +1,14 @@
 import { IRoom } from "../interfaces/IRoom";
-import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useAppDispatch } from "../store/hooks";
 import { useSelector } from "react-redux";
 import { setInitialRoomBoard } from "../store/RoomGameSlice";
+import { LockOpen, Lock }  from '@mui/icons-material';
+import { HouseSvg, BoardSvg, DifficultySvg, PersonSvg } from "./svg/VectorGraphics";
+import { Button, Grid, Typography } from "@mui/material";
+
+import { Analytics, GridOn, PeopleAlt, TempleBuddhist, Villa, TempleHindu, Synagogue, Stadium} from '@mui/icons-material';
 
 const Room = ({ room }: { room: IRoom }) => {
   const navigate = useNavigate();
@@ -49,43 +53,49 @@ const Room = ({ room }: { room: IRoom }) => {
   };
 
     return (
-        <div className="paper">  
-
-            <div className="paper-element">
-              {room.name}
-            </div>
-
-            <div className="paper-element">
-              {
-                room.isPrivate ? "Private" : "Public"
-              }
-            </div>
-
-            <div className="paper-element">
-              {room.boardSize}
-            </div>
-
-            <div className="paper-element">
-              {room.difficulty}
-            </div>
-
-            <div className="paper-element">
-              {room.numPlayers}
-            </div>
-
-            <div className="paper-element">
-
-              <Button
-                color="secondary"
-                onClick={() => {
-                  handleButtonInteraction(`/room/${room.name}`);
-                  handleChangeRoom(room.name);
-                }}
-              >
-                  Join
-              </Button>
-            </div>
-        </div>
+      <Grid container className="header">
+        <Grid item xs={12} sm={8} md={4}>
+          <div className="header-element">
+            <HouseSvg />
+            <Typography noWrap>{room.name}</Typography>
+          </div>
+        </Grid>
+        <Grid item xs={6} sm={4} md={1} className="header-element center">
+            {
+              room.isPrivate ? 
+                  <Lock color="info"/>
+                    : 
+                  <LockOpen color="info"/>
+            }
+        </Grid>
+        <Grid item xs={6} sm={4} md={1} className="header-element center">
+            <PeopleAlt />
+            {room.numPlayers} 
+        </Grid>
+        <Grid item xs={6} sm={4} md={2} className="header-element center">
+            <GridOn/>
+            {
+              room.boardSize === 7 ? <Typography noWrap>Small size</Typography>: room.difficulty === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
+            }
+        </Grid>
+        <Grid item xs={6} sm={4} md={2} className="header-element center">
+            <Analytics/>
+            {
+              room.difficulty === 1 ? "Easy" : room.difficulty === 2 ? "Medium" : "Hard"
+            }
+        </Grid>
+        <Grid item xs className="header-element but">
+          <Button
+            color="secondary"
+            onClick={() => {
+              handleButtonInteraction(`/room/${room.name}`);
+              if (room.name !== null){
+                handleChangeRoom(room.name);
+              }}}>
+            Join
+          </Button>
+        </Grid>
+      </Grid>
     )
 }
 

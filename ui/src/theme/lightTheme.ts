@@ -8,6 +8,8 @@ const secondaryColorHover = "#374157";
 
 const primaryBackgroundColor = "#FFFFFF";
 
+const primarySvgColor = "#9ca9c3";
+
 const lightTheme = createTheme({
     palette: {
         primary: {
@@ -63,9 +65,17 @@ const lightTheme = createTheme({
             styleOverrides:{
                 root:{
                     width: "100%",
+                    padding: "0px",
                 }
             }
-        }
+        },
+        MuiSvgIcon:{
+            styleOverrides:{
+                root:{
+                    color: primarySvgColor,
+                }
+            }
+        },
     }
 });
 

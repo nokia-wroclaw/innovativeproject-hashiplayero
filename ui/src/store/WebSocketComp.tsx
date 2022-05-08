@@ -217,7 +217,7 @@ const WebSocketComp = () => {
 
   return (
     <>
-      <div>{user.uuid}</div>
+      {/* <div>{user.uuid}</div>
       <div>{user.name}</div>
       <br />
       {rooms != null && rooms.length > 0 ? (
@@ -241,7 +241,7 @@ const WebSocketComp = () => {
       <br />
       <button type="submit" onClick={handleChangeNameUser}>
         Change my Name
-      </button>
+      </button> */}
     </>
   );
 };
