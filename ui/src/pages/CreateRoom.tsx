@@ -130,48 +130,28 @@ const CreateRoom = () => {
                 <div className="general-info">
 
                     <div className="form-element">
-                        {/* <FormControl fullWidth>
-                            <InputLabel id="roomNameLabel">Room name</InputLabel> */}
-                            <TextField
-                                id="roomNameInput"
-                                type="text"
-                                value={values.roomNameInput}
-                                variant="outlined"
-                                label="Room name"
-                                onChange={handleChange("roomNameInput")}
-                            />
-                        {/* </FormControl> */}
-                    </div>
-
-                    <div className="form-element">
-                        {/* <FormControl fullWidth>
-                            <InputLabel id="passwordLabel">Password</InputLabel> */}
-                            <TextField
-                                id="passwordInput"
-                                type="Password"
-                                variant="outlined"
-                                label="Password"
-                                value={values.passwordInput}
-                                onChange={handleChange("passwordInput")}
-                            />
-                        {/* </FormControl> */}
-                    </div>
-
-                    <div className="form-element">
-                        {/* <FormControl fullWidth>
-                        <InputLabel id="timeLimitLabel">Seed</InputLabel> */}
                         <TextField
-                            id="seedInput"
+                            id="roomNameInput"
                             type="text"
+                            value={values.roomNameInput}
                             variant="outlined"
-                            label="Seed"
-                            value={values.seedInput}
-                            onChange={handleChange("seedInput")}
+                            label="Room name"
+                            onChange={handleChange("roomNameInput")}
                         />
-                        {/* </FormControl> */}
                     </div>
 
-                    <Grid item minWidth={400}>
+                    <div className="form-element">
+                        <TextField
+                            id="passwordInput"
+                            type="Password"
+                            variant="outlined"
+                            label="Password"
+                            value={values.passwordInput}
+                            onChange={handleChange("passwordInput")}
+                        />
+                    </div>
+
+                    {/* <Grid item minWidth={400}>
                         <FormControl fullWidth>
                             <InputLabel id="playersLabel">Number Of Players</InputLabel>
                             <Input
@@ -188,7 +168,7 @@ const CreateRoom = () => {
                                 }}
                             />
                         </FormControl>
-                    </Grid>
+                    </Grid> */}
 
                     <Slider
                         aria-label="Custom marks"
@@ -204,7 +184,7 @@ const CreateRoom = () => {
 
                     <div className="form-element">
                         <FormControl fullWidth>
-                            <InputLabel id="difficultyLabel">Board size</InputLabel>
+                            <InputLabel id="difficultyLabel">Difficulty</InputLabel>
                             <Select
                                 labelId="difficultyLabelId"
                                 id="difficultyInput"
@@ -235,6 +215,7 @@ const CreateRoom = () => {
                             </Select>
                         </FormControl>
                     </div>
+                    
                     <div style={{display: "flex", flexDirection: "row"}}>
                         <h5>Enable Time Limit</h5>
                         <Checkbox

@@ -52,7 +52,7 @@ const WebSocketComp = () => {
         } else if (json?.response === "CreateBoard") {
           // Create board
           consoleLogWebSocket("Create Board");
-          dispatch(setInitialRoomBoard());
+          // dispatch(setInitialRoomBoard());
 
           let createBoard: ICreateBoard = {
             array: json.Payload.array,
