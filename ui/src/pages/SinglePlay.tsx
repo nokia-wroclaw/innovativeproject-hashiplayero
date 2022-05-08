@@ -79,7 +79,7 @@ const SinglePlay = () => {
 
   useEffect(() => {
     console.log(roomAndBoard)
-    if (roomAndBoard.array.length !== 0 && roomAndBoard.settings.size !== null) {
+    if (roomAndBoard.name !== "name" && roomAndBoard.array.length !== 0 && roomAndBoard.settings.size !== null) {
       navigate(`${roomAndBoard.name}`);
     }
 
@@ -92,20 +92,9 @@ const SinglePlay = () => {
     <>
       <div className="form-container paper">
         <div className="general-info">
-          <div>
+          <div className="form-element">
             <FormControl fullWidth>
-              <InputLabel id="timeLimitLabel">Seed</InputLabel>
-              <Input
-                id="seedInput"
-                type="text"
-                value={seedInput}
-                onChange={handleSetSeedInput}
-              />
-            </FormControl>
-          </div>
-          <div>
-            <FormControl fullWidth>
-              <InputLabel id="difficultyLabel">Board difficulty</InputLabel>
+              <InputLabel id="difficultyLabel">Difficulty</InputLabel>
               <Select
                 labelId="difficultyLabelId"
                 id="difficultyInput"
@@ -119,7 +108,7 @@ const SinglePlay = () => {
               </Select>
             </FormControl>
           </div>
-          <div>
+          <div className="form-element">
             <FormControl fullWidth>
               <InputLabel id="boardSizeLabel">Board size</InputLabel>
               <Select
@@ -143,7 +132,7 @@ const SinglePlay = () => {
                   inputProps={{ 'aria-label': 'controlled' }}
               />
           </div>
-          <div>
+          <div className="form-element">
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <MobileTimePicker
                 views={["minutes", "seconds"]}

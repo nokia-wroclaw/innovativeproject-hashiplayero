@@ -13,6 +13,7 @@ import Faq from "./components/Faq";
 import Contact from "./components/Contact";
 import Rules from "./components/Rules";
 import Game from "./pages/Game";
+import WaitingRoom from "./pages/WaitingRoom";
 import WebSocketComp from "./store/WebSocketComp";
 
 class App extends Component {
@@ -33,6 +34,7 @@ class App extends Component {
               <Route path="/faq" element={<Faq />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/rules" element={<Rules />} />
+              <Route path="/waitingroom" element={<WaitingRoom />} />
             </Routes>
         </div>
       </div>

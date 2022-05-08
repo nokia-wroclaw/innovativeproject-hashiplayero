@@ -26,30 +26,30 @@ const FindRoom = () => {
     setSearchedSize(event.target.value);
   };
 
-  useEffect(() => {
-      filteredRooms = rooms.filter((room) => {
-        if (searchedName !== "" && searchedSize !== "" && searchedQuantity !== "") return true;
-        const studentName = room.name.toLowerCase().split(" ");
-        debugger;
-        const names = searchedName.split(" ");
-        let inputName = searchedName.toLowerCase().split(" ");
-        // if (names === undefined) {
-        //   inputName = "";
-        // }
-        if (
-          inputName === null
-              ? true
-              : inputName.every((item) =>
-                  studentName.some((name) =>
-                    name.includes(item.toLowerCase())
-                  )
-                )
-          ) {
-            debugger;
-            return room;
-          }
-      });
-  }, [searchedQuantity, searchedSize, searchedName]);
+  // useEffect(() => {
+  //     filteredRooms = rooms.filter((room) => {
+  //       if (searchedName !== "" && searchedSize !== "" && searchedQuantity !== "") return true;
+  //       const studentName = room.name.toLowerCase().split(" ");
+  //       debugger;
+  //       const names = searchedName.split(" ");
+  //       let inputName = searchedName.toLowerCase().split(" ");
+  //       // if (names === undefined) {
+  //       //   inputName = "";
+  //       // }
+  //       if (
+  //         inputName === null
+  //             ? true
+  //             : inputName.every((item) =>
+  //                 studentName.some((name) =>
+  //                   name.includes(item.toLowerCase())
+  //                 )
+  //               )
+  //         ) {
+  //           debugger;
+  //           return room;
+  //         }
+  //     });
+  // }, [searchedQuantity, searchedSize, searchedName]);
 
   return (
     <>
