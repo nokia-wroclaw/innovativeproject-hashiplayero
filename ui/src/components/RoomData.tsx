@@ -1,39 +1,22 @@
 import { IRoomAndBoard } from "../interfaces/IRoomAndBoard";
-import {
-  Analytics,
-  GridOn,
-  PeopleAlt,
-  LockOpen,
-  Lock,
-} from "@mui/icons-material";
-import { HouseSvg } from "./svg/VectorGraphics";
-
 import { IState } from "../interfaces/IState";
 import {
-  Slider,
-  MenuItem,
-  FormControl,
-  Grid,
-  Input,
-  InputLabel,
-  Select,
   Button,
   TextField,
   Checkbox,
-  Typography,
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
-import createMarks from "./functions/Marks";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useAppDispatch } from "../store/hooks";
-
-function valueLabelFormat(value: number) {
-  const marks = createMarks();
-  return marks.findIndex((mark) => mark.value === value) + 2;
-}
+import { setInitialRoomBoard } from "../store/RoomGameSlice";
+import NameInput from "./dynamic-components/NameInput";
+import PasswordInput from "./dynamic-components/PasswordInput";
+import PlayersInput from "./dynamic-components/PlayersInput";
+import DifficultyInput from "./dynamic-components/DifficultyInput";
+import BoardInput from "./dynamic-components/BardSizeInput";
 
 const RoomData = ({
   room,
@@ -42,7 +25,6 @@ const RoomData = ({
   room: IRoomAndBoard;
   isAdmin: boolean;
 }) => {
-  const marks = createMarks();
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
@@ -102,134 +84,78 @@ const RoomData = ({
     }
   };
 
+
+  const handleStartGame = () => {
+    if (webSocket !== undefined) {
+      webSocket.send(
+        JSON.stringify({
+          action: "startGame",
+          userUuid: user.uuid,
+          data: {
+            roomName: roomAndBoard.name,
+          },
+        })
+      );
+    }
+  };
+
+  const handleExitRoom = () => {
+    if (webSocket !== undefined) {
+      webSocket.send(
+        JSON.stringify({
+          action: "changeRoom",
+          userUuid: user.uuid,
+          data: {
+            roomName: "lobby",
+          },
+        })
+      );
+      dispatch(setInitialRoomBoard());
+      console.log("WebSocket-> Change Room");
+    }
+  };
+
+  const handleDeleteRoom = () => {
+    if (webSocket !== undefined) {
+      webSocket.send(
+        JSON.stringify({
+          action: "deleteRoom",
+          userUuid: user.uuid,
+          data: {
+            roomName: roomAndBoard.name,
+          },
+        })
+      );
+    }
+  };
+
+
   return (
     <>
-      <Grid container className="header">
-        <Grid item xs={12} sm={8} md={4}>
-          <div className="header-element">
-            <HouseSvg />
-            <Typography noWrap>{room.name}</Typography>
-          </div>
-        </Grid>
-        <Grid item xs={6} sm={4} md={1} className="header-element center">
-          {room.isPrivate ? <Lock color="info" /> : <LockOpen color="info" />}
-        </Grid>
-        <Grid item xs={6} sm={4} md={1} className="header-element center">
-          <PeopleAlt />
-          {room.maxPlayers}
-        </Grid>
-        <Grid item xs={6} sm={4} md={2} className="header-element center">
-          <GridOn />
-          {room.settings.size === 7 ? (
-            <Typography noWrap>Small size</Typography>
-          ) : room.settings.size === 15 ? (
-            <Typography noWrap>Large size</Typography>
-          ) : (
-            <Typography noWrap>Normal size</Typography>
-          )}
-        </Grid>
-        <Grid item xs={6} sm={4} md={2} className="header-element center">
-          <Analytics />
-          {room.settings.difficulty === 1
-            ? "Easy"
-            : room.settings.difficulty === 2
-            ? "Medium"
-            : "Hard"}
-        </Grid>
-      </Grid>
-
       <div className="form-container paper">
         <div className="general-info">
+
           <div className="form-element">
-            <TextField
-              disabled={!isAdmin}
-              id="roomNameInput"
-              type="text"
-              value={values.roomNameInput}
-              variant="outlined"
-              label="Room name"
-              onChange={handleChange("roomNameInput")}
-            />
+            <NameInput value={values.roomNameInput} handleChange={handleChange("roomNameInput")} isAdmin={false} />
+          </div>
+
+          {
+            isAdmin ?
+              <div className="form-element">
+                <PasswordInput value={values.passwordInput} handleChange={handleChange("passwordInput")} isAdmin={isAdmin} />
+              </div> : null
+          }
+
+          <div className="form-element">
+            <PlayersInput value={values.amountOfPlayersInput} handleChange={handleSliderChange} isAdmin={isAdmin} />
           </div>
 
           <div className="form-element">
-            <TextField
-              disabled={!isAdmin}
-              id="passwordInput"
-              type="Password"
-              variant="outlined"
-              label="Password"
-              value={values.passwordInput}
-              onChange={handleChange("passwordInput")}
-            />
-          </div>
-
-          {/* <Grid item minWidth={400}>
-                        <FormControl fullWidth>
-                            <InputLabel id="playersLabel">Number Of Players</InputLabel>
-                            <Input
-                                value={value}
-                                size="small"
-                                onChange={handleInputChange}
-                                onBlur={handleBlur}
-                                inputProps={{
-                                    step: 1,
-                                    min: 0,
-                                    max: 10,
-                                    type: 'number',
-                                    'aria-labelledby': 'input-slider',
-                                }}
-                            />
-                        </FormControl>
-                    </Grid> */}
-
-          <Slider
-            disabled={!isAdmin}
-            aria-label="Custom marks"
-            marks={marks}
-            valueLabelDisplay="auto"
-            valueLabelFormat={valueLabelFormat}
-            value={values.amountOfPlayersInput}
-            onChange={handleSliderChange}
-            min={2}
-            step={1}
-            max={10}
-          />
-
-          <div className="form-element">
-            <FormControl fullWidth>
-              <InputLabel id="difficultyLabel">Difficulty</InputLabel>
-              <Select
-                disabled={!isAdmin}
-                labelId="difficultyLabelId"
-                id="difficultyInput"
-                value={values.difficultyInput}
-                label="Difficulty"
-                onChange={handleChange("difficultyInput")}
-              >
-                <MenuItem value={1}>Easy</MenuItem>
-                <MenuItem value={2}>Medium</MenuItem>
-                <MenuItem value={3}>Hard</MenuItem>
-              </Select>
-            </FormControl>
+            <DifficultyInput value={values.difficultyInput} handleChange={handleChange("difficultyInput")} isAdmin={isAdmin} />
           </div>
 
           <div className="form-element">
-            <FormControl fullWidth>
-              <InputLabel id="boardSizeLabel">Board size</InputLabel>
-              <Select
-                disabled={!isAdmin}
-                labelId="boardSizeLabelId"
-                id="boardSizeInput"
-                value={values.boardSizeInput}
-                label="Boardsize"
-                onChange={handleChange("boardSizeInput")}
-              >
-                <MenuItem value={7}>Seven</MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={15}>Fifteen</MenuItem>
-              </Select>
-            </FormControl>
+            <BoardInput value={values.boardSizeInput} handleChange={handleChange("boardSizeInput")} isAdmin={isAdmin} />
           </div>
 
           <div style={{ display: "flex", flexDirection: "row" }}>
@@ -251,7 +177,7 @@ const RoomData = ({
                 mask="__:__"
                 label="Minutes and seconds"
                 value={values.timeLimitInput}
-                disabled={values.enableTimeLimitInput}
+                disabled={!isAdmin ? true : values.enableTimeLimitInput}
                 onChange={(newValue) => {
                   if (newValue !== null) {
                     setValues({ ...values, timeLimitInput: newValue });
@@ -268,7 +194,34 @@ const RoomData = ({
             }}
             color="secondary"
           >
-            Edit Room Data
+            Edit
+          </Button>
+          <Button
+            className="m-2"
+            onClick={() => {
+              handleStartGame();
+            }}
+            color="secondary"
+          >
+            Start Game
+          </Button>
+          <Button
+            className="m-2"
+            onClick={() => {
+              handleExitRoom();
+            }}
+            color="secondary"
+          >
+            Exit Room
+          </Button>
+          <Button
+            className="m-2"
+            onClick={() => {
+              handleDeleteRoom();
+            }}
+            color="secondary"
+          >
+            Delete Room
           </Button>
         </div>
       </div>

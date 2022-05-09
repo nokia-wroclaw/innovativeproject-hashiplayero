@@ -76,6 +76,15 @@ const lightTheme = createTheme({
                 }
             }
         },
+        MuiPaper: {
+            styleOverrides:{
+                root:{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }
+            }
+        },
     }
 });
 

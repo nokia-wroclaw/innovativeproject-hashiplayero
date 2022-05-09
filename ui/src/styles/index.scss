@@ -1,3 +1,4 @@
+
 $light_primary_background_color: #FFFFFF;
 
 $lighter_primary_button_color: #6c6af0;
@@ -8,6 +9,8 @@ $light_secondary_button_color: #7081A6;
 $light_secondary_button_color-hover: #374157;
 
 $light_logo-secondary-color: #8b89ec;
+
+// @use "./components/waitingRoom/_waitingRoom.scss";
 
 @mixin display-flex ($direction, $spacing) {
     display: flex;
@@ -241,26 +244,34 @@ $light_logo-secondary-color: #8b89ec;
     padding: 8px;
 }
 
-.form-elements{
+.form-elements {
     display: flex;
     flex-direction: row;
     align-items: center;
     width: 100%;
 }
 
-.form-inner-element{
+.form-elements-column {
+    @include display-flex(column, center);
+    // width: 100%;
+    margin: 8px;
+
+}
+
+.form-inner-element {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.form-element-time{
+.form-element-time {
     display: flex;
     flex-direction: row;
     align-items: center;
     // min-width: 30%;
 }
-.form-element-checkbox{
+
+.form-element-checkbox {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -341,8 +352,10 @@ $light_logo-secondary-color: #8b89ec;
 
 .filter {
     max-width: 70%;
+
     @media screen and (max-width: 1430px) {
         max-width: 100%;
+
         .rooms {
             width: 95%;
         }
@@ -366,70 +379,63 @@ $light_logo-secondary-color: #8b89ec;
 
 .players {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
-
-
-  .box {
+.box {
     border-radius: 20px;
     width: 60px;
     height: 60px;
     background: #ffffff;
-    box-shadow:  0 0 0 #cccccc,
-                 0 0 0 #ffffff,
-                  10px 10px 10px #cccccc inset,
-                  -10px -10px 10px #ffffff inset;
+    box-shadow: 0 0 0 #cccccc,
+        0 0 0 #ffffff,
+        10px 10px 10px #cccccc inset,
+        -10px -10px 10px #ffffff inset;
     animation: anime 3s cubic-bezier(0.16, 1, 0.3, 1) 1s;
-/*       transform:  */
+    /*       transform:  */
     animation-fill-mode: forwards;
-
-  }
-
+}
 
 
-  @keyframes anime {
+@keyframes anime {
     0% {
-      width: 60px;
-      height: 60px;
-      background: #f0f0f0;
-      box-shadow:  0 0 0 #cccccc,
-                   0 0 0 #ffffff,
-                    10px 10px 10px #cccccc inset,
-                    -10px -10px 10px #ffffff inset;
+        width: 60px;
+        height: 60px;
+        background: #f0f0f0;
+        box-shadow: 0 0 0 #cccccc,
+            0 0 0 #ffffff,
+            10px 10px 10px #cccccc inset,
+            -10px -10px 10px #ffffff inset;
     }
-    25% {
-      width: 60px;
-      height: 60px;
-      background: #f8f8f8;
-      box-shadow:  10px 10px 10px #cccccc,
-                   10px 10px 10px #ffffff,
-                   0 0 0 #cccccc inset,
-                   0 0 0 #ffffff inset;
-    }
-    50% {
-      width: 60px;
-      height: 100%;
-      background: #f8f8f8;
-      box-shadow:  10px 10px 10px #cccccc,
-                   10px 10px 10px #ffffff,
-                   0 0 0 #cccccc inset,
-                   0 0 0 #ffffff inset;
-    }
-    100% {
-      width: 90%;
-      height: 100%;
-      box-shadow:  40px 40px 40px #cccccc,
-                   0 0 0 #ffffff,
-                   0 0 0 #cccccc inset,
-                   2px 2px 2px #ffffff inset;
-        .content{
-            // show content inside of content
-            display: block;
 
-        }
+    25% {
+        width: 60px;
+        height: 60px;
+        background: #f8f8f8;
+        box-shadow: 10px 10px 10px #cccccc,
+            10px 10px 10px #ffffff,
+            0 0 0 #cccccc inset,
+            0 0 0 #ffffff inset;
     }
-  }
+
+    50% {
+        width: 60px;
+        height: 100%;
+        background: #f8f8f8;
+        box-shadow: 10px 10px 10px #cccccc,
+            10px 10px 10px #ffffff,
+            0 0 0 #cccccc inset,
+            0 0 0 #ffffff inset;
+    }
+
+    100% {
+        width: 90%;
+        height: 100%;
+        box-shadow: 40px 40px 40px #cccccc,
+            0 0 0 #ffffff,
+            0 0 0 #cccccc inset,
+            2px 2px 2px #ffffff inset;
+    }
+}

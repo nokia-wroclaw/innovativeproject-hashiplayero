@@ -6,18 +6,20 @@ const PlayerList = ({ players }: { players: IMember[] }) => {
 
     return (
         <>
-        <div>
-            List Of Players
-        </div>
-        <div className="header filter players">
-        {
-            players.map((player: IMember) => {
-                return (
-                    <Player key={player.uuid} player={player} />
-                )
-            })
-        }
-        </div>
+            <div className="form-elements-column">
+                <div>
+                    List Of Players
+                </div>
+                <div className="header filter players">
+                    {
+                        players.map((player: IMember) => {
+                            return (
+                                <Player key={player.uuid} player={player} />
+                            )
+                        })
+                    }
+                </div>
+            </div>
         </>
     )
 }
