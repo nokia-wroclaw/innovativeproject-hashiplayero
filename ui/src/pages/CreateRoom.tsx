@@ -1,11 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IState } from "../interfaces/IState";
 import {
-  Slider,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
   Button,
   TextField,
   Checkbox,
@@ -15,16 +10,20 @@ import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { useAppDispatch } from "../store/hooks";
-import createMarks from "../components/functions/Marks";
 
-function valueLabelFormat(value: number) {
-  const marks = createMarks();
-  return marks.findIndex((mark) => mark.value === value) + 2;
-}
+import BoardInput from "../components/dynamic-components/BardSizeInput";
+import DifficultyInput from "../components/dynamic-components/DifficultyInput";
+import PlayersInput from "../components/dynamic-components/PlayersInput";
+import PasswordInput from "../components/dynamic-components/PasswordInput";
+import NameInput from "../components/dynamic-components/NameInput";
 
 const CreateRoom = () => {
-  const marks = createMarks();
+
+  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
+  const { user } = useSelector((state: RootState) => state.defaultUser);
+  const { webSocket } = useSelector((state: RootState) => state.webSocket);
+  const navigate = useNavigate();
+
   const [values, setValues] = useState<IState>({
     amountOfPlayersInput: 2,
     roomNameInput: "",
@@ -37,8 +36,6 @@ const CreateRoom = () => {
     isDisabled: true,
   });
 
-  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-  const navigate = useNavigate();
   useEffect(() => {
     if (roomAndBoard.name !== "name" && roomAndBoard.name.length > 0) {
       navigate(`/waitingroom/${roomAndBoard.name}`);
@@ -53,9 +50,9 @@ const CreateRoom = () => {
     }
   };
 
-  const { user } = useSelector((state: RootState) => state.defaultUser);
-  const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const dispatch = useAppDispatch();
+  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+    setValues({ ...values, amountOfPlayersInput: Number(newValue) });
+  };
 
   const handleCreateRoom = () => {
     let nameOfRoom = values.roomNameInput + user.uuid;
@@ -79,99 +76,29 @@ const CreateRoom = () => {
     console.log("WebSocket-> Create Room");
   };
 
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setValues({ ...values, amountOfPlayersInput: Number(newValue) });
-  };
-
   return (
     <>
       <div className="form-container paper">
         <div className="general-info">
+
           <div className="form-element">
-            <TextField
-              id="roomNameInput"
-              type="text"
-              value={values.roomNameInput}
-              variant="outlined"
-              label="Room name"
-              onChange={handleChange("roomNameInput")}
-            />
+            <NameInput value={values.roomNameInput} handleChange={handleChange("roomNameInput")} isAdmin={true}/>
           </div>
 
           <div className="form-element">
-            <TextField
-              id="passwordInput"
-              type="Password"
-              variant="outlined"
-              label="Password"
-              value={values.passwordInput}
-              onChange={handleChange("passwordInput")}
-            />
-          </div>
-
-          {/* <Grid item minWidth={400}>
-                        <FormControl fullWidth>
-                            <InputLabel id="playersLabel">Number Of Players</InputLabel>
-                            <Input
-                                value={value}
-                                size="small"
-                                onChange={handleInputChange}
-                                onBlur={handleBlur}
-                                inputProps={{
-                                    step: 1,
-                                    min: 0,
-                                    max: 10,
-                                    type: 'number',
-                                    'aria-labelledby': 'input-slider',
-                                }}
-                            />
-                        </FormControl>
-                    </Grid> */}
-
-          <Slider
-            aria-label="Custom marks"
-            marks={marks}
-            valueLabelDisplay="auto"
-            valueLabelFormat={valueLabelFormat}
-            value={values.amountOfPlayersInput}
-            onChange={handleSliderChange}
-            min={2}
-            step={1}
-            max={10}
-          />
-
-          <div className="form-element">
-            <FormControl fullWidth>
-              <InputLabel id="difficultyLabel">Difficulty</InputLabel>
-              <Select
-                labelId="difficultyLabelId"
-                id="difficultyInput"
-                value={values.difficultyInput}
-                label="Difficulty"
-                onChange={handleChange("difficultyInput")}
-              >
-                <MenuItem value={1}>Easy</MenuItem>
-                <MenuItem value={2}>Medium</MenuItem>
-                <MenuItem value={3}>Hard</MenuItem>
-              </Select>
-            </FormControl>
+            <PasswordInput value={values.passwordInput} handleChange={handleChange("passwordInput")} isAdmin={true}/>
           </div>
 
           <div className="form-element">
-            <FormControl fullWidth>
-              <InputLabel id="boardSizeLabel">Board size</InputLabel>
-              <Select
-                labelId="boardSizeLabelId"
-                id="boardSizeInput"
-                value={values.boardSizeInput}
-                label="Boardsize"
-                onChange={handleChange("boardSizeInput")}
-              >
-                <MenuItem value={7}>Seven</MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={15}>Fifteen</MenuItem>
-              </Select>
-            </FormControl>
+            <PlayersInput value={values.amountOfPlayersInput} handleChange={handleSliderChange} isAdmin={true}/>
+          </div>
+
+          <div className="form-element">
+            <DifficultyInput value={values.difficultyInput} handleChange={handleChange("difficultyInput")} isAdmin={true}/>
+          </div>
+
+          <div className="form-element">
+            <BoardInput value={values.boardSizeInput} handleChange={handleChange("boardSizeInput")} isAdmin={true}/>
           </div>
 
           <div style={{ display: "flex", flexDirection: "row" }}>
@@ -201,6 +128,7 @@ const CreateRoom = () => {
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
+            {/* <TimeInput value={values.timeLimitInput} timeEnable={values.enableTimeLimitInput} handleChange={setValues} values={values}/> */}
           </div>
         </div>
 

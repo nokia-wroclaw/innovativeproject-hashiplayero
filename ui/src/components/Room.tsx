@@ -1,25 +1,26 @@
 import { IRoom } from "../interfaces/IRoom";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../store/store";
-import { useAppDispatch } from "../store/hooks";
+import { useState } from "react";
 import { useSelector } from "react-redux";
-import { setInitialRoomBoard } from "../store/RoomGameSlice";
-import { LockOpen, Lock }  from '@mui/icons-material';
-import { HouseSvg, BoardSvg, DifficultySvg, PersonSvg } from "./svg/VectorGraphics";
 import { Button, Grid, Typography } from "@mui/material";
 
-import { Analytics, GridOn, PeopleAlt} from '@mui/icons-material';
-
+import BoardDisplay from "./static-components/BoardSize";
+import DifficultyDisplay from "./static-components/Difficulty";
+import RoomStatusDisplay from "./static-components/RoomStatus";
+import RoomPlatersDisplay from "./static-components/RoomPlayers";
+import RoomNameDisplay from "./static-components/RoomName";
+import CustomizedSnackbar from "./static-components/SnackBar";
+import { ISnackbar } from "../interfaces/ISnackbar";
 const Room = ({ room }: { room: IRoom }) => {
-  const navigate = useNavigate();
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const dispatch = useAppDispatch();
   const { user } = useSelector((state: RootState) => state.defaultUser);
 
-  const handleButtonInteraction = (navigation: String) => {
-    // navigate(`${navigation}`);
-    console.log(navigation);
-  }
+  const [snackbar, setSnackbar] = useState<ISnackbar>({
+    open: false,
+    message: "",
+    severity: 'success',
+  });
 
   const handleChangeRoom = (roomName: string) => {
     if (webSocket !== undefined) {
@@ -35,52 +36,60 @@ const Room = ({ room }: { room: IRoom }) => {
       console.log("WebSocket-> Change Room");
     }
   };
+  // !!! type AlertColor = 'success' | 'info' | 'warning' | 'error';
+  const handleJoinRoom = (roomName: string) => {
+    if (room.name !== null) {
+      if (room.isPrivate) {
+        console.log("Room is private");
+        setSnackbar({ message: "Room is private", open: true, severity: 'warning' });
+      } else if (room.maxPlayers === room.numPlayers) {
+        setSnackbar({ message: "Room is full", open: true, severity: 'error' });
+      } else {
+        // !!! ODKOMENTUJ JAK CHCESZ PRZEJSC DO POKOJU !!!
+        handleChangeRoom(room.name);
+      }
+    }
+  }
 
-    return (
-      <Grid container className="header">
-        <Grid item xs={12} sm={8} md={4}>
-          <div className="header-element">
-            <HouseSvg />
-            <Typography noWrap>{room.name}</Typography>
-          </div>
-        </Grid>
-        <Grid item xs={6} sm={4} md={1} className="header-element center">
-            {
-              room.isPrivate ? 
-                  <Lock color="info"/>
-                    : 
-                  <LockOpen color="info"/>
-            }
-        </Grid>
-        <Grid item xs={6} sm={4} md={1} className="header-element center">
-            <PeopleAlt />
-            {room.numPlayers}/{room.maxPlayers}
-        </Grid>
-        <Grid item xs={6} sm={4} md={2} className="header-element center">
-            <GridOn/>
-            {
-              room.boardSize === 7 ? <Typography noWrap>Small size</Typography>: room.boardSize === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
-            }
-        </Grid>
-        <Grid item xs={6} sm={4} md={2} className="header-element center">
-            <Analytics/>
-            {
-              room.difficulty === 1 ? "Easy" : room.difficulty === 2 ? "Medium" : "Hard"
-            }
-        </Grid>
-        <Grid item xs className="header-element but">
-          <Button
-            color="secondary"
-            onClick={() => {
-              handleButtonInteraction(`/room/${room.name}`);
-              if (room.name !== null){
-                handleChangeRoom(room.name);
-              }}}>
-            Join
-          </Button>
-        </Grid>
+  return (
+    <Grid container className="header">
+
+      <Grid item xs={12} sm={8} md={4}>
+        <div className="header-element">
+          <RoomNameDisplay value={room.name} />
+        </div>
       </Grid>
-    )
+
+      <Grid item xs={6} sm={4} md={1} className="header-element center">
+        <RoomStatusDisplay value={room.isPrivate} />
+      </Grid>
+
+      <Grid item xs={6} sm={4} md={1} className="header-element center">
+        <RoomPlatersDisplay players={room.numPlayers} maxPlayers={room.maxPlayers} />
+      </Grid>
+
+      <Grid item xs={6} sm={4} md={2} className="header-element center">
+        <BoardDisplay value={room.boardSize} />
+      </Grid>
+      <Grid item xs={6} sm={4} md={2} className="header-element center">
+        <DifficultyDisplay value={room.difficulty} />
+      </Grid>
+
+      <Grid item xs className="header-element but">
+        <Button
+          color="secondary"
+          onClick={() => {
+            handleJoinRoom(room.name);
+          }}>
+          Join
+        </Button>
+      </Grid>
+      {
+        snackbar.open ? <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} /> : null
+      }
+
+    </Grid>
+  )
 }
 
 export default Room;

@@ -1,11 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FormControl,
-  Input,
-  InputLabel,
-  MenuItem,
-  Select,
   Button,
   TextField,
   Checkbox,
@@ -15,6 +10,8 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
+import DifficultyInput from "../components/dynamic-components/DifficultyInput";
+import BoardInput from "../components/dynamic-components/BardSizeInput";
 
 interface State {
   difficulty: number;
@@ -32,12 +29,7 @@ const SinglePlay = () => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-
-  const [seedInput, setSeedInput] = useState("");
-  const handleSetSeedInput = (event: any) => {
-    setSeedInput(event.target.value);
-  };
-
+  
   const [values, setValues] = useState<State>({
     difficulty: 2,
     boardSize: 7,
@@ -88,83 +80,55 @@ const SinglePlay = () => {
   return (
     <>
       <div className="form-container paper">
-          <div className="general-info">
+        <div className="general-info">
 
-            <div className="form-elements">      
-              <div className="form-element">
-                <FormControl fullWidth>
-                  <InputLabel id="difficultyLabel">Difficulty</InputLabel>
-                  <Select
-                    labelId="difficultyLabelId"
-                    id="difficultyInput"
-                    value={values.difficulty}
-                    label="Difficulty"
-                    onChange={handleChange("difficulty")}
-                  >
-                    <MenuItem value={1}>Easy</MenuItem>
-                    <MenuItem value={2}>Medium</MenuItem>
-                    <MenuItem value={3}>Hard</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
-
-              <div className="form-element">
-                <FormControl fullWidth>
-                  <InputLabel id="boardSizeLabel">Board size</InputLabel>
-                  <Select
-                    labelId="boardSizeLabelId"
-                    id="boardSizeInput"
-                    value={values.boardSize}
-                    label="Boardsize"
-                    onChange={handleChange("boardSize")}
-                  >
-                    <MenuItem value={7}>Seven</MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={15}>Fifteen</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
-            </div>
-
-            <div className="form-elements">
-                <div className="form-element-checkbox">
-                  <span>Time</span>
-                  <Checkbox
-                    checked={values.enableTimeLimit}
-                    onChange={handleChange("enableTimeLimit")}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                  />
-                </div>
-                <div className="form-element-time">
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileTimePicker
-                      views={["minutes", "seconds"]}
-                      ampm={false}
-                      inputFormat="mm:ss"
-                      mask="__:__"
-                      label="Minutes and seconds"
-                      value={values.timeLimit}
-                      disabled={values.enableTimeLimit}
-                      onChange={(newValue) => {
-                        if (newValue !== null) {
-                          setValues({ ...values, timeLimit: newValue });
-                        }
-                      }}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider>
-                </div>
-            </div>
+          <div className="form-element">
+            <DifficultyInput value={values.difficulty} handleChange={handleChange("difficulty")} isAdmin={true} />
           </div>
 
-          <Button
-            color="secondary"
-            onClick={() => {
-              handleCreateSingleGame();
-            }}
-          >
-            Play!
-          </Button>
+          <div className="form-element">
+            <BoardInput value={values.boardSize} handleChange={handleChange("boardSize")} isAdmin={true} />
+          </div>
+
+          <div className="form-elements">
+            <div className="form-element-checkbox">
+              <span>Time</span>
+              <Checkbox
+                checked={values.enableTimeLimit}
+                onChange={handleChange("enableTimeLimit")}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+            </div>
+            <div className="form-element-time">
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <MobileTimePicker
+                  views={["minutes", "seconds"]}
+                  ampm={false}
+                  inputFormat="mm:ss"
+                  mask="__:__"
+                  label="Minutes and seconds"
+                  value={values.timeLimit}
+                  disabled={values.enableTimeLimit}
+                  onChange={(newValue) => {
+                    if (newValue !== null) {
+                      setValues({ ...values, timeLimit: newValue });
+                    }
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+          </div>
+        </div>
+
+        <Button
+          color="secondary"
+          onClick={() => {
+            handleCreateSingleGame();
+          }}
+        >
+          Play!
+        </Button>
       </div>
     </>
   );
