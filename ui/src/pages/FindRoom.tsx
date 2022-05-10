@@ -149,7 +149,12 @@ const FindRoom = () => {
             <Room room={room} key={room.name} />
           ))
         ) : (
-          <div>No Rooms!</div>
+          <h1 className="error">
+            <span>N</span>
+            <span>O</span>
+            <span>N</span>
+            <span>E</span>
+          </h1>
         )}
       </div>
     </>
