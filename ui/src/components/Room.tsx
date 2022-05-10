@@ -11,7 +11,9 @@ import RoomStatusDisplay from "./static-components/RoomStatus";
 import RoomPlatersDisplay from "./static-components/RoomPlayers";
 import RoomNameDisplay from "./static-components/RoomName";
 import CustomizedSnackbar from "./static-components/SnackBar";
+import Modal from "./dynamic-components/Modal";
 import { ISnackbar } from "../interfaces/ISnackbar";
+import IModal from "../interfaces/IModal";
 const Room = ({ room }: { room: IRoom }) => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
@@ -20,6 +22,11 @@ const Room = ({ room }: { room: IRoom }) => {
     open: false,
     message: "",
     severity: 'success',
+  });
+
+  const [modal, setModal] = useState<IModal>({
+    show: false,
+    password: "",
   });
 
   const handleChangeRoom = (roomName: string) => {
@@ -42,6 +49,7 @@ const Room = ({ room }: { room: IRoom }) => {
       if (room.isPrivate) {
         console.log("Room is private");
         setSnackbar({ message: "Room is private", open: true, severity: 'warning' });
+        setModal({ show: true, password: "haslo" });
       } else if (room.maxPlayers === room.numPlayers) {
         setSnackbar({ message: "Room is full", open: true, severity: 'error' });
       } else {
@@ -86,6 +94,10 @@ const Room = ({ room }: { room: IRoom }) => {
       </Grid>
       {
         snackbar.open ? <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} /> : null
+      }
+
+      {
+        modal.show ? <Modal show={modal.show} password={modal.password} setModal={setModal}/> : null
       }
 
     </Grid>

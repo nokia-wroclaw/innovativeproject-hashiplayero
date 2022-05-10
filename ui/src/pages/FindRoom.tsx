@@ -85,7 +85,7 @@ const FindRoom = () => {
               onChange={(event) => setSearchedName(event.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3} className="header-element element">
+          <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
             <GridOn />
             <FormControl
               variant="standard"
@@ -111,7 +111,7 @@ const FindRoom = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6} md={3} className="header-element element">
+          <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
             <Groups />
             <FormControl
               variant="standard"
