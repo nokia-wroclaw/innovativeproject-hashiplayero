@@ -11,6 +11,8 @@ $light_logo-secondary-color: #8b89ec;
 
 // @use "./components/waitingRoom/_waitingRoom.scss";
 @use "./components/_modal.scss";
+@use "./components/_roomData.scss";
+@use "./components/_logo.scss";
 
 @mixin display-flex ($direction, $spacing) {
     display: flex;
@@ -54,30 +56,6 @@ $light_logo-secondary-color: #8b89ec;
     }
 }
 
-.logo {
-    @include display-flex(row, center);
-    padding: 8px 16px;
-    margin: 24px;
-    transition: all 0.3s ease-out;
-    border-radius: 4px;
-    flex-grow: 1;
-    justify-content: flex-start;
-
-    background-color: #FFFFFF;
-
-    &:hover {
-        transition: all 0.3s ease-out;
-
-        .logo-first-half {
-            color: $light_secondary_button_color;
-        }
-
-        .logo-second-half {
-            color: $light_primary_button_color;
-        }
-    }
-}
-
 @keyframes gradient {
     0% {
         background-position: 0%
@@ -88,18 +66,6 @@ $light_logo-secondary-color: #8b89ec;
     }
 }
 
-.logo-inner {
-    display: flex;
-    cursor: pointer;
-}
-
-.logo-first-half {
-    color: $light_primary_button_color;
-}
-
-.logo-second-half {
-    color: $light_secondary_button_color;
-}
 
 .form-container {
     @include display-flex(column, center);
