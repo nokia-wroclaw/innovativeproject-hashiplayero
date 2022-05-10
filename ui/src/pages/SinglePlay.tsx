@@ -89,36 +89,6 @@ const SinglePlay = () => {
           <div className="form-element">
             <BoardInput value={values.boardSize} handleChange={handleChange("boardSize")} isAdmin={true} />
           </div>
-
-          <div className="form-elements">
-            <div className="form-element-checkbox">
-              <span>Time</span>
-              <Checkbox
-                checked={values.enableTimeLimit}
-                onChange={handleChange("enableTimeLimit")}
-                inputProps={{ 'aria-label': 'controlled' }}
-              />
-            </div>
-            <div className="form-element-time">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <MobileTimePicker
-                  views={["minutes", "seconds"]}
-                  ampm={false}
-                  inputFormat="mm:ss"
-                  mask="__:__"
-                  label="Minutes and seconds"
-                  value={values.timeLimit}
-                  disabled={values.enableTimeLimit}
-                  onChange={(newValue) => {
-                    if (newValue !== null) {
-                      setValues({ ...values, timeLimit: newValue });
-                    }
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
-            </div>
-          </div>
         </div>
 
         <Button

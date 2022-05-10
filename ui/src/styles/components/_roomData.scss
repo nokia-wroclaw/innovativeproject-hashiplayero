@@ -1,0 +1,52 @@
+.error {
+	font-weight: 900;
+	font-style: italic;
+	font-size: clamp(3rem, 45vmin, 12vw);
+	letter-spacing: 0.04em;
+	margin: 0;
+	color: #d1c4e9;
+	-webkit-text-stroke-width: 0.045em;
+	// -webkit-text-stroke-color: #474749;
+	transform: skew(-10deg);
+	display: flex;
+    margin-top: 140px;
+}
+
+.error span {
+	--t: 0.17em;
+	display: block;
+	text-shadow: 
+		0 0  #d1c4e9,
+		0 0  #b388ff,
+		0 0  #7c4dff,
+		0 0  #651fff,
+		0 0  #6200ea;
+	animation: animate 1800ms forwards var(--delay, 100ms);
+	transform: translate3d(var(--t), var(--t), 0);
+}
+
+.error span:nth-child(2) {
+	--delay: 300ms;
+}
+
+.error span:nth-child(3) {
+	--delay: 600ms;
+}
+
+.error span:nth-child(4) {
+	--delay: 900ms;
+}
+
+
+@keyframes animate {
+	to {
+		--t: -0.17em;
+		text-shadow: 
+        0.05em 0.05em  #d1c4e9,
+		0.08em 0.08em  #b388ff,
+		0.11em 0.11em  #7c4dff,
+		0.14em 0.14em #651fff,
+		0.17em 0.17em  #6200ea;
+		transform: translate3d(var(--t), var(--t), 0);
+	}
+}

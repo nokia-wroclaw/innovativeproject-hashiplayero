@@ -1,0 +1,78 @@
+$light_primary_background_color: #FFFFFF;
+
+$lighter_primary_button_color: #6c6af0;
+$light_primary_button_color: #5452E4;
+$light_primary_button_color-hover: #403eb4;
+
+$light_secondary_button_color: #7081A6;
+$light_secondary_button_color-hover: #374157;
+
+$light_logo-secondary-color: #8b89ec;
+
+@mixin display-flex ($direction, $spacing) {
+  display: flex;
+  align-items: center;
+  flex-direction: $direction;
+  justify-content: $spacing;
+}
+
+.logo::before {
+  transform: scaleX(0);
+  transform-origin: bottom right;
+}
+
+.logo:hover::before {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.logo::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  inset: 0 0 0 0;
+  background: hsl(200 100% 80%);
+  z-index: -1;
+  transition: transform .3s ease;
+}
+
+.logo {
+  @include display-flex(row, center);
+  padding: 8px 16px;
+  margin: 24px;
+  transition: all 0.3s ease-out;
+  border-radius: 4px;
+  flex-grow: 1;
+  justify-content: flex-start;
+
+  background-color: #FFFFFF;
+
+  &:hover {
+    transition: all 0.3s ease-out;
+
+    .logo-first-half {
+      color: $light_secondary_button_color;
+    }
+
+    .logo-second-half {
+      color: $light_primary_button_color;
+    }
+  }
+}
+
+.logo-inner {
+  display: flex;
+  cursor: pointer;
+}
+
+.logo-first-half {
+  color: $light_primary_button_color;
+}
+
+.logo-second-half {
+  color: $light_secondary_button_color;
+}

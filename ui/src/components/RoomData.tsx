@@ -158,35 +158,6 @@ const RoomData = ({
             <BoardInput value={values.boardSizeInput} handleChange={handleChange("boardSizeInput")} isAdmin={isAdmin} />
           </div>
 
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <h5>Enable Time Limit</h5>
-            <Checkbox
-              disabled={!isAdmin}
-              checked={values.enableTimeLimitInput}
-              onChange={handleChange("enableTimeLimitInput")}
-              inputProps={{ "aria-label": "controlled" }}
-            />
-          </div>
-
-          <div className="form-element">
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <MobileTimePicker
-                views={["minutes", "seconds"]}
-                ampm={false}
-                inputFormat="mm:ss"
-                mask="__:__"
-                label="Minutes and seconds"
-                value={values.timeLimitInput}
-                disabled={!isAdmin ? true : values.enableTimeLimitInput}
-                onChange={(newValue) => {
-                  if (newValue !== null) {
-                    setValues({ ...values, timeLimitInput: newValue });
-                  }
-                }}
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </LocalizationProvider>
-          </div>
           <Button
             className="m-2"
             onClick={() => {
