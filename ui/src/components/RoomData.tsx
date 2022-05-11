@@ -1,9 +1,7 @@
 import { IRoomAndBoard } from "../interfaces/IRoomAndBoard";
 import { IState } from "../interfaces/IState";
 import {
-  Button,
-  TextField,
-  Checkbox,
+  Button  
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
@@ -64,6 +62,7 @@ const RoomData = ({
     }
   };
 
+  // mają istnieć wszystkie wartości, jeśli nie chce zmieniać to ma być wysłane to samo co było
   const handleEditRoom = () => {
     if (webSocket !== undefined) {
       webSocket.send(

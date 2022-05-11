@@ -4,6 +4,7 @@ import userReducer from "./userSlice";
 import RoomsListReducer from "./RoomsListSlice";
 import RoomGameReducer from "./RoomGameSlice";
 import WebSocketReducer from "./WebSocketSlice";
+import StateMachineReducer from "./StateMachineSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,8 +13,9 @@ export const store = configureStore({
     RoomsList: RoomsListReducer,
     RoomGame: RoomGameReducer,
     webSocket: WebSocketReducer,
+    StateMachine: StateMachineReducer,
   },
-  middleware: getDefaultMiddleware =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),

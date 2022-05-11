@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Button,
-  TextField,
-  Checkbox,
+  Button
 } from "@mui/material";
-
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import DifficultyInput from "../components/dynamic-components/DifficultyInput";
