@@ -3,10 +3,8 @@ import { useSelector } from "react-redux";
 import RoomData from "../components/RoomData";
 import PlayerList from "../components/PlayerList";
 import { Grid } from "@mui/material";
-import { useAppDispatch } from "../store/hooks";
 
 const WaitingRoom = () => {
-  const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   let isAdmin = user.uuid === roomAndBoard.admin;
