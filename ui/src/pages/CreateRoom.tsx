@@ -31,7 +31,7 @@ const CreateRoom = () => {
     boardSizeInput: 10,
     timeLimitInput: new Date(0),
     enableTimeLimitInput: false,
-    isDisabled: true,
+    isDisabled: false,
   });
 
   const [snackbar, setSnackbar] = useState<ISnackbar>({

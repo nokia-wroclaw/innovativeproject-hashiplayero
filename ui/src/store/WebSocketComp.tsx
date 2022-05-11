@@ -5,9 +5,8 @@ import { useAppDispatch } from "./hooks";
 import { RootState } from "./store";
 import { createUser, updateUserName } from "./userSlice";
 import { setInitialRoomsList, updateRooms } from "./RoomsListSlice";
-import { IRoom, IRooms } from "../interfaces/IRoom";
+import { IRooms } from "../interfaces/IRoom";
 import {
-  setInitialRoomBoard,
   updateAsAdmin,
   updateCreateBoard,
   updateCreateRoom,
@@ -18,6 +17,7 @@ import {
   ICreateBoard,
   ICreateRoom,
 } from "../interfaces/IRoomAndBoard";
+import { enterAdmin, enterRoom } from "./StateMachineSlice";
 
 const WebSocketComp = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
@@ -116,6 +116,8 @@ const WebSocketComp = () => {
               },
             };
             dispatch(updateAsAdmin(updateAdminRoom));
+            dispatch(enterRoom());
+            dispatch(enterAdmin());
           } else {
             // Nie admin
             console.log("NIE - ADMIN");
@@ -136,6 +138,7 @@ const WebSocketComp = () => {
               },
             };
             dispatch(updateRoomGame(updateUserRoom));
+            dispatch(enterRoom());
           }
           dispatch(setInitialRoomsList());
         } else if (json?.response === "ChangeName") {
@@ -156,28 +159,6 @@ const WebSocketComp = () => {
     };
   }
 
-  // const handleCreateRoom = () => {
-  //   let nameOfRoom = "Pokoj-" + user.uuid;
-  //   if (webSocket !== undefined) {
-  //     webSocket.send(
-  //       JSON.stringify({
-  //         action: "createRoom",
-  //         userUuid: user.uuid,
-  //         data: {
-  //           name: nameOfRoom,
-  //           password: "haslo",
-  //           maxPlayers: 10,
-  //           isPrivate: true,
-  //           timeLimit: 60,
-  //           difficulty: 1,
-  //           boardSize: 10,
-  //         },
-  //       })
-  //     );
-  //   }
-  //   consoleLogWebSocket("Create Room");
-  // };
-
   const handleChangeUserName = () => {
     if (webSocket !== undefined) {
       webSocket.send(
@@ -192,72 +173,12 @@ const WebSocketComp = () => {
     }
   };
 
-  // mają istnieć wszystkie wartości, jeśli nie chce zmieniać to ma być wysłane to samo co było
-  // const handleEditRoom = () => {
-  //   if (webSocket !== undefined) {
-  //     webSocket.send(
-  //       JSON.stringify({
-  //         action: "editRoom",
-  //         userUuid: user.uuid,
-  //         data: {
-  //           name: roomAndBoard.name,
-  //           password: "haslo",
-  //           maxPlayers: 10,
-  //           isPrivate: true,
-  //           timeLimit: 60,
-  //           difficulty: 1,
-  //           boardSize: 10,
-  //         },
-  //       })
-  //     );
-  //   }
-  // };
-
-  const handleChangeNameUser = () => {
-    if (webSocket !== undefined) {
-      webSocket.send(
-        JSON.stringify({
-          action: "changeName",
-          userUuid: user.uuid,
-          data: {
-            newName: "nowaNazwa",
-          },
-        })
-      );
-    }
-  };
-
   const consoleLogWebSocket = (mess: string) => {
     console.log("WebSocket-> " + mess);
   };
 
   return (
     <>
-      {/* <div>{user.uuid}</div>
-      <div>{user.name}</div>
-      <br />
-      {rooms != null && rooms.length > 0 ? (
-        rooms.map((room: IRoom, index: number) => (
-          <div>
-            {room.name} -- {room.numPlayers}
-          </div>
-        ))
-      ) : (
-        <div>No Rooms</div>
-      )}
-      <br />
-      <div>
-        POKOJ:
-        {roomAndBoard.name} - {}
-        {roomAndBoard.members.length}
-      </div>
-      <button type="submit" onClick={handleCreateRoom}>
-        Create Room
-      </button>
-      <br />
-      <button type="submit" onClick={handleChangeNameUser}>
-        Change my Name
-      </button> */}
     </>
   );
 };
