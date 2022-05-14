@@ -68,6 +68,11 @@ func startGame(data interface{}, userUuid interface{}) {
 	roomName := data.(map[string]interface{})["roomName"].(string)
 	c := clientsMap[userUuid.(string)]
 	r := c.room
+	if r.gameOn {
+		rm := ResponeMessage{Respone: "startGame", Error: "Game already is started"}
+		sendToClient(c, rm)
+		return
+	}
 	if roomName != r.roomSettings.Name {
 		rm := ResponeMessage{Respone: "startGame", Error: "Wrong room name"}
 		sendToClient(c, rm)
@@ -82,14 +87,27 @@ func startGame(data interface{}, userUuid interface{}) {
 	r.gameData = make(map[string]UserGameState)
 	for client := range r.clients {
 		r.gameData[client.uuid] = UserGameState{
-			InGame:    false,
+			InGame:    true,
 			Correct:   false,
 			TimeStart: current_time,
 		}
 	}
-	updatedRoomMulticast(r)
+	r.gameOn = true
 	createBoard(data, userUuid)
+	updatedRoomMulticast(r)
 	updatedGameMulticast(r)
+	if r.roomSettings.MaxPlayers == 1 {
+		stateRm := ResponeMessage{Respone: "InSingleGame"}
+		sendToClient(c, stateRm)
+	} else {
+		stateRm := ResponeMessage{Respone: "InMultiGame"}
+		roomBroadcast(r, stateRm)
+	}
+}
+
+// cancel game and clear game data
+func cancelGame() {
+	return
 }
 
 // Message with informations about room and players in room
