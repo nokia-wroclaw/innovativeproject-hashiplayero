@@ -389,6 +389,10 @@ func (r *Room) run() {
 				changeName(payload["data"], payload["userUuid"])
 			case "startGame":
 				startGame(payload["data"], payload["userUuid"])
+			case "checkBoard":
+				checkBoard(payload["data"], payload["userUuid"])
+			case "finishGame":
+				userFinished(payload["data"], payload["userUuid"])
 			default:
 				rm := ResponeMessage{Respone: "Error", Error: "Wrong response"}
 				sendToClient(clientsMap[cid.Uuid], rm)
