@@ -99,12 +99,16 @@ func addRoom(data interface{}, userUuid interface{}) {
 	room.clients[c] = true
 	go room.run()
 	rm := ResponeMessage{Respone: "CreateRoom", Payload: room.roomSettings}
+	sendToClient(c, rm)
+	updatedRoomMulticast(room)
+	stateRm := ResponeMessage{Respone: "IsAdmin"}
+	sendToClient(c, stateRm)
+	stateRm = ResponeMessage{Respone: "InWaitingRoom"}
+	sendToClient(c, stateRm)
 	// if it is singleplayer game
 	if room.roomSettings.MaxPlayers == 1 {
 		startGame(data, userUuid)
 	}
-	sendToClient(c, rm)
-	updatedRoomMulticast(room)
 	lobbyBroadcast()
 }
 
@@ -112,6 +116,11 @@ func addRoom(data interface{}, userUuid interface{}) {
 func editRoom(data interface{}, userUuid interface{}) {
 	c := clientsMap[userUuid.(string)]
 	room := roomsMap[c.room.roomSettings.Name]
+	if room.gameOn {
+		rm := ResponeMessage{Respone: "EditRoom", Error: "Room can't be edited during the game"}
+		sendToClient(c, rm)
+		return
+	}
 	roomSettings := RoomSettings{}
 	roomSettings.Name = data.(map[string]interface{})["name"].(string)
 	roomSettings.Password = data.(map[string]interface{})["password"].(string)
@@ -155,26 +164,85 @@ func deleteRoom(roomName string, userUuid interface{}) {
 	for client := range room.clients {
 		client.room = lobby
 		lobby.clients[client] = true
+		stateRm := ResponeMessage{Respone: "ExitWaitingRoom"}
+		sendToClient(client, stateRm)
 	}
 	delete(roomsMap, room.roomSettings.Name)
+	stateRm := ResponeMessage{Respone: "ExitAdmin"}
+	sendToClient(clientsMap[userUuid.(string)], stateRm)
 	lobbyBroadcast()
+}
+
+// moves client to given room
+func changeRoom(data interface{}, userUuid interface{}) {
+	roomName := data.(map[string]interface{})["roomName"].(string)
+	c := clientsMap[userUuid.(string)]
+	if c.room.roomSettings.Name == roomName {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Client already is in this room"}
+		sendToClient(c, rm)
+		return
+	}
+	if c.room.roomSettings.Name != "lobby" && roomName != "lobby" {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Client must be in lobby to enter to the room"}
+		sendToClient(c, rm)
+		return
+	}
+	oldRoom := c.room
+	var oldRoomExist bool = true
+	newRoom, ok := roomsMap[roomName]
+	if !ok {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Room does not exist"}
+		sendToClient(c, rm)
+		return
+	}
+	delete(oldRoom.clients, c)
+	newRoom.clients[c] = true
+	c.room = newRoom
+	if oldRoom.roomSettings.Admin == c.uuid {
+		oldRoomExist = changeAdmin(oldRoom.roomSettings.Name, c.uuid)
+	}
+	if oldRoom.roomSettings.Name != "lobby" && oldRoomExist {
+		updatedRoomMulticast(oldRoom)
+	}
+	// to prevent double lobbyBroadcast because it is called in deleteRoom
+	if oldRoomExist {
+		lobbyBroadcast()
+	}
+	if newRoom.roomSettings.Name == "lobby" {
+		stateRm := ResponeMessage{Respone: "ExitWaitingRoom"}
+		sendToClient(c, stateRm)
+	} else {
+		updatedRoomMulticast(newRoom)
+		stateRm := ResponeMessage{Respone: "InWaitingRoom"}
+		sendToClient(c, stateRm)
+	}
 }
 
 // give admin to another user in this room if exist, if not then delete room
 // return false if room is deleted
 func changeAdmin(roomName string, userUuid interface{}) bool {
 	room := roomsMap[roomName]
+	if userUuid.(string) != room.roomSettings.Admin {
+		rm := ResponeMessage{Respone: "changeAdmin", Error: "User is not admin"}
+		sendToClient(clientsMap[userUuid.(string)], rm)
+		return true
+	}
+	oldAdmin := clientsMap[userUuid.(string)]
 	if len(room.clients) == 0 {
 		deleteRoom(roomName, userUuid)
 		return false
 	}
 	for client := range room.clients {
-		if client.uuid == room.roomSettings.Admin {
+		if client.uuid == oldAdmin.uuid {
 			continue
 		}
 		room.roomSettings.Admin = client.uuid
 		break
 	}
+	stateRm := ResponeMessage{Respone: "ExitAdmin"}
+	sendToClient(oldAdmin, stateRm)
+	stateRm = ResponeMessage{Respone: "IsAdmin"}
+	sendToClient(clientsMap[room.roomSettings.Admin], stateRm)
 	return true
 }
 
@@ -263,46 +331,6 @@ func collectDataForLobbyBroadcast() ResponeMessage {
 		rm.Payload = structTable
 	}
 	return rm
-}
-
-// moves client to given room
-func changeRoom(data interface{}, userUuid interface{}) {
-	roomName := data.(map[string]interface{})["roomName"].(string)
-	c := clientsMap[userUuid.(string)]
-	if c.room.roomSettings.Name == roomName {
-		rm := ResponeMessage{Respone: "changeRoom", Error: "Client already is in this room"}
-		sendToClient(c, rm)
-		return
-	}
-	if c.room.roomSettings.Name != "lobby" && roomName != "lobby" {
-		rm := ResponeMessage{Respone: "changeRoom", Error: "Client must be in lobby to enter to the room"}
-		sendToClient(c, rm)
-		return
-	}
-	oldRoom := c.room
-	var oldRoomExist bool = true
-	newRoom, ok := roomsMap[roomName]
-	if !ok {
-		rm := ResponeMessage{Respone: "changeRoom", Error: "Room does not exist"}
-		sendToClient(c, rm)
-		return
-	}
-	delete(oldRoom.clients, c)
-	newRoom.clients[c] = true
-	c.room = newRoom
-	if newRoom.roomSettings.Name != "lobby" {
-		updatedRoomMulticast(newRoom)
-	}
-	if oldRoom.roomSettings.Admin == c.uuid {
-		oldRoomExist = changeAdmin(oldRoom.roomSettings.Name, c.uuid)
-	}
-	if !oldRoomExist {
-		// return to prevent double lobbyBroadcast because it is called in deleteRoom
-		return
-	} else if oldRoom.roomSettings.Name != "lobby" {
-		updatedRoomMulticast(oldRoom)
-	}
-	lobbyBroadcast()
 }
 
 func (r *Room) run() {
