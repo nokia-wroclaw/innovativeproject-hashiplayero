@@ -65,9 +65,9 @@ func createBoard(data interface{}, userUuid interface{}) {
 }
 
 func startGame(data interface{}, userUuid interface{}) {
-	roomName := data.(map[string]interface{})["roomName"].(string)
 	c := clientsMap[userUuid.(string)]
-	r := c.room
+	roomName := c.room.roomSettings.Name
+	r := roomsMap[roomName]
 	if r.gameOn {
 		rm := ResponeMessage{Respone: "startGame", Error: "Game already is started"}
 		sendToClient(c, rm)

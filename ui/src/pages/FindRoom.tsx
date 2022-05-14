@@ -28,7 +28,7 @@ const FindRoom = () => {
   const [searchedSize, setSearchedSize] = useState("");
   const [searchedQuantity, setSearchedQuantity] = useState("");
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-  const { inRoom } = useSelector((state: RootState) => state.StateMachine);
+  const { inWaitingRoom } = useSelector((state: RootState) => state.StateMachine);
 
   // const [filteredRooms, setFilteredRooms] = useState<IRoom[]>([]);
 
@@ -43,10 +43,10 @@ const FindRoom = () => {
   };
 
   useEffect(() => {
-    if (inRoom) {
+    if (inWaitingRoom) {
       navigate(`/waitingroom/${roomAndBoard.name}`);
     }
-  }, [inRoom, navigate, roomAndBoard]);
+  }, [inWaitingRoom, navigate, roomAndBoard]);
 
   // useEffect(() => {
   //     filteredRooms = rooms.filter((room) => {
