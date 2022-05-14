@@ -15,6 +15,7 @@ import PasswordInput from "./dynamic-components/PasswordInput";
 import PlayersInput from "./dynamic-components/PlayersInput";
 import DifficultyInput from "./dynamic-components/DifficultyInput";
 import BoardInput from "./dynamic-components/BardSizeInput";
+import { exitRoom } from "../store/StateMachineSlice";
 
 const RoomData = ({
   room,
@@ -110,6 +111,7 @@ const RoomData = ({
         })
       );
       dispatch(setInitialRoomBoard());
+      dispatch(exitRoom());
       console.log("WebSocket-> Change Room");
     }
   };
