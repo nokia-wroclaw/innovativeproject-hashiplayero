@@ -19,8 +19,7 @@ export const StateMachineSlice = createSlice({
     },
     exitRoom: (state) => {
       return {
-        inRoom: false,
-        isAdmin: state.isAdmin,
+        ...state, isAdmin: false
       };
     },
     enterAdmin: (state) => {

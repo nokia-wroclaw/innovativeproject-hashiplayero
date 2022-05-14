@@ -7,7 +7,7 @@ import { Grid } from "@mui/material";
 const WaitingRoom = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-  let isAdmin = user.uuid === roomAndBoard.admin;
+  const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
 
   return (
     <>
