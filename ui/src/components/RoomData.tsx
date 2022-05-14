@@ -15,7 +15,7 @@ import PasswordInput from "./dynamic-components/PasswordInput";
 import PlayersInput from "./dynamic-components/PlayersInput";
 import DifficultyInput from "./dynamic-components/DifficultyInput";
 import BoardInput from "./dynamic-components/BardSizeInput";
-import { exitRoom } from "../store/StateMachineSlice";
+import { changeWaitingRoom } from "../store/StateMachineSlice";
 
 const RoomData = ({
   room,
@@ -84,7 +84,6 @@ const RoomData = ({
     }
   };
 
-
   const handleStartGame = () => {
     if (webSocket !== undefined) {
       webSocket.send(
@@ -92,7 +91,7 @@ const RoomData = ({
           action: "startGame",
           userUuid: user.uuid,
           data: {
-            roomName: roomAndBoard.name,
+            name: roomAndBoard.name,
           },
         })
       );
@@ -111,7 +110,7 @@ const RoomData = ({
         })
       );
       dispatch(setInitialRoomBoard());
-      dispatch(exitRoom());
+      dispatch(changeWaitingRoom(false));
       console.log("WebSocket-> Change Room");
     }
   };

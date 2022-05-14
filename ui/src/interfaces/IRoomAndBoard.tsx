@@ -7,10 +7,12 @@ export interface IRoomAndBoard {
   members: [];
   admin: string;
   array: [];
+  gameOn: boolean;
   settings: {
     difficulty: number;
     size: number;
   };
+  gameData: IGameData[];
 }
 
 export interface IDefaultRoomAndBoard {
@@ -32,4 +34,16 @@ export interface ICreateRoom {
   name: string;
   password: string;
   timeLimit: number;
+}
+
+export interface IGameData {
+  uuid: string;
+  UserGameState: IUserGameState;
+}
+
+export interface IUserGameState {
+  correct: boolean;
+  inGame: boolean;
+  solvingTime: number;
+  timeStart: string;
 }

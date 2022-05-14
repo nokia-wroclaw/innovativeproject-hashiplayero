@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Button
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import DifficultyInput from "../components/dynamic-components/DifficultyInput";
@@ -24,7 +22,10 @@ const SinglePlay = () => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-  
+  const { inSingleGame, isAdmin } = useSelector(
+    (state: RootState) => state.StateMachine
+  );
+
   const [values, setValues] = useState<State>({
     difficulty: 2,
     boardSize: 7,
@@ -67,22 +68,29 @@ const SinglePlay = () => {
   };
 
   useEffect(() => {
-    if (roomAndBoard.name !== "name" && roomAndBoard.array.length !== 0 && roomAndBoard.settings.size !== null) {
+    if (inSingleGame && isAdmin) {
       navigate(`${roomAndBoard.name}`);
     }
-  }, [roomAndBoard, navigate]);
+  }, [inSingleGame, isAdmin, roomAndBoard, navigate]);
 
   return (
     <>
       <div className="form-container paper">
         <div className="general-info">
-
           <div className="form-element">
-            <DifficultyInput value={values.difficulty} handleChange={handleChange("difficulty")} isAdmin={true} />
+            <DifficultyInput
+              value={values.difficulty}
+              handleChange={handleChange("difficulty")}
+              isAdmin={true}
+            />
           </div>
 
           <div className="form-element">
-            <BoardInput value={values.boardSize} handleChange={handleChange("boardSize")} isAdmin={true} />
+            <BoardInput
+              value={values.boardSize}
+              handleChange={handleChange("boardSize")}
+              isAdmin={true}
+            />
           </div>
         </div>
 
