@@ -1,43 +1,59 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import IStateMachine from "../interfaces/IStateMachine";
 import { RootState } from "./store";
 
 const initialState: IStateMachine = {
-  inRoom: false,
+  inWaitingRoom: false,
   isAdmin: false,
+  inMultiGame: false,
+  inSingleGame: false,
+  isBoardCorrect: false,
 };
 
 export const StateMachineSlice = createSlice({
   name: "StateMachine",
   initialState,
   reducers: {
-    enterRoom: (state) => {
+    changeWaitingRoom: (state, action: PayloadAction<boolean>) => {
       return {
-        inRoom: true,
-        isAdmin: state.isAdmin,
+        ...state,
+        inWaitingRoom: action.payload,
       };
     },
-    exitRoom: (state) => {
+    changeAdmin: (state, action: PayloadAction<boolean>) => {
       return {
-        ...state, isAdmin: false
+        ...state,
+        isAdmin: action.payload,
       };
     },
-    enterAdmin: (state) => {
+    changeMultiGame: (state, action: PayloadAction<boolean>) => {
       return {
-        inRoom: state.inRoom,
-        isAdmin: true,
+        ...state,
+        inMultiGame: action.payload,
       };
     },
-    exitAdmin: (state) => {
+    changeSingleGame: (state, action: PayloadAction<boolean>) => {
       return {
-        inRoom: state.inRoom,
-        isAdmin: false,
+        ...state,
+        inSingleGame: action.payload,
+      };
+    },
+    changeBoardCorrect: (state, action: PayloadAction<boolean>) => {
+      return {
+        ...state,
+        isBoardCorrect: action.payload,
       };
     },
   },
 });
 
-export const { enterRoom, exitRoom, enterAdmin, exitAdmin } = StateMachineSlice.actions;
+export const {
+  changeWaitingRoom,
+  changeAdmin,
+  changeMultiGame,
+  changeSingleGame,
+  changeBoardCorrect,
+} = StateMachineSlice.actions;
 
 export const selectRooms = (state: RootState) => state.RoomGame;
 

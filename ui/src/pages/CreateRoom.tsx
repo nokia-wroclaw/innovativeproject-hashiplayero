@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { IState } from "../interfaces/IState";
-import {
-  Button,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -16,7 +14,6 @@ import { ISnackbar } from "../interfaces/ISnackbar";
 import CustomizedSnackbar from "../components/static-components/SnackBar";
 
 const CreateRoom = () => {
-
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
@@ -37,9 +34,9 @@ const CreateRoom = () => {
   const [snackbar, setSnackbar] = useState<ISnackbar>({
     open: false,
     message: "",
-    severity: 'success',
+    severity: "success",
   });
-  
+
   useEffect(() => {
     if (roomAndBoard.name !== "name" && roomAndBoard.name.length > 0) {
       navigate(`/waitingroom/${roomAndBoard.name}`);
@@ -60,7 +57,11 @@ const CreateRoom = () => {
 
   const handleCreateRoom = () => {
     if (values.roomNameInput === "") {
-      setSnackbar({ message: "Room name cannot be empty!", open: true, severity: 'error' });
+      setSnackbar({
+        message: "Room name cannot be empty!",
+        open: true,
+        severity: "error",
+      });
     } else {
       let nameOfRoom = values.roomNameInput + user.uuid;
       if (webSocket !== undefined) {
@@ -89,28 +90,42 @@ const CreateRoom = () => {
     <>
       <div className="form-container paper">
         <div className="general-info">
-
           <div className="form-element">
-            <NameInput value={values.roomNameInput} handleChange={handleChange("roomNameInput")} isAdmin={true} />
+            <NameInput
+              value={values.roomNameInput}
+              handleChange={handleChange("roomNameInput")}
+              isAdmin={true}
+            />
           </div>
-
           <div className="form-element">
-            <PasswordInput value={values.passwordInput} handleChange={handleChange("passwordInput")} isAdmin={true} />
+            <PasswordInput
+              value={values.passwordInput}
+              handleChange={handleChange("passwordInput")}
+              isAdmin={true}
+            />
           </div>
-
           <div className="form-element">
-            <PlayersInput value={values.amountOfPlayersInput} handleChange={handleSliderChange} isAdmin={true} />
+            <PlayersInput
+              value={values.amountOfPlayersInput}
+              handleChange={handleSliderChange}
+              isAdmin={true}
+            />
           </div>
-
           <div className="form-element">
-            <DifficultyInput value={values.difficultyInput} handleChange={handleChange("difficultyInput")} isAdmin={true} />
+            <DifficultyInput
+              value={values.difficultyInput}
+              handleChange={handleChange("difficultyInput")}
+              isAdmin={true}
+            />
           </div>
-
           <div className="form-element">
-            <BoardInput value={values.boardSizeInput} handleChange={handleChange("boardSizeInput")} isAdmin={true} />
+            <BoardInput
+              value={values.boardSizeInput}
+              handleChange={handleChange("boardSizeInput")}
+              isAdmin={true}
+            />
           </div>
         </div>
-
         <Button
           onClick={() => {
             handleCreateRoom();
@@ -119,10 +134,9 @@ const CreateRoom = () => {
         >
           Create!
         </Button>
-
-        {
-          snackbar.open ? <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} /> : null
-        }
+        {snackbar.open ? (
+          <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+        ) : null}
       </div>
     </>
   );

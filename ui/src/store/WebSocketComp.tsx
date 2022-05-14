@@ -10,23 +10,29 @@ import {
   updateAsAdmin,
   updateCreateBoard,
   updateCreateRoom,
+  updateGameData,
   updateRoomGame,
 } from "./RoomGameSlice";
 import {
   IDefaultRoomAndBoard,
   ICreateBoard,
   ICreateRoom,
+  IGameData,
 } from "../interfaces/IRoomAndBoard";
-import { enterAdmin, enterRoom } from "./StateMachineSlice";
+import {
+  changeWaitingRoom,
+  changeAdmin,
+  changeMultiGame,
+  changeSingleGame,
+  changeBoardCorrect,
+} from "./StateMachineSlice";
 
 const WebSocketComp = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
-  const { rooms } = useSelector((state: RootState) => state.RoomsList);
-  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
+  const dispatch = useAppDispatch();
 
   // websocket
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const dispatch = useAppDispatch();
 
   if (webSocket !== undefined) {
     webSocket.onmessage = (e) => {
@@ -41,113 +47,151 @@ const WebSocketComp = () => {
         }
         console.log(json);
 
-        if (json?.response === "CreateUser") {
-          // Dodanie playera
-          consoleLogWebSocket("Adding new User");
-          let newUser: IDefaultUser = {
-            user: {
-              uuid: json.Payload.uuid,
+        switch (json?.response) {
+          case "CreateUser": // dodanie uzytkownika
+            consoleLogWebSocket("CreateUser");
+            let newUser: IDefaultUser = {
+              user: {
+                uuid: json.Payload.uuid,
+                name: json.Payload.name,
+              },
+            };
+            dispatch(createUser(newUser));
+            break;
+          case "CreateBoard":
+            consoleLogWebSocket("CreateBoard");
+            let createBoard: ICreateBoard = {
+              array: json.Payload.array,
+              settings: {
+                difficulty: json.Payload.settings.difficulty,
+                size: json.Payload.settings.size,
+              },
+            };
+            dispatch(updateCreateBoard(createBoard));
+            dispatch(setInitialRoomsList());
+            break;
+          case "CreateRoom":
+            consoleLogWebSocket("CreateRoom");
+            let createRoom: ICreateRoom = {
+              admin: json.Payload.admin,
+              isPrivate: json.Payload.isPrivate,
+              maxPlayers: json.Payload.maxPlayers,
               name: json.Payload.name,
-            },
-          };
-          dispatch(createUser(newUser));
-        } else if (json?.response === "CreateBoard") {
-          // Create board
-          consoleLogWebSocket("Create Board");
-          // dispatch(setInitialRoomBoard());
-
-          let createBoard: ICreateBoard = {
-            array: json.Payload.array,
-            settings: {
-              difficulty: json.Payload.settings.difficulty,
-              size: json.Payload.settings.size,
-            },
-          };
-
-          dispatch(updateCreateBoard(createBoard));
-
-          // usun liste pokoi - lobby, bo juz ich nie sprawda i nie odswieza
-          dispatch(setInitialRoomsList());
-        } else if (json?.response === "CreateRoom") {
-          // Create room
-          consoleLogWebSocket("Create Room");
-
-          let createRoom: ICreateRoom = {
-            admin: json.Payload.admin,
-            isPrivate: json.Payload.isPrivate,
-            maxPlayers: json.Payload.maxPlayers,
-            name: json.Payload.name,
-            password: json.Payload.password,
-            timeLimit: json.Payload.timeLimit,
-          };
-
-          dispatch(updateCreateRoom(createRoom));
-
-          // usun liste pokoi - lobby, bo juz ich nie sprawda i nie odswieza
-          dispatch(setInitialRoomsList());
-        } else if (json?.response === "RoomsList") {
-          // lista pokoji w pokoju default 0
-          consoleLogWebSocket("Refresh rooms");
-          let newRooms: IRooms = {
-            rooms: json.Payload,
-          };
-          dispatch(updateRooms(newRooms));
-        } else if (json?.response === "UpdateRoom") {
-          // wejscie do pokoju lub aktualizacja nowych danych dla wszystkich
-          consoleLogWebSocket("Update Room");
-
-          // if admin
-          if (user.uuid === json.Payload.admin) {
-            console.log("ADMIN");
-            let updateAdminRoom: IDefaultRoomAndBoard = {
-              roomAndBoard: {
-                name: json.Payload.name,
-                maxPlayers: json.Payload.maxPlayers,
-                isPrivate: json.Payload.isPrivate,
-                password: "",
-                timeLimit: -1,
-                array: [],
-                admin: user.name,
-                settings: {
-                  difficulty: json.Payload.difficulty,
-                  size: json.Payload.boardSize,
-                },
-                members: json.Payload.Players,
-              },
+              password: json.Payload.password,
+              timeLimit: json.Payload.timeLimit,
             };
-            dispatch(updateAsAdmin(updateAdminRoom));
-            dispatch(enterRoom());
-            dispatch(enterAdmin());
-          } else {
-            // Nie admin
-            console.log("NIE - ADMIN");
-            let updateUserRoom: IDefaultRoomAndBoard = {
-              roomAndBoard: {
-                name: json.Payload.name,
-                maxPlayers: json.Payload.maxPlayers,
-                isPrivate: json.Payload.isPrivate,
-                password: "",
-                timeLimit: -1,
-                array: [],
-                admin: "",
-                settings: {
-                  difficulty: json.Payload.difficulty,
-                  size: json.Payload.boardSize,
-                },
-                members: json.Payload.Players,
-              },
+            dispatch(updateCreateRoom(createRoom));
+            dispatch(setInitialRoomsList());
+            break;
+          case "RoomsList":
+            consoleLogWebSocket("RoomsList");
+            let newRooms: IRooms = {
+              rooms: json.Payload,
             };
-            dispatch(updateRoomGame(updateUserRoom));
-            dispatch(enterRoom());
-          }
-          dispatch(setInitialRoomsList());
-        } else if (json?.response === "ChangeName") {
-          // Zmiana nazwy pokoju
-          consoleLogWebSocket("Change User Name");
-          dispatch(updateUserName(json.Payload.name));
-        } else {
-          consoleLogWebSocket("Incorrect");
-          console.log(e.data);
+            dispatch(updateRooms(newRooms));
+            break;
+          case "UpdateRoom":
+            consoleLogWebSocket("UpdateRoom");
+            if (user.uuid === json.Payload.admin) {
+              consoleLogWebSocket("ADMIN");
+              let updateAdminRoom: IDefaultRoomAndBoard = {
+                roomAndBoard: {
+                  name: json.Payload.name,
+                  maxPlayers: json.Payload.maxPlayers,
+                  isPrivate: json.Payload.isPrivate,
+                  password: "",
+                  timeLimit: -1,
+                  array: [],
+                  gameOn: json.Payload.gameOn,
+                  admin: json.Payload.admin,
+                  settings: {
+                    difficulty: json.Payload.difficulty,
+                    size: json.Payload.boardSize,
+                  },
+                  members: json.Payload.Players,
+                  gameData: [],
+                },
+              };
+              dispatch(updateAsAdmin(updateAdminRoom));
+            } else {
+              consoleLogWebSocket("GRACZ - NIE ADMIN");
+              let updateUserRoom: IDefaultRoomAndBoard = {
+                roomAndBoard: {
+                  name: json.Payload.name,
+                  maxPlayers: json.Payload.maxPlayers,
+                  isPrivate: json.Payload.isPrivate,
+                  password: "",
+                  timeLimit: -1,
+                  array: [],
+                  gameOn: false,
+                  admin: "",
+                  settings: {
+                    difficulty: json.Payload.difficulty,
+                    size: json.Payload.boardSize,
+                  },
+                  members: json.Payload.Players,
+                  gameData: [],
+                },
+              };
+              dispatch(updateRoomGame(updateUserRoom));
+            }
+            dispatch(setInitialRoomsList());
+            break;
+          case "UpdateGameData":
+            consoleLogWebSocket("UpdateGameData");
+            // if board is correct for current user set true
+            let currentUserData: IGameData = json.Payload.find(
+              (elem: IGameData) => elem.uuid === user.uuid
+            );
+            if (currentUserData !== null) {
+              dispatch(
+                changeBoardCorrect(currentUserData.UserGameState.correct)
+              );
+              dispatch(changeMultiGame(currentUserData.UserGameState.inGame));
+            }
+            dispatch(updateGameData(json.Payload));
+            break;
+          case "ChangeName":
+            consoleLogWebSocket("ChangeName");
+            dispatch(updateUserName(json.Payload.name));
+            break;
+          // STATE MACHINE
+          case "InWaitingRoom":
+            consoleLogWebSocket("InWaitingRoom");
+            dispatch(changeWaitingRoom(true));
+            break;
+          case "ExitWaitingRoom":
+            consoleLogWebSocket("ExitWaitingRoom");
+            dispatch(changeWaitingRoom(false));
+            break;
+          case "IsAdmin":
+            consoleLogWebSocket("IsAdmin");
+            dispatch(changeAdmin(true));
+            break;
+          case "ExitAdmin":
+            consoleLogWebSocket("ExitAdmin");
+            dispatch(changeAdmin(false));
+            break;
+          case "InSingleGame":
+            consoleLogWebSocket("InSingleGame");
+            dispatch(changeSingleGame(true));
+            break;
+          case "ExitSingleGame":
+            consoleLogWebSocket("ExitSingleGame");
+            dispatch(changeSingleGame(false));
+            break;
+          case "InMultiGame":
+            consoleLogWebSocket("InMultiGame");
+            dispatch(changeMultiGame(true));
+            break;
+          case "ExitMultiGame":
+            consoleLogWebSocket("ExitMultiGame");
+            dispatch(changeMultiGame(false));
+            break;
+          default:
+            consoleLogWebSocket("Incorrect");
+            console.log(e.data);
+            break;
         }
       }
     };
@@ -177,10 +221,7 @@ const WebSocketComp = () => {
     console.log("WebSocket-> " + mess);
   };
 
-  return (
-    <>
-    </>
-  );
+  return <></>;
 };
 
 export default WebSocketComp;

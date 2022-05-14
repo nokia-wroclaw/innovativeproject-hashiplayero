@@ -1,9 +1,9 @@
 interface IStateMachine {
-    // inWaitingRoom: boolean;
+    inWaitingRoom: boolean;
     isAdmin: boolean;
-    inRoom: boolean; // out of date
-    // inSingleGame: boolean;
-    // inMultiGame: boolean;
+    inSingleGame: boolean;
+    inMultiGame: boolean;
+    isBoardCorrect: boolean;
 }
 
 export default IStateMachine;
