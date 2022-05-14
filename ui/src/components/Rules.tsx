@@ -5,7 +5,7 @@ interface IRules {
     description: string;
     image: string;
     id: number;
-  }
+}
 
 const Rules = () => {
 
@@ -28,7 +28,7 @@ const Rules = () => {
         {
             header: "What if I make a mistake?",
             description: "Don't worry. In case you make any mistakes you can just delete all of the bridges between same islands. " +
-                "For example, if you make 2 bridges to a island marked as 1, you can just try to add another bridge. Bridges between those islands will disappear " + 
+                "For example, if you make 2 bridges to a island marked as 1, you can just try to add another bridge. Bridges between those islands will disappear " +
                 "and you will be able to start over.",
             image: "3",//Image showing process od deleting bridges
             id: 3,
@@ -43,17 +43,20 @@ const Rules = () => {
 
     return (
         <>
-            <h1>Rules</h1>
-            {
-                rules.map((r) => (
-                    <div key={r.id} data-testid='rule-id'>
-                        <h3>{r.header}</h3>
-                        <p>{r.description}</p>
-                        <img src={r.image} alt="Rule pic"></img>
-                    </div>
-                ))
-
-            }
+            <div className="paper contact">
+                <div className="title">
+                    <h1>Rules</h1>
+                </div>
+                {
+                    rules.map((r) => (
+                        <div key={r.id} data-testid='rule-id'>
+                            <h3 className="sub-title">{r.header}</h3>
+                            <p className="contact-text">{r.description}</p>
+                            <img className="center" src={r.image} alt="Rule pic"></img>
+                        </div>
+                    ))
+                }
+            </div>
         </>
     );
 }

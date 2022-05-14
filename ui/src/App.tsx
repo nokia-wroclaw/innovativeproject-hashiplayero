@@ -15,6 +15,7 @@ import Rules from "./components/Rules";
 import Game from "./pages/Game";
 import WaitingRoom from "./pages/WaitingRoom";
 import WebSocketComp from "./store/WebSocketComp";
+import Footer from "./components/Footer";
 
 class App extends Component {
   render() {
@@ -37,6 +38,7 @@ class App extends Component {
               <Route path="/waitingroom/:waitingroomId" element={<WaitingRoom />} />
             </Routes>
         </div>
+        <Footer/>
       </div>
       </ThemeProvider>
     );
