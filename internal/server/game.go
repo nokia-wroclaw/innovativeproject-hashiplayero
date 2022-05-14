@@ -96,6 +96,7 @@ func startGame(data interface{}, userUuid interface{}) {
 	createBoard(data, userUuid)
 	updatedRoomMulticast(r)
 	updatedGameMulticast(r)
+	lobbyBroadcast()
 	if r.roomSettings.MaxPlayers == 1 {
 		stateRm := ResponeMessage{Respone: "InSingleGame"}
 		sendToClient(c, stateRm)
@@ -146,7 +147,7 @@ func userFinished(data interface{}, userUuid interface{}) {
 	// check if game should be finished
 	finished := true
 	for client := range r.clients {
-		if r.gameData[client.uuid].InGame == true {
+		if r.gameData[client.uuid].InGame {
 			finished = false
 		}
 	}
@@ -163,14 +164,16 @@ func finishGame(r *Room) {
 	r.boardData.Array = nil
 	r.gameOn = false
 	updatedRoomMulticast(r)
+	lobbyBroadcast()
 }
 
 // Cancel game and clear game data
+/*
 func cancelGame() {
-	// finishGame()
+	finishGame()
 	return
 }
-
+*/
 // Message with informations about room and players in room
 func updatedGameMulticast(room *Room) {
 	var userGameData UserGameData

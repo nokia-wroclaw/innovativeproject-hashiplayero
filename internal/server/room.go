@@ -176,6 +176,7 @@ func deleteRoom(roomName string, userUuid interface{}) {
 // moves client to given room
 func changeRoom(data interface{}, userUuid interface{}) {
 	roomName := data.(map[string]interface{})["roomName"].(string)
+	roomPassword := data.(map[string]interface{})["password"].(string)
 	c := clientsMap[userUuid.(string)]
 	if c.room.roomSettings.Name == roomName {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Client already is in this room"}
@@ -192,6 +193,21 @@ func changeRoom(data interface{}, userUuid interface{}) {
 	newRoom, ok := roomsMap[roomName]
 	if !ok {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Room does not exist"}
+		sendToClient(c, rm)
+		return
+	}
+	if newRoom.roomSettings.Password != roomPassword {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Wrong password"}
+		sendToClient(c, rm)
+		return
+	}
+	if len(newRoom.clients) == newRoom.roomSettings.MaxPlayers {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Max players in room"}
+		sendToClient(c, rm)
+		return
+	}
+	if newRoom.gameOn {
+		rm := ResponeMessage{Respone: "changeRoom", Error: "Room has an active game"}
 		sendToClient(c, rm)
 		return
 	}
@@ -244,6 +260,33 @@ func changeAdmin(roomName string, userUuid interface{}) bool {
 	stateRm = ResponeMessage{Respone: "IsAdmin"}
 	sendToClient(clientsMap[room.roomSettings.Admin], stateRm)
 	return true
+}
+
+// kick user from room to lobby
+func kickUser(data interface{}, userUuid interface{}) {
+	userToKick := data.(map[string]interface{})["userToKick"].(string)
+	c := clientsMap[userUuid.(string)]
+	r := c.room
+	if c.uuid != r.roomSettings.Admin {
+		rm := ResponeMessage{Respone: "kickUser", Error: "Only admin can kick users"}
+		sendToClient(c, rm)
+		return
+	}
+	for _, client := range clientsMap {
+		if client.name == userToKick && client.room.roomSettings.Name == r.roomSettings.Name {
+			kick := ClientKick{RoomName: "lobby",
+				Password: ""}
+			info, _ := json.MarshalIndent(kick, "", "  ")
+			var payload map[string]interface{}
+			_ = json.Unmarshal(info, &payload)
+			changeRoom(payload, client.uuid)
+			rm := ResponeMessage{Respone: "kickUser", Error: "You have been kicked from the room"}
+			sendToClient(client, rm)
+			return
+		}
+	}
+	rm := ResponeMessage{Respone: "kickUser", Error: "Wrong user name"}
+	sendToClient(c, rm)
 }
 
 // Send given json to all clients in given room
@@ -393,6 +436,8 @@ func (r *Room) run() {
 				checkBoard(payload["data"], payload["userUuid"])
 			case "finishGame":
 				userFinished(payload["data"], payload["userUuid"])
+			case "kickUser":
+				kickUser(payload["data"], payload["userUuid"])
 			default:
 				rm := ResponeMessage{Respone: "Error", Error: "Wrong response"}
 				sendToClient(clientsMap[cid.Uuid], rm)
