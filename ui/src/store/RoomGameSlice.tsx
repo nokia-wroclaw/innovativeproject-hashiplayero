@@ -67,10 +67,32 @@ export const RoomBoardSlice = createSlice({
           ...state.roomAndBoard,
           maxPlayers: action.payload.roomAndBoard.maxPlayers,
           members: action.payload.roomAndBoard.members,
+          isPrivate: action.payload.roomAndBoard.isPrivate,
+          password: action.payload.roomAndBoard.password,
+          gameOn: action.payload.roomAndBoard.gameOn,
           settings: {
             difficulty: action.payload.roomAndBoard.settings.difficulty,
             size: action.payload.roomAndBoard.settings.size,
           },
+        },
+      };
+    },
+    updateAsPlayer: (state, action: PayloadAction<IDefaultRoomAndBoard>) => {
+      return {
+        ...state,
+        roomAndBoard: {
+          ...state.roomAndBoard,
+          maxPlayers: action.payload.roomAndBoard.maxPlayers,
+          members: action.payload.roomAndBoard.members,
+          isPrivate: action.payload.roomAndBoard.isPrivate,
+          settings: {
+            difficulty: action.payload.roomAndBoard.settings.difficulty,
+            size: action.payload.roomAndBoard.settings.size,
+          },
+          admin: action.payload.roomAndBoard.admin,
+          gameOn: action.payload.roomAndBoard.gameOn,
+          name: action.payload.roomAndBoard.name,
+          timeLimit: action.payload.roomAndBoard.timeLimit,
         },
       };
     },
@@ -93,6 +115,7 @@ export const {
   updateCreateRoom,
   updateCreateBoard,
   updateGameData,
+  updateAsPlayer,
 } = RoomBoardSlice.actions;
 
 export const selectRooms = (state: RootState) => state.RoomGame;

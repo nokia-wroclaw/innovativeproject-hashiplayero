@@ -5,11 +5,13 @@ import PlayerList from "../components/PlayerList";
 import { Grid } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../store/hooks";
 
 const WaitingRoom = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { inWaitingRoom } = useSelector(
+    (state: RootState) => state.StateMachine
+  );
+  const { isAdmin, inMultiGame } = useSelector(
     (state: RootState) => state.StateMachine
   );
   const navigate = useNavigate();
@@ -18,7 +20,10 @@ const WaitingRoom = () => {
     if (!inWaitingRoom) {
       navigate("/");
     }
-  }, [inWaitingRoom, navigate]);
+    if (inMultiGame) {
+      navigate(`/multiplayer/${roomAndBoard.name}`);
+    }
+  }, [inWaitingRoom, navigate, roomAndBoard, inMultiGame, isAdmin]);
 
   return (
     <>
