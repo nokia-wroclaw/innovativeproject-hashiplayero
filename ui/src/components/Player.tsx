@@ -3,13 +3,18 @@ import { IconButton } from "@mui/material";
 import { PersonRemove } from "@mui/icons-material";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
+import { IGameData } from "../interfaces/IRoomAndBoard";
 
-const Player = ({ player }: { player: IMember }) => {
+const Player = ({
+  player,
+  userGameData,
+}: {
+  player: IMember;
+  userGameData: IGameData | undefined;
+}) => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const { isAdmin } = useSelector(
-    (state: RootState) => state.StateMachine
-  );
+  const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
 
   const handleKickPlayer = () => {
     if (webSocket !== undefined && isAdmin) {
@@ -47,6 +52,28 @@ const Player = ({ player }: { player: IMember }) => {
           >
             <PersonRemove />
           </IconButton>
+        </div>
+        <div>
+          {userGameData !== undefined ? (
+            <>
+              {userGameData.UserGameState.correct ? (
+                <div>TRUE</div>
+              ) : (
+                <div>FALSE</div>
+              )}
+              {userGameData.UserGameState.inGame ? (
+                <div>TRUE</div>
+              ) : (
+                <div>FALSE</div>
+              )}
+              {userGameData.UserGameState.solvingTime === 0 ? (
+                <div>NOT END</div>
+              ) : (
+                <div>{userGameData.UserGameState.solvingTime} seconds</div>
+              )}
+              {userGameData.UserGameState.timeStart}
+            </>
+          ) : null}
         </div>
       </div>
     </div>
