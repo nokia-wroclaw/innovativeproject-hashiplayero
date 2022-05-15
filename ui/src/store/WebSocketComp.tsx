@@ -30,6 +30,7 @@ import {
 const WebSocketComp = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const dispatch = useAppDispatch();
+  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
   // websocket
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
@@ -147,13 +148,22 @@ const WebSocketComp = () => {
               dispatch(
                 changeBoardCorrect(currentUserData.UserGameState.correct)
               );
-              dispatch(changeMultiGame(currentUserData.UserGameState.inGame));
+              if (roomAndBoard.maxPlayers === 1) {
+                dispatch(
+                  changeSingleGame(currentUserData.UserGameState.inGame)
+                );
+              } else {
+                dispatch(changeMultiGame(currentUserData.UserGameState.inGame));
+              }
             }
             dispatch(updateGameData(json.Payload));
             break;
           case "ChangeName":
             consoleLogWebSocket("ChangeName");
             dispatch(updateUserName(json.Payload.name));
+            break;
+          case "EditRoom":
+            consoleLogWebSocket("EditRoom");
             break;
           // STATE MACHINE
           case "InWaitingRoom":

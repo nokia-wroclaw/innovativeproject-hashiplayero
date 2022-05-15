@@ -18,6 +18,9 @@ const CreateRoom = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const navigate = useNavigate();
+  const { inWaitingRoom } = useSelector(
+    (state: RootState) => state.StateMachine
+  );
 
   const [values, setValues] = useState<IState>({
     amountOfPlayersInput: 2,
@@ -38,10 +41,10 @@ const CreateRoom = () => {
   });
 
   useEffect(() => {
-    if (roomAndBoard.name !== "name" && roomAndBoard.name.length > 0) {
+    if (inWaitingRoom) {
       navigate(`/waitingroom/${roomAndBoard.name}`);
     }
-  }, [roomAndBoard, navigate]);
+  }, [inWaitingRoom, navigate, roomAndBoard]);
 
   const handleChange = (prop: keyof IState) => (event: any) => {
     if (prop === "enableTimeLimitInput") {
@@ -73,7 +76,7 @@ const CreateRoom = () => {
               name: nameOfRoom,
               password: values.passwordInput,
               maxPlayers: values.amountOfPlayersInput,
-              isPrivate: values.isDisabled,
+              isPrivate: false,
               timeLimit: values.timeLimitInput.getMinutes(),
               difficulty: values.difficultyInput,
               boardSize: values.boardSizeInput,
