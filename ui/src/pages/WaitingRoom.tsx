@@ -31,7 +31,10 @@ const WaitingRoom = () => {
       <Grid container className="waiting-room-header">
         {/* <div className="form-elements"> */}
         <RoomData room={roomAndBoard} key="roomData" />
-        <PlayerList players={roomAndBoard.members} />
+        <PlayerList
+          players={roomAndBoard.members}
+          gameData={roomAndBoard.gameData}
+        />
         {/* </div> */}
       </Grid>
     </>
