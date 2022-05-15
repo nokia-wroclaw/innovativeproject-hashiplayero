@@ -20,24 +20,28 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={lightTheme}>
-      <div className="body">
-        <HeaderBar />
-        <WebSocketComp />
-        <div className="main-content">
+        <div className="body">
+          <HeaderBar />
+          <WebSocketComp />
+          <div className="main-content">
             <Suspense fallback={<div>Loading...</div>}></Suspense>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/singleplay" element={<SinglePlay />} ></Route>
+              <Route path="/singleplay" element={<SinglePlay />} />
               <Route path="/singleplay/:roomId" element={<Game />} />
               <Route path="/createroom" element={<CreateRoom />} />
               <Route path="/findroom" element={<FindRoom />} />
               <Route path="/faq" element={<Faq />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/rules" element={<Rules />} />
-              <Route path="/waitingroom/:waitingroomId" element={<WaitingRoom />} />
+              <Route
+                path="/waitingroom/:waitingroomId"
+                element={<WaitingRoom />}
+              />
+              <Route path="/multiplayer/:roomId" element={<Game />} />
             </Routes>
+          </div>
         </div>
-      </div>
       </ThemeProvider>
     );
   }

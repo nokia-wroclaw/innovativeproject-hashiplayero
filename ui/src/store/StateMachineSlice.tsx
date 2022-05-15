@@ -14,6 +14,9 @@ export const StateMachineSlice = createSlice({
   name: "StateMachine",
   initialState,
   reducers: {
+    setInitialState: () => {
+      return initialState;
+    },
     changeWaitingRoom: (state, action: PayloadAction<boolean>) => {
       return {
         ...state,
@@ -53,6 +56,7 @@ export const {
   changeMultiGame,
   changeSingleGame,
   changeBoardCorrect,
+  setInitialState
 } = StateMachineSlice.actions;
 
 export const selectRooms = (state: RootState) => state.RoomGame;

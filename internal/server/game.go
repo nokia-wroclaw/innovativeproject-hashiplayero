@@ -151,10 +151,9 @@ func userFinished(data interface{}, userUuid interface{}) {
 			finished = false
 		}
 	}
+	updatedGameMulticast(r)
 	if finished {
 		finishGame(r)
-	} else {
-		updatedGameMulticast(r)
 	}
 }
 
