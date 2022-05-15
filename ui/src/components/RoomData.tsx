@@ -1,8 +1,6 @@
 import { IRoomAndBoard } from "../interfaces/IRoomAndBoard";
 import { IState } from "../interfaces/IState";
-import {
-  Button  
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { useEffect, useState } from "react";
@@ -17,17 +15,12 @@ import DifficultyInput from "./dynamic-components/DifficultyInput";
 import BoardInput from "./dynamic-components/BardSizeInput";
 import { changeWaitingRoom } from "../store/StateMachineSlice";
 
-const RoomData = ({
-  room,
-  isAdmin,
-}: {
-  room: IRoomAndBoard;
-  isAdmin: boolean;
-}) => {
+const RoomData = ({ room }: { room: IRoomAndBoard }) => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const dispatch = useAppDispatch();
+  const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
 
   const [values, setValues] = useState<IState>({
     amountOfPlayersInput: roomAndBoard.maxPlayers,
@@ -106,6 +99,7 @@ const RoomData = ({
           userUuid: user.uuid,
           data: {
             roomName: "lobby",
+            password: "",
           },
         })
       );
@@ -129,35 +123,52 @@ const RoomData = ({
     }
   };
 
-
   return (
     <>
       <div className="form-container paper">
         <div className="general-info">
-
           <div className="form-element">
-            <NameInput value={values.roomNameInput} handleChange={handleChange("roomNameInput")} isAdmin={false} />
+            <NameInput
+              value={values.roomNameInput}
+              handleChange={handleChange("roomNameInput")}
+              isAdmin={false}
+            />
           </div>
 
-          {
-            isAdmin ?
-              <div className="form-element">
-                <PasswordInput value={values.passwordInput} handleChange={handleChange("passwordInput")} isAdmin={isAdmin} />
-              </div> : null
-          }
+          {isAdmin ? (
+            <div className="form-element">
+              <PasswordInput
+                value={values.passwordInput}
+                handleChange={handleChange("passwordInput")}
+                isAdmin={isAdmin}
+              />
+            </div>
+          ) : null}
 
           <div className="form-element">
-            <PlayersInput value={values.amountOfPlayersInput} handleChange={handleSliderChange} isAdmin={isAdmin} />
+            <PlayersInput
+              value={values.amountOfPlayersInput}
+              handleChange={handleSliderChange}
+              isAdmin={isAdmin}
+            />
           </div>
 
           <div className="form-element">
-            <DifficultyInput value={values.difficultyInput} handleChange={handleChange("difficultyInput")} isAdmin={isAdmin} />
+            <DifficultyInput
+              value={values.difficultyInput}
+              handleChange={handleChange("difficultyInput")}
+              isAdmin={isAdmin}
+            />
           </div>
 
           <div className="form-element">
-            <BoardInput value={values.boardSizeInput} handleChange={handleChange("boardSizeInput")} isAdmin={isAdmin} />
+            <BoardInput
+              value={values.boardSizeInput}
+              handleChange={handleChange("boardSizeInput")}
+              isAdmin={isAdmin}
+            />
           </div>
-
+          {isAdmin ? (
           <Button
             className="m-2"
             onClick={() => {
@@ -167,15 +178,18 @@ const RoomData = ({
           >
             Edit
           </Button>
-          <Button
-            className="m-2"
-            onClick={() => {
-              handleStartGame();
-            }}
-            color="secondary"
-          >
-            Start Game
-          </Button>
+          ) : null }
+          {isAdmin ? (
+            <Button
+              className="m-2"
+              onClick={() => {
+                handleStartGame();
+              }}
+              color="secondary"
+            >
+              Start Game
+            </Button>
+          ) : null}
           <Button
             className="m-2"
             onClick={() => {
@@ -185,15 +199,17 @@ const RoomData = ({
           >
             Exit Room
           </Button>
-          <Button
-            className="m-2"
-            onClick={() => {
-              handleDeleteRoom();
-            }}
-            color="secondary"
-          >
-            Delete Room
-          </Button>
+          {isAdmin ? (
+            <Button
+              className="m-2"
+              onClick={() => {
+                handleDeleteRoom();
+              }}
+              color="secondary"
+            >
+              Delete Room
+            </Button>
+          ) : null}
         </div>
       </div>
     </>

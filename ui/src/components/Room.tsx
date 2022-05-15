@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 
 import BoardDisplay from "./static-components/BoardSize";
 import DifficultyDisplay from "./static-components/Difficulty";
@@ -37,6 +37,7 @@ const Room = ({ room }: { room: IRoom }) => {
           userUuid: user.uuid,
           data: {
             roomName: roomName,
+            password: "", // musi być haslo aby wejsc
           },
         })
       );
