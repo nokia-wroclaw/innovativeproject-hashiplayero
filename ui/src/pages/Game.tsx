@@ -3,6 +3,13 @@ import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { Button } from "@mui/material";
+import { useAppDispatch } from "../store/hooks";
+import {
+  changeAdmin,
+  changeBoardCorrect,
+  changeSingleGame,
+} from "../store/StateMachineSlice";
+import { useNavigate } from "react-router-dom";
 
 interface Bridge {
   nodeFrom: number;
@@ -58,9 +65,11 @@ const Game = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
-  const { isBoardCorrect } = useSelector(
+  const { isBoardCorrect, inSingleGame, inWaitingRoom, isAdmin } = useSelector(
     (state: RootState) => state.StateMachine
   );
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [lines, setLines] = useState([{}] as Bridge[]);
 
@@ -197,9 +206,13 @@ const Game = () => {
           userUuid: user.uuid,
           data: {
             roomName: "lobby",
+            password: "",
           },
         })
       );
+      dispatch(changeSingleGame(false));
+      dispatch(changeBoardCorrect(false));
+      dispatch(changeAdmin(false));
     }
   };
 
@@ -214,6 +227,7 @@ const Game = () => {
           },
         })
       );
+      handleExitGame();
     }
   };
 
@@ -230,6 +244,23 @@ const Game = () => {
       );
     }
   };
+
+  useEffect(() => {
+    //TODO:
+    if (inSingleGame && !inWaitingRoom && !isAdmin) {
+      navigate("/singleplay");
+    }
+    if (!inSingleGame && !inWaitingRoom && !isAdmin) {
+      navigate("/");
+    }
+  }, [
+    roomAndBoard,
+    navigate,
+    isBoardCorrect,
+    inSingleGame,
+    inWaitingRoom,
+    isAdmin,
+  ]);
 
   return (
     <>
