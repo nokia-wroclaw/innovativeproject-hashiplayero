@@ -25,7 +25,7 @@ const Dashboard = () => {
     {
       label: "Play",
       navigation: "/singleplay",
-      isDisabled: inMultiGame || inWaitingRoom,
+      isDisabled: inMultiGame,
     },
     {
       label: "Create a room",

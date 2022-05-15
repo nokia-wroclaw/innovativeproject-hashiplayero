@@ -15,7 +15,7 @@ var clientsMap = make(map[string]*Client)
 func setRouter() *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
-	lobby := newRoom(RoomSettings{Name: "lobby", MaxPlayers: 1000})
+	lobby := newRoom(RoomSettings{Name: "lobby"})
 	roomsMap["lobby"] = lobby
 	go lobby.run()
 	router.Use(cors.New(cors.Config{

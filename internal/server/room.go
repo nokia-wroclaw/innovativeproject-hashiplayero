@@ -201,7 +201,7 @@ func changeRoom(data interface{}, userUuid interface{}) {
 		sendToClient(c, rm)
 		return
 	}
-	if len(newRoom.clients) == newRoom.roomSettings.MaxPlayers {
+	if len(newRoom.clients) == newRoom.roomSettings.MaxPlayers && newRoom.roomSettings.Name != "lobby" {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Max players in room"}
 		sendToClient(c, rm)
 		return

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { IDefaultUser } from "../interfaces/IUser";
 import { useAppDispatch } from "./hooks";
@@ -6,12 +6,15 @@ import { RootState } from "./store";
 import { createUser, updateUserName } from "./userSlice";
 import { setInitialRoomsList, updateRooms } from "./RoomsListSlice";
 import { IRooms } from "../interfaces/IRoom";
+import { ISnackbar } from "../interfaces/ISnackbar";
+import CustomizedSnackbar from "../components/static-components/SnackBar";
+
 import {
   updateAsAdmin,
   updateCreateBoard,
   updateCreateRoom,
   updateGameData,
-  updateRoomGame,
+  updateAsPlayer,
 } from "./RoomGameSlice";
 import {
   IDefaultRoomAndBoard,
@@ -34,6 +37,12 @@ const WebSocketComp = () => {
 
   // websocket
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
+
+  const [snackbar, setSnackbar] = useState<ISnackbar>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   if (webSocket !== undefined) {
     webSocket.onmessage = (e) => {
@@ -124,8 +133,8 @@ const WebSocketComp = () => {
                   password: "",
                   timeLimit: -1,
                   array: [],
-                  gameOn: false,
-                  admin: "",
+                  gameOn: json.Payload.gameOn,
+                  admin: json.Payload.admin,
                   settings: {
                     difficulty: json.Payload.difficulty,
                     size: json.Payload.boardSize,
@@ -134,7 +143,10 @@ const WebSocketComp = () => {
                   gameData: [],
                 },
               };
-              dispatch(updateRoomGame(updateUserRoom));
+              if (roomAndBoard.maxPlayers >= 1) {
+                // dispatch(changeMultiGame(json.Payload.gameOn));
+              }
+              dispatch(updateAsPlayer(updateUserRoom));
             }
             dispatch(setInitialRoomsList());
             break;
@@ -201,6 +213,13 @@ const WebSocketComp = () => {
           default:
             consoleLogWebSocket("Incorrect");
             console.log(e.data);
+            if (json?.error !== "") {
+              setSnackbar({
+                message: `${json.response} - ${json.error}`,
+                open: true,
+                severity: "error",
+              });
+            }
             break;
         }
       }
@@ -231,7 +250,13 @@ const WebSocketComp = () => {
     console.log("WebSocket-> " + mess);
   };
 
-  return <></>;
+  return (
+    <>
+      {snackbar.open ? (
+        <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+      ) : null}
+    </>
+  );
 };
 
 export default WebSocketComp;

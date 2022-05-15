@@ -1,5 +1,4 @@
 import { IRoom } from "../interfaces/IRoom";
-import { useNavigate } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -21,7 +20,7 @@ const Room = ({ room }: { room: IRoom }) => {
   const [snackbar, setSnackbar] = useState<ISnackbar>({
     open: false,
     message: "",
-    severity: 'success',
+    severity: "success",
   });
 
   const [modal, setModal] = useState<IModal>({
@@ -49,20 +48,23 @@ const Room = ({ room }: { room: IRoom }) => {
     if (room.name !== null) {
       if (room.isPrivate) {
         console.log("Room is private");
-        setSnackbar({ message: "Room is private", open: true, severity: 'warning' });
+        setSnackbar({
+          message: "Room is private",
+          open: true,
+          severity: "warning",
+        });
         setModal({ show: true, password: "haslo" });
       } else if (room.maxPlayers === room.numPlayers) {
-        setSnackbar({ message: "Room is full", open: true, severity: 'error' });
+        setSnackbar({ message: "Room is full", open: true, severity: "error" });
       } else {
         // !!! ODKOMENTUJ JAK CHCESZ PRZEJSC DO POKOJU !!!
         handleChangeRoom(room.name);
       }
     }
-  }
+  };
 
   return (
     <Grid container className="header">
-
       <Grid item xs={12} sm={8} md={4}>
         <div className="header-element">
           <RoomNameDisplay value={room.name} />
@@ -74,7 +76,10 @@ const Room = ({ room }: { room: IRoom }) => {
       </Grid>
 
       <Grid item xs={6} sm={4} md={1} className="header-element center">
-        <RoomPlatersDisplay players={room.numPlayers} maxPlayers={room.maxPlayers} />
+        <RoomPlatersDisplay
+          players={room.numPlayers}
+          maxPlayers={room.maxPlayers}
+        />
       </Grid>
 
       <Grid item xs={6} sm={4} md={2} className="header-element center">
@@ -89,20 +94,24 @@ const Room = ({ room }: { room: IRoom }) => {
           color="secondary"
           onClick={() => {
             handleJoinRoom(room.name);
-          }}>
+          }}
+        >
           Join
         </Button>
       </Grid>
-      {
-        snackbar.open ? <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} /> : null
-      }
+      {snackbar.open ? (
+        <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+      ) : null}
 
-      {
-        modal.show ? <Modal show={modal.show} password={modal.password} setModal={setModal}/> : null
-      }
-
+      {modal.show ? (
+        <Modal
+          show={modal.show}
+          password={modal.password}
+          setModal={setModal}
+        />
+      ) : null}
     </Grid>
-  )
-}
+  );
+};
 
 export default Room;
