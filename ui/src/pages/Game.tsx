@@ -158,7 +158,7 @@ const Game = () => {
             </Button>
           </>
         ) : null}
-        {!inSingleGame ? <PlayerList players={roomAndBoard.members} /> : null}
+        {!inSingleGame ? <PlayerList players={roomAndBoard.members} gameData={roomAndBoard.gameData} /> : null}
       </div>
     </>
   );
