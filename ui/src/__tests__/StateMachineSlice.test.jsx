@@ -8,86 +8,56 @@ test('should return the initial state', () => {
             isAdmin: false,
         }
     )
-    expect(reducer(undefined, {})).not.toEqual(
-        {
-            inRoom: true,
-            isAdmin: false,
-        }
-    )
 })
 
 test('should return enter room state', () => {
-    const previousState = {
+    const state = {
         inRoom: false,
         isAdmin: false
     }
-    expect(reducer(previousState, enterRoom())).toEqual(
+    expect(reducer(state, enterRoom())).toEqual(
         {
             inRoom: true,
-            isAdmin: previousState.isAdmin,
-        }
-    )
-    expect(reducer(previousState, enterRoom())).not.toEqual(
-        {
-            inRoom: false,
-            isAdmin: previousState.isAdmin,
+            isAdmin: state.isAdmin,
         }
     )
 })
 
 test('should return exit room state', () => {
-    const previousState = {
+    const state = {
         inRoom: true,
         isAdmin: true
     }
-    expect(reducer(previousState, exitRoom())).toEqual(
+    expect(reducer(state, exitRoom())).toEqual(
         {
             inRoom: false,
-            isAdmin: previousState.isAdmin,
-        }
-    )
-    expect(reducer(previousState, exitRoom())).not.toEqual(
-        {
-            inRoom: true,
-            isAdmin: previousState.isAdmin,
+            isAdmin: state.isAdmin,
         }
     )
 })
 
 test('should return enter admin state', () => {
-    const previousState = {
+    const state = {
         inRoom: true,
         isAdmin: false
     }
-    expect(reducer(previousState, enterAdmin())).toEqual(
+    expect(reducer(state, enterAdmin())).toEqual(
         {
             inRoom: true,
             isAdmin: true,
         }
     )
-    expect(reducer(previousState, enterAdmin())).not.toEqual(
-        {
-            inRoom: true,
-            isAdmin: false,
-        }
-    )
 })
 
 test('should return exit admin state', () => {
-    const previousState = {
+    const state = {
         inRoom: true,
         isAdmin: true
     }
-    expect(reducer(previousState, exitAdmin())).toEqual(
+    expect(reducer(state, exitAdmin())).toEqual(
         {
             inRoom: true,
             isAdmin: false,
-        }
-    )
-    expect(reducer(previousState, exitAdmin())).not.toEqual(
-        {
-            inRoom: true,
-            isAdmin: previousState.isAdmin,
         }
     )
 })
