@@ -70,35 +70,4 @@ test('should update room in game with correct data', () => {
             },
         },
     })
-    expect(reducer(previousState, updateRoomGame({
-        roomAndBoard: {
-            name: "TEST-mdnliu1g23o1",
-            maxPlayers: 5,
-            isPrivate: false,
-            password: "pjo1ui231",
-            timeLimit: 10,
-            members: [],
-            array: [],
-            admin: "h1b3yu1234k1324bk",
-            settings: {
-                difficulty: 3,
-                size: 5,
-            },
-        },
-    }))).not.toEqual({
-        roomAndBoard: {
-            name: "323",
-            maxPlayers: 5,
-            isPrivate: false,
-            password: "deewd",
-            timeLimit: 10,
-            members: [],
-            array: [],
-            admin: "h123d",
-            settings: {
-                difficulty: 3,
-                size: 5,
-            },
-        },
-    })
 })
