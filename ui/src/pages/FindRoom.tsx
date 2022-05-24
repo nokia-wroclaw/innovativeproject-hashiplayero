@@ -49,19 +49,24 @@ const FindRoom = () => {
 
   useEffect(() => {
     const inputName = searchedName.toLowerCase();
-    const roomsToShow: IRoom[] = rooms.filter((room) => {
-      const roomName = room.name.toLowerCase();
-      let nameCond = roomName.includes(inputName);      
-      
-      if (searchedName.replace(/\s/g, '').length === 0) nameCond = true;
-      
-      const diffCond = room.difficulty.toString() == searchedDifficulty || searchedDifficulty === "";
-      const sizeCond = room.boardSize.toString() == searchedSize || searchedSize === "";
-      console.log(room.boardSize, searchedSize);
-      return nameCond && diffCond && sizeCond;
-      
-    });
-    setFilteredRooms(roomsToShow);
+    if (rooms === null) {
+      setFilteredRooms([]);
+    } else {
+      const roomsToShow: IRoom[] = rooms.filter((room) => {
+        const roomName = room.name.toLowerCase();
+        let nameCond = roomName.includes(inputName);
+
+        if (searchedName.replace(/\s/g, '').length === 0) nameCond = true;
+
+        const diffCond = room.difficulty.toString() == searchedDifficulty || searchedDifficulty === "";
+        const sizeCond = room.boardSize.toString() == searchedSize || searchedSize === "";
+        console.log(room.boardSize, searchedSize);
+        return nameCond && diffCond && sizeCond;
+
+      });
+      setFilteredRooms(roomsToShow);
+    }
+
   }, [rooms, searchedSize, searchedDifficulty, searchedName]);
 
   return (
@@ -104,7 +109,7 @@ const FindRoom = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
-          <Analytics />
+            <Analytics />
             <FormControl
               variant="standard"
               sx={{ m: 1, minWidth: 120, paddingBottom: "16px" }}
