@@ -32,7 +32,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
     timeLimitInput: new Date(),
     enableTimeLimitInput: false,
     isDisabled: true,
-    isPrivate: roomAndBoard.isPrivate
+    isPrivate: roomAndBoard.isPrivate,
   });
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
       passwordInput: roomAndBoard.password,
       difficultyInput: roomAndBoard.settings.difficulty,
       boardSizeInput: roomAndBoard.settings.size,
-      isPrivate: roomAndBoard.isPrivate
+      isPrivate: roomAndBoard.isPrivate,
     });
   }, [roomAndBoard]);
 
@@ -67,9 +67,9 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
           userUuid: user.uuid,
           data: {
             name: roomAndBoard.name,
-            password: values.passwordInput,
+            password: values.isPrivate ? values.passwordInput : "",
             maxPlayers: values.amountOfPlayersInput,
-            isPrivate: roomAndBoard.isPrivate,
+            isPrivate: values.isPrivate,
             timeLimit: values.timeLimitInput.getMinutes(),
             difficulty: values.difficultyInput,
             boardSize: values.boardSizeInput,
@@ -137,25 +137,30 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
             />
           </div>
 
-          {isAdmin ?
+          {isAdmin ? (
             <div className="form-elements-visibility">
               <div className="form-element-visibility">
-                <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
+                <VisibilityInput
+                  value={values.isPrivate}
+                  handleChange={handleChange("isPrivate")}
+                />
               </div>
-              <div className="form-element" style={{ display: values.isPrivate ? 'block' : 'none' }}>
-                {
-                  values.isPrivate ?
-                    <div className="form-element">
-                      <PasswordInput
-                        value={values.passwordInput}
-                        handleChange={handleChange("passwordInput")}
-                        isAdmin={isAdmin}
-                      />
-                    </div> : null
-                }
+              <div
+                className="form-element"
+                style={{ display: values.isPrivate ? "block" : "none" }}
+              >
+                {values.isPrivate ? (
+                  <div className="form-element">
+                    <PasswordInput
+                      value={values.passwordInput}
+                      handleChange={handleChange("passwordInput")}
+                      isAdmin={isAdmin}
+                    />
+                  </div>
+                ) : null}
               </div>
             </div>
-            : null}
+          ) : null}
 
           <div className="form-element">
             <PlayersInput

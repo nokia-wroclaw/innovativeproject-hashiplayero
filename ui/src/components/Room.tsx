@@ -1,7 +1,5 @@
 import { IRoom } from "../interfaces/IRoom";
-import { RootState } from "../store/store";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { Button, Grid } from "@mui/material";
 
 import BoardDisplay from "./static-components/BoardSize";
@@ -15,8 +13,6 @@ import { ISnackbar } from "../interfaces/ISnackbar";
 import IModal from "../interfaces/IModal";
 import DialogInput from "./dynamic-components/DialogInput";
 const Room = ({ room }: { room: IRoom }) => {
-  const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const { user } = useSelector((state: RootState) => state.defaultUser);
 
   const [snackbar, setSnackbar] = useState<ISnackbar>({
     open: false,
@@ -29,23 +25,6 @@ const Room = ({ room }: { room: IRoom }) => {
     password: "",
   });
 
-  const [password, setPassword] = useState("");
-
-  const handleChangeRoom = (roomName: string) => {
-    if (webSocket !== undefined) {
-      webSocket.send(
-        JSON.stringify({
-          action: "changeRoom",
-          userUuid: user.uuid,
-          data: {
-            roomName: roomName,
-            password: "", // musi być haslo aby wejsc
-          },
-        })
-      );
-      console.log("WebSocket-> Change Room");
-    }
-  };
   // !!! type AlertColor = 'success' | 'info' | 'warning' | 'error';
   const handleJoinRoom = (roomName: string) => {
     if (room.name !== null) {
@@ -60,7 +39,6 @@ const Room = ({ room }: { room: IRoom }) => {
         setSnackbar({ message: "Room is full", open: true, severity: "error" });
       } else {
         // !!! ODKOMENTUJ JAK CHCESZ PRZEJSC DO POKOJU !!!
-        handleChangeRoom(room.name);
       }
     }
   };
@@ -92,7 +70,7 @@ const Room = ({ room }: { room: IRoom }) => {
       </Grid>
 
       <Grid item xs className="header-element but">
-        <DialogInput password={password} handlePassword={setPassword} isPrivate={room.isPrivate} handleClick={setModal}/>
+        <DialogInput isPrivate={room.isPrivate} handleClick={setModal} roomName={room.name}/>
       </Grid>
       {snackbar.open ? (
         <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
