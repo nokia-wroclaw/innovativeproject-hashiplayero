@@ -322,6 +322,7 @@ $light_logo-secondary-color: #8b89ec;
     @include display-flex(column, center);
     height: 100%;
     width: 80%;
+    margin-bottom: 68px;
 }
 
 .header {

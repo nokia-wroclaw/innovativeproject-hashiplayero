@@ -26,14 +26,14 @@ const FindRoom = () => {
   const { rooms } = useSelector((state: RootState) => state.RoomsList);
   const [searchedName, setSearchedName] = useState("");
   const [searchedDifficulty, setsearchedDifficulty] = useState("");
-  const [searchedQuantity, setSearchedQuantity] = useState("");
+  const [searchedSize, setsearchedSize] = useState("");
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { inWaitingRoom, inSingleGame } = useSelector((state: RootState) => state.StateMachine);
 
   const [filteredRooms, setFilteredRooms] = useState<IRoom[]>(rooms);
 
-  const handleQuantityInput = (event: SelectChangeEvent) => {
-    setSearchedQuantity(event.target.value);
+  const handleSizeInput = (event: SelectChangeEvent) => {
+    setsearchedSize(event.target.value);
   };
 
   const handleDifficultyInput = (event: SelectChangeEvent) => {
@@ -56,13 +56,13 @@ const FindRoom = () => {
       if (searchedName.replace(/\s/g, '').length === 0) nameCond = true;
       
       const diffCond = room.difficulty.toString() == searchedDifficulty || searchedDifficulty === "";
-      const sizeCond = room.boardSize.toString() == searchedQuantity || searchedQuantity === "";
-      console.log(room.boardSize, searchedQuantity);
+      const sizeCond = room.boardSize.toString() == searchedSize || searchedSize === "";
+      console.log(room.boardSize, searchedSize);
       return nameCond && diffCond && sizeCond;
       
     });
     setFilteredRooms(roomsToShow);
-  }, [rooms, searchedQuantity, searchedDifficulty, searchedName]);
+  }, [rooms, searchedSize, searchedDifficulty, searchedName]);
 
   return (
     <>
@@ -84,15 +84,15 @@ const FindRoom = () => {
               sx={{ m: 1, minWidth: 120, paddingBottom: "16px" }}
               size="small"
             >
-              <InputLabel id="room-search-people-number-label">
-                Number of people
+              <InputLabel id="room-search-size-label">
+                Board size
               </InputLabel>
               <Select
-                labelId="room-search-people-number"
-                id="room-search-people-number"
-                value={searchedQuantity}
+                labelId="room-search-size"
+                id="room-search-size"
+                value={searchedSize}
                 label=""
-                onChange={handleQuantityInput}
+                onChange={handleSizeInput}
               >
                 <MenuItem value="">
                   <em>None</em>
@@ -124,7 +124,7 @@ const FindRoom = () => {
                   <em>None</em>
                 </MenuItem>
                 <MenuItem value={1}>Easy</MenuItem>
-                <MenuItem value={2}>Medium</MenuItem>
+                <MenuItem value={2}>Normal</MenuItem>
                 <MenuItem value={3}>Hard</MenuItem>
               </Select>
             </FormControl>
