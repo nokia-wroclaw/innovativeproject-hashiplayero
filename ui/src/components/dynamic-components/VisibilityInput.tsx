@@ -9,7 +9,7 @@ const VisibilityInput = ({ value, handleChange }: { value: boolean, handleChange
     return (
         <>
             {
-                value ? "Prywatne" : "Publiczne"
+                value ? "Private" : "Public"
             }
             <Checkbox
                 checked={value}
