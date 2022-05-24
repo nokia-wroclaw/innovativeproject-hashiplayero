@@ -14,6 +14,7 @@ import PlayersInput from "./dynamic-components/PlayersInput";
 import DifficultyInput from "./dynamic-components/DifficultyInput";
 import BoardInput from "./dynamic-components/BardSizeInput";
 import { changeWaitingRoom } from "../store/StateMachineSlice";
+import VisibilityInput from "./dynamic-components/VisibilityInput";
 
 const RoomData = ({ room }: { room: IRoomAndBoard }) => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
@@ -32,6 +33,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
     timeLimitInput: new Date(),
     enableTimeLimitInput: false,
     isDisabled: true,
+    isPrivate: roomAndBoard.isPrivate
   });
 
   useEffect(() => {
@@ -41,6 +43,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
       passwordInput: roomAndBoard.password,
       difficultyInput: roomAndBoard.settings.difficulty,
       boardSizeInput: roomAndBoard.settings.size,
+      isPrivate: roomAndBoard.isPrivate
     });
   }, [roomAndBoard]);
 
@@ -135,15 +138,25 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
             />
           </div>
 
-          {isAdmin ? (
-            <div className="form-element">
-              <PasswordInput
-                value={values.passwordInput}
-                handleChange={handleChange("passwordInput")}
-                isAdmin={isAdmin}
-              />
+          {isAdmin ?
+            <div className="form-elements">
+              <div className="form-element">
+                <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
+              </div>
+              <div className="form-element">
+                {
+                  values.isPrivate ?
+                    <div className="form-element">
+                      <PasswordInput
+                        value={values.passwordInput}
+                        handleChange={handleChange("passwordInput")}
+                        isAdmin={isAdmin}
+                      />
+                    </div> : null
+                }
+              </div>
             </div>
-          ) : null}
+            : null}
 
           <div className="form-element">
             <PlayersInput
@@ -169,16 +182,16 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
             />
           </div>
           {isAdmin ? (
-          <Button
-            className="m-2"
-            onClick={() => {
-              handleEditRoom();
-            }}
-            color="secondary"
-          >
-            Edit
-          </Button>
-          ) : null }
+            <Button
+              className="m-2"
+              onClick={() => {
+                handleEditRoom();
+              }}
+              color="secondary"
+            >
+              Edit
+            </Button>
+          ) : null}
           {isAdmin ? (
             <Button
               className="m-2"

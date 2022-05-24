@@ -1,0 +1,37 @@
+.rowBackground {
+    // optional class for background color
+    background-color: #e6e6e656;
+}
+
+.row {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    margin: 150px 0 120px 0;
+    padding: 150px 0;
+}
+
+.skew {
+    // Only skews
+    transform: skewY(-11.5deg);
+    width: 100vw;
+}
+
+.column {
+    // Horizontal padding prevents it
+    // from touching the edge on mobile
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skew .column {
+    // if skew class exists on a parent
+    // then revert skew on column
+    transform: skewY(11.5deg);
+}
+
+.row+.row {
+    margin-top: 50px;
+}
