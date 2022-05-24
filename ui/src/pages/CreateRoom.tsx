@@ -106,7 +106,7 @@ const CreateRoom = () => {
 
   return (
     <>
-      <div className="form-container paper">
+      <div className="form-container paper-create">
         <div className="general-info">
           
           <div className="form-element">
