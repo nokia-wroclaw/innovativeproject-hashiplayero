@@ -8,4 +8,5 @@ export interface IState {
     timeLimitInput: Date;
     enableTimeLimitInput: boolean;
     isDisabled: boolean;
+    isPrivate: boolean;
 }
