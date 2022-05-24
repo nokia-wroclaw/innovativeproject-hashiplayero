@@ -7,7 +7,7 @@ const BoardDisplay = ({ value }: { value: Number }) => {
         <>
             <GridOn />
             {
-                value === 7 ? <Typography noWrap>Small size</Typography> : value === 15 ? <Typography noWrap>Large size</Typography> : <Typography noWrap>Normal size</Typography>
+                value === 7 ? <Typography noWrap>Small</Typography> : value === 15 ? <Typography noWrap>Large</Typography> : <Typography noWrap>Medium</Typography>
             }
         </>
     )
