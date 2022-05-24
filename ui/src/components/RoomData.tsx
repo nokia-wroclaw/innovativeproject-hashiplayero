@@ -138,11 +138,11 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
           </div>
 
           {isAdmin ?
-          <div className="form-elements-visibility">
-            <div className="form-element-visibility">
+            <div className="form-elements-visibility">
+              <div className="form-element-visibility">
                 <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
               </div>
-              <div className="form-element" style={{display: values.isPrivate ? 'block' : 'none' }}>
+              <div className="form-element" style={{ display: values.isPrivate ? 'block' : 'none' }}>
                 {
                   values.isPrivate ?
                     <div className="form-element">
@@ -180,48 +180,50 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
               isAdmin={isAdmin}
             />
           </div>
-          {isAdmin ? (
+          <div className="form-elements">
+            {isAdmin ? (
+              <Button
+                className="m-2"
+                onClick={() => {
+                  handleEditRoom();
+                }}
+                color="secondary"
+              >
+                Edit
+              </Button>
+            ) : null}
+            {isAdmin ? (
+              <Button
+                className="m-2"
+                onClick={() => {
+                  handleStartGame();
+                }}
+                color="secondary"
+              >
+                Start Game
+              </Button>
+            ) : null}
             <Button
               className="m-2"
               onClick={() => {
-                handleEditRoom();
+                handleExitRoom();
               }}
               color="secondary"
             >
-              Edit
+              Exit Room
             </Button>
-          ) : null}
-          {isAdmin ? (
-            <Button
-              className="m-2"
-              onClick={() => {
-                handleStartGame();
-              }}
-              color="secondary"
-            >
-              Start Game
-            </Button>
-          ) : null}
-          <Button
-            className="m-2"
-            onClick={() => {
-              handleExitRoom();
-            }}
-            color="secondary"
-          >
-            Exit Room
-          </Button>
-          {isAdmin ? (
-            <Button
-              className="m-2"
-              onClick={() => {
-                handleDeleteRoom();
-              }}
-              color="secondary"
-            >
-              Delete Room
-            </Button>
-          ) : null}
+            {isAdmin ? (
+              <Button
+                className="m-2"
+                onClick={() => {
+                  handleDeleteRoom();
+                }}
+                color="secondary"
+              >
+                Delete Room
+              </Button>
+            ) : null}
+          </div>
         </div>
       </div>
     </>
