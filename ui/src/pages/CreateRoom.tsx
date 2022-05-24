@@ -13,10 +13,8 @@ import NameInput from "../components/dynamic-components/NameInput";
 import { ISnackbar } from "../interfaces/ISnackbar";
 import CustomizedSnackbar from "../components/static-components/SnackBar";
 
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import Checkbox from "@mui/material/Checkbox";
 import VisibilityInput from "../components/dynamic-components/VisibilityInput";
+import { style } from "@mui/system";
 
 
 const CreateRoom = () => {
@@ -119,25 +117,6 @@ const CreateRoom = () => {
             />
           </div>
         
-          <div className="form-elements">
-            <div className="form-element">
-              <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
-              </div>
-              <div className="form-element">
-              {
-                values.isPrivate ? 
-                  <div className="form-element">
-                  <PasswordInput
-                    value={values.passwordInput}
-                    handleChange={handleChange("passwordInput")}
-                    isAdmin={true}
-                  />
-                </div> : null
-              }
-              </div>
-          </div>
-
-
           <div className="form-element">
             <PlayersInput
               value={values.amountOfPlayersInput}
@@ -161,7 +140,23 @@ const CreateRoom = () => {
               />
             </div>
           </div>
-
+          <div className="form-elements-visibility">
+            <div className="form-element-visibility">
+              <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
+            </div>
+            <div className="form-element" style={{display: values.isPrivate ? 'block' : 'none' }}>
+              {
+                values.isPrivate ? 
+                  <div className="form-element" >
+                  <PasswordInput
+                    value={values.passwordInput}
+                    handleChange={handleChange("passwordInput")}
+                    isAdmin={true}
+                  />
+                </div> : null
+              }
+            </div>
+          </div>
         </div>
         <Button
           onClick={() => {
@@ -171,6 +166,7 @@ const CreateRoom = () => {
         >
           Create!
         </Button>
+        
         {snackbar.open ? (
           <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
         ) : null}
