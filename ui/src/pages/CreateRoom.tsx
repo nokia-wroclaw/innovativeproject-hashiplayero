@@ -16,7 +16,6 @@ import CustomizedSnackbar from "../components/static-components/SnackBar";
 import VisibilityInput from "../components/dynamic-components/VisibilityInput";
 import { style } from "@mui/system";
 
-
 const CreateRoom = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { user } = useSelector((state: RootState) => state.defaultUser);
@@ -36,7 +35,7 @@ const CreateRoom = () => {
     timeLimitInput: new Date(0),
     enableTimeLimitInput: false,
     isDisabled: false,
-    isPrivate: true
+    isPrivate: true,
   });
 
   const [snackbar, setSnackbar] = useState<ISnackbar>({
@@ -77,18 +76,16 @@ const CreateRoom = () => {
         severity: "error",
       });
     } else {
-      if (values.isPrivate){
-          values.passwordInput="";
-          console.log("prywatne!")
+      if (!values.isPrivate) {
+        values.passwordInput = "";
       }
-      let nameOfRoom = values.roomNameInput + user.uuid;
       if (webSocket !== undefined) {
         webSocket.send(
           JSON.stringify({
             action: "createRoom",
             userUuid: user.uuid,
             data: {
-              name: nameOfRoom,
+              name: values.roomNameInput,
               password: values.passwordInput,
               maxPlayers: values.amountOfPlayersInput,
               isPrivate: values.isPrivate,
@@ -108,7 +105,6 @@ const CreateRoom = () => {
     <>
       <div className="form-container paper-create">
         <div className="general-info">
-          
           <div className="form-element">
             <NameInput
               value={values.roomNameInput}
@@ -116,7 +112,7 @@ const CreateRoom = () => {
               isAdmin={true}
             />
           </div>
-        
+
           <div className="form-element">
             <PlayersInput
               value={values.amountOfPlayersInput}
@@ -142,19 +138,24 @@ const CreateRoom = () => {
           </div>
           <div className="form-elements-visibility">
             <div className="form-element-visibility">
-              <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
+              <VisibilityInput
+                value={values.isPrivate}
+                handleChange={handleChange("isPrivate")}
+              />
             </div>
-            <div className="form-element" style={{display: values.isPrivate ? 'block' : 'none' }}>
-              {
-                values.isPrivate ? 
-                  <div className="form-element" >
+            <div
+              className="form-element"
+              style={{ display: values.isPrivate ? "block" : "none" }}
+            >
+              {values.isPrivate ? (
+                <div className="form-element">
                   <PasswordInput
                     value={values.passwordInput}
                     handleChange={handleChange("passwordInput")}
                     isAdmin={true}
                   />
-                </div> : null
-              }
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -166,7 +167,7 @@ const CreateRoom = () => {
         >
           Create!
         </Button>
-        
+
         {snackbar.open ? (
           <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
         ) : null}

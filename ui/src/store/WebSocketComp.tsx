@@ -15,6 +15,7 @@ import {
   updateCreateRoom,
   updateGameData,
   updateAsPlayer,
+  editRoom,
 } from "./RoomGameSlice";
 import {
   IDefaultRoomAndBoard,
@@ -82,6 +83,14 @@ const WebSocketComp = () => {
             break;
           case "CreateRoom":
             consoleLogWebSocket("CreateRoom");
+            if (json.error !== "") {
+              setSnackbar({
+                message: `${json.error}`,
+                open: true,
+                severity: "error",
+              });
+              break;
+            }
             let createRoom: ICreateRoom = {
               admin: json.Payload.admin,
               isPrivate: json.Payload.isPrivate,
@@ -175,6 +184,25 @@ const WebSocketComp = () => {
             dispatch(updateUserName(json.Payload.name));
             break;
           case "EditRoom":
+            let updateAdminRoom: IDefaultRoomAndBoard = {
+              roomAndBoard: {
+                name: json.Payload.name,
+                maxPlayers: json.Payload.maxPlayers,
+                isPrivate: json.Payload.isPrivate,
+                password: json.Payload.password,
+                timeLimit: json.Payload.timeLimit,
+                array: [],
+                gameOn: false,
+                admin: json.Payload.admin,
+                settings: {
+                  difficulty: json.Payload.difficulty,
+                  size: json.Payload.boardSize,
+                },
+                members: json.Payload.Players,
+                gameData: [],
+              },
+            };
+            dispatch(editRoom(updateAdminRoom));
             consoleLogWebSocket("EditRoom");
             break;
           // STATE MACHINE
@@ -215,7 +243,7 @@ const WebSocketComp = () => {
             console.log(e.data);
             if (json?.error !== "") {
               setSnackbar({
-                message: `${json.response} - ${json.error}`,
+                message: `${json.error}`,
                 open: true,
                 severity: "error",
               });
