@@ -1,8 +1,7 @@
 import { IRoomAndBoard } from "../interfaces/IRoomAndBoard";
 import { IState } from "../interfaces/IState";
 import { Button } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -52,7 +51,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
   };
 
   const handleChange = (prop: keyof IState) => (event: any) => {
-    if (prop === "enableTimeLimitInput") {
+    if (prop === "enableTimeLimitInput" || prop === "isPrivate") {
       setValues({ ...values, [prop]: event.target.checked });
     } else {
       setValues({ ...values, [prop]: event.target.value });
@@ -139,11 +138,11 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
           </div>
 
           {isAdmin ?
-            <div className="form-elements">
-              <div className="form-element">
+          <div className="form-elements-visibility">
+            <div className="form-element-visibility">
                 <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
               </div>
-              <div className="form-element">
+              <div className="form-element" style={{display: values.isPrivate ? 'block' : 'none' }}>
                 {
                   values.isPrivate ?
                     <div className="form-element">

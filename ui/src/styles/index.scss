@@ -222,6 +222,35 @@ $light_logo-secondary-color: #8b89ec;
     width: 100%;
 }
 
+.form-element-visibility {
+    display: flex;
+    align-items: center;
+    width: 25%;
+    //center elements
+    justify-content: center;
+    margin: 0 12px;
+    min-height: 120px;
+}
+
+.form-elements-visibility {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+
+
+    @media (max-width: 700px) {
+        flex-direction: column;
+        .form-element-visibility{
+            min-height: 0px;
+            margin-top: 24px;
+
+        }
+    }
+
+}
+
 .form-inner-element {
     display: flex;
     flex-direction: row;
@@ -349,8 +378,6 @@ $light_logo-secondary-color: #8b89ec;
     flex-direction: column;
 }
 
-
-
 .box {
     border-radius: 20px;
     width: 60px;
@@ -365,8 +392,6 @@ $light_logo-secondary-color: #8b89ec;
     animation-fill-mode: forwards;
 
 }
-
-
 
 @keyframes anime {
     0% {

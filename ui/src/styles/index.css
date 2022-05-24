@@ -533,6 +533,32 @@
   width: 100%;
 }
 
+.form-element-visibility {
+  display: flex;
+  align-items: center;
+  width: 25%;
+  justify-content: center;
+  margin: 0 12px;
+  min-height: 120px;
+}
+
+.form-elements-visibility {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+}
+@media (max-width: 700px) {
+  .form-elements-visibility {
+    flex-direction: column;
+  }
+  .form-elements-visibility .form-element-visibility {
+    min-height: 0px;
+    margin-top: 24px;
+  }
+}
+
 .form-inner-element {
   display: flex;
   flex-direction: row;

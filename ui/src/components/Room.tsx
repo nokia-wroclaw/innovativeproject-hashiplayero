@@ -13,6 +13,7 @@ import CustomizedSnackbar from "./static-components/SnackBar";
 import Modal from "./dynamic-components/Modal";
 import { ISnackbar } from "../interfaces/ISnackbar";
 import IModal from "../interfaces/IModal";
+import DialogInput from "./dynamic-components/DialogInput";
 const Room = ({ room }: { room: IRoom }) => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
@@ -27,6 +28,8 @@ const Room = ({ room }: { room: IRoom }) => {
     show: false,
     password: "",
   });
+
+  const [password, setPassword] = useState("");
 
   const handleChangeRoom = (roomName: string) => {
     if (webSocket !== undefined) {
@@ -47,7 +50,6 @@ const Room = ({ room }: { room: IRoom }) => {
   const handleJoinRoom = (roomName: string) => {
     if (room.name !== null) {
       if (room.isPrivate) {
-        console.log("Room is private");
         setSnackbar({
           message: "Room is private",
           open: true,
@@ -90,26 +92,19 @@ const Room = ({ room }: { room: IRoom }) => {
       </Grid>
 
       <Grid item xs className="header-element but">
-        <Button
-          color="secondary"
-          onClick={() => {
-            handleJoinRoom(room.name);
-          }}
-        >
-          Join
-        </Button>
+        <DialogInput password={password} handlePassword={setPassword} isPrivate={room.isPrivate} handleClick={setModal}/>
       </Grid>
       {snackbar.open ? (
         <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
       ) : null}
 
-      {modal.show ? (
+      {/* {modal.show ? (
         <Modal
           show={modal.show}
           password={modal.password}
           setModal={setModal}
         />
-      ) : null}
+      ) : null} */}
     </Grid>
   );
 };
