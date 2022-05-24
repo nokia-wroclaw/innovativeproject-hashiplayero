@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import {
-  GridOn,
+  Analytics,
   Groups,
   ScreenSearchDesktop,
   Search,
@@ -25,21 +25,19 @@ const FindRoom = () => {
   const navigate = useNavigate();
   const { rooms } = useSelector((state: RootState) => state.RoomsList);
   const [searchedName, setSearchedName] = useState("");
-  const [searchedSize, setSearchedSize] = useState("");
+  const [searchedDifficulty, setsearchedDifficulty] = useState("");
   const [searchedQuantity, setSearchedQuantity] = useState("");
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { inWaitingRoom, inSingleGame } = useSelector((state: RootState) => state.StateMachine);
 
-  // const [filteredRooms, setFilteredRooms] = useState<IRoom[]>([]);
-
-  let filteredRooms = rooms;
+  const [filteredRooms, setFilteredRooms] = useState<IRoom[]>(rooms);
 
   const handleQuantityInput = (event: SelectChangeEvent) => {
     setSearchedQuantity(event.target.value);
   };
 
-  const handleSizeInput = (event: SelectChangeEvent) => {
-    setSearchedSize(event.target.value);
+  const handleDifficultyInput = (event: SelectChangeEvent) => {
+    setsearchedDifficulty(event.target.value);
   };
 
   useEffect(() => {
@@ -48,30 +46,23 @@ const FindRoom = () => {
     }
   }, [inWaitingRoom, navigate, roomAndBoard, inSingleGame]);
 
-  // useEffect(() => {
-  //     filteredRooms = rooms.filter((room) => {
-  //       if (searchedName !== "" && searchedSize !== "" && searchedQuantity !== "") return true;
-  //       const studentName = room.name.toLowerCase().split(" ");
-  //       debugger;
-  //       const names = searchedName.split(" ");
-  //       let inputName = searchedName.toLowerCase().split(" ");
-  //       // if (names === undefined) {
-  //       //   inputName = "";
-  //       // }
-  //       if (
-  //         inputName === null
-  //             ? true
-  //             : inputName.every((item) =>
-  //                 studentName.some((name) =>
-  //                   name.includes(item.toLowerCase())
-  //                 )
-  //               )
-  //         ) {
-  //           debugger;
-  //           return room;
-  //         }
-  //     });
-  // }, [searchedQuantity, searchedSize, searchedName]);
+
+  useEffect(() => {
+    const inputName = searchedName.toLowerCase();
+    const roomsToShow: IRoom[] = rooms.filter((room) => {
+      const roomName = room.name.toLowerCase();
+      let nameCond = roomName.includes(inputName);      
+      
+      if (searchedName.replace(/\s/g, '').length === 0) nameCond = true;
+      
+      const diffCond = room.difficulty.toString() == searchedDifficulty || searchedDifficulty === "";
+      const sizeCond = room.boardSize.toString() == searchedQuantity || searchedQuantity === "";
+      console.log(room.boardSize, searchedQuantity);
+      return nameCond && diffCond && sizeCond;
+      
+    });
+    setFilteredRooms(roomsToShow);
+  }, [rooms, searchedQuantity, searchedDifficulty, searchedName]);
 
   return (
     <>
@@ -85,32 +76,6 @@ const FindRoom = () => {
               value={searchedName}
               onChange={(event) => setSearchedName(event.target.value)}
             />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
-            <GridOn />
-            <FormControl
-              variant="standard"
-              sx={{ m: 1, minWidth: 120, paddingBottom: "16px" }}
-              size="small"
-            >
-              <InputLabel id="room-search-board-difficulty-label">
-                Board difficulty
-              </InputLabel>
-              <Select
-                labelId="room-search-board-difficulty"
-                id="room-search-board-difficulty"
-                value={searchedSize}
-                label=""
-                onChange={handleSizeInput}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={1}>Easy</MenuItem>
-                <MenuItem value={2}>Normal</MenuItem>
-                <MenuItem value={3}>Hard</MenuItem>
-              </Select>
-            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
             <Groups />
@@ -135,6 +100,32 @@ const FindRoom = () => {
                 <MenuItem value={7}>Small</MenuItem>
                 <MenuItem value={10}>Medium</MenuItem>
                 <MenuItem value={15}>Large</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
+          <Analytics />
+            <FormControl
+              variant="standard"
+              sx={{ m: 1, minWidth: 120, paddingBottom: "16px" }}
+              size="small"
+            >
+              <InputLabel id="room-search-board-difficulty-label">
+                Board difficulty
+              </InputLabel>
+              <Select
+                labelId="room-search-board-difficulty"
+                id="room-search-board-difficulty"
+                value={searchedDifficulty}
+                label=""
+                onChange={handleDifficultyInput}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={1}>Easy</MenuItem>
+                <MenuItem value={2}>Medium</MenuItem>
+                <MenuItem value={3}>Hard</MenuItem>
               </Select>
             </FormControl>
           </Grid>

@@ -1,0 +1,11 @@
+.background{
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    max-width: 900px;
+    margin: 24px 16px;
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    min-width: 800px;
+    transform: translate(-10%, 15%);
+}

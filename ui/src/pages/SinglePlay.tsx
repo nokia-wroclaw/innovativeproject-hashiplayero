@@ -5,6 +5,7 @@ import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import DifficultyInput from "../components/dynamic-components/DifficultyInput";
 import BoardInput from "../components/dynamic-components/BardSizeInput";
+import { BackgroundSvg } from "../components/svg/VectorGraphics";
 
 interface State {
   difficulty: number;
@@ -75,7 +76,7 @@ const SinglePlay = () => {
 
   return (
     <>
-      <div className="form-container paper">
+      <div className="form-container paper-create">
         <div className="general-info">
           <div className="form-element">
             <DifficultyInput
@@ -102,7 +103,12 @@ const SinglePlay = () => {
         >
           Play!
         </Button>
+        
+        {/* <div className="background">
+          <BackgroundSvg />
+        </div> */}
       </div>
+
     </>
   );
 };
