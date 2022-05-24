@@ -20,7 +20,7 @@ const DifficultyInput = ({ value, handleChange, isAdmin }: { value: Number, hand
                     onChange={handleChange}
                 >
                     <MenuItem value={1}>Easy</MenuItem>
-                    <MenuItem value={2}>Medium</MenuItem>
+                    <MenuItem value={2}>Normal</MenuItem>
                     <MenuItem value={3}>Hard</MenuItem>
                 </Select>
             </FormControl>
