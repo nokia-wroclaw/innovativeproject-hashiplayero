@@ -13,6 +13,12 @@ import NameInput from "../components/dynamic-components/NameInput";
 import { ISnackbar } from "../interfaces/ISnackbar";
 import CustomizedSnackbar from "../components/static-components/SnackBar";
 
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import Checkbox from "@mui/material/Checkbox";
+import VisibilityInput from "../components/dynamic-components/VisibilityInput";
+
+
 const CreateRoom = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { user } = useSelector((state: RootState) => state.defaultUser);
@@ -32,6 +38,7 @@ const CreateRoom = () => {
     timeLimitInput: new Date(0),
     enableTimeLimitInput: false,
     isDisabled: false,
+    isPrivate: true
   });
 
   const [snackbar, setSnackbar] = useState<ISnackbar>({
@@ -40,6 +47,12 @@ const CreateRoom = () => {
     severity: "success",
   });
 
+  // const [checked, setChecked] = useState(true);
+
+  // const handleVisibilityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setChecked(event.target.checked);
+  // };
+
   useEffect(() => {
     if (inWaitingRoom) {
       navigate(`/waitingroom/${roomAndBoard.name}`);
@@ -47,7 +60,7 @@ const CreateRoom = () => {
   }, [inWaitingRoom, navigate, roomAndBoard]);
 
   const handleChange = (prop: keyof IState) => (event: any) => {
-    if (prop === "enableTimeLimitInput") {
+    if (prop === "enableTimeLimitInput" || prop === "isPrivate") {
       setValues({ ...values, [prop]: event.target.checked });
     } else {
       setValues({ ...values, [prop]: event.target.value });
@@ -66,6 +79,10 @@ const CreateRoom = () => {
         severity: "error",
       });
     } else {
+      if (values.isPrivate){
+          values.passwordInput="";
+          console.log("prywatne!")
+      }
       let nameOfRoom = values.roomNameInput + user.uuid;
       if (webSocket !== undefined) {
         webSocket.send(
@@ -76,7 +93,7 @@ const CreateRoom = () => {
               name: nameOfRoom,
               password: values.passwordInput,
               maxPlayers: values.amountOfPlayersInput,
-              isPrivate: false,
+              isPrivate: values.isPrivate,
               timeLimit: values.timeLimitInput.getMinutes(),
               difficulty: values.difficultyInput,
               boardSize: values.boardSizeInput,
@@ -93,6 +110,7 @@ const CreateRoom = () => {
     <>
       <div className="form-container paper">
         <div className="general-info">
+          
           <div className="form-element">
             <NameInput
               value={values.roomNameInput}
@@ -100,13 +118,26 @@ const CreateRoom = () => {
               isAdmin={true}
             />
           </div>
-          <div className="form-element">
-            <PasswordInput
-              value={values.passwordInput}
-              handleChange={handleChange("passwordInput")}
-              isAdmin={true}
-            />
+        
+          <div className="form-elements">
+            <div className="form-element">
+              <VisibilityInput value={values.isPrivate} handleChange={handleChange("isPrivate")} />
+              </div>
+              <div className="form-element">
+              {
+                values.isPrivate ? 
+                  <div className="form-element">
+                  <PasswordInput
+                    value={values.passwordInput}
+                    handleChange={handleChange("passwordInput")}
+                    isAdmin={true}
+                  />
+                </div> : null
+              }
+              </div>
           </div>
+
+
           <div className="form-element">
             <PlayersInput
               value={values.amountOfPlayersInput}
@@ -114,20 +145,23 @@ const CreateRoom = () => {
               isAdmin={true}
             />
           </div>
-          <div className="form-element">
-            <DifficultyInput
-              value={values.difficultyInput}
-              handleChange={handleChange("difficultyInput")}
-              isAdmin={true}
-            />
+          <div className="form-elements">
+            <div className="form-element">
+              <DifficultyInput
+                value={values.difficultyInput}
+                handleChange={handleChange("difficultyInput")}
+                isAdmin={true}
+              />
+            </div>
+            <div className="form-element">
+              <BoardInput
+                value={values.boardSizeInput}
+                handleChange={handleChange("boardSizeInput")}
+                isAdmin={true}
+              />
+            </div>
           </div>
-          <div className="form-element">
-            <BoardInput
-              value={values.boardSizeInput}
-              handleChange={handleChange("boardSizeInput")}
-              isAdmin={true}
-            />
-          </div>
+
         </div>
         <Button
           onClick={() => {

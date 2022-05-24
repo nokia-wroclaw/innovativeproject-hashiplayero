@@ -7,7 +7,7 @@ import { Button, Grid } from "@mui/material";
 import BoardDisplay from "./static-components/BoardSize";
 import DifficultyDisplay from "./static-components/Difficulty";
 import RoomStatusDisplay from "./static-components/RoomStatus";
-import RoomPlatersDisplay from "./static-components/RoomPlayers";
+import RoomPlayersDisplay from "./static-components/RoomPlayers";
 import RoomNameDisplay from "./static-components/RoomName";
 import CustomizedSnackbar from "./static-components/SnackBar";
 import Modal from "./dynamic-components/Modal";
@@ -76,7 +76,7 @@ const Room = ({ room }: { room: IRoom }) => {
       </Grid>
 
       <Grid item xs={6} sm={4} md={1} className="header-element center">
-        <RoomPlatersDisplay
+        <RoomPlayersDisplay
           players={room.numPlayers}
           maxPlayers={room.maxPlayers}
         />

@@ -1,7 +1,7 @@
 import { PeopleAlt } from "@mui/icons-material";
 
 
-const RoomPlatersDisplay = ({ players, maxPlayers }: { players: Number, maxPlayers: Number }) => {
+const RoomPlayersDisplay = ({ players, maxPlayers }: { players: Number, maxPlayers: Number }) => {
     return (
         <>
             <PeopleAlt />
@@ -10,4 +10,4 @@ const RoomPlatersDisplay = ({ players, maxPlayers }: { players: Number, maxPlaye
     )
 }
 
-export default RoomPlatersDisplay;
+export default RoomPlayersDisplay;
