@@ -5,101 +5,127 @@ import (
     "strings"
     "strconv"
     "math/rand"
-    "time"
 )
 
-type NodeState int
-
-const (
-    Empty NodeState = iota
-    V1Bridge
-    V2Bridge
-    H1Bridge
-    H2Bridge
-    Island
-)
-
-type Node struct {
-    x, y int
-    Bridges int
-    state NodeState
+type BoardItem interface {
+    Render() string
+    getCount() int
+    setCount(int) int
 }
 
-func (n *Node) Render() string {
-    switch n.state {
-    case Empty:
-        return " "
-    case Island:
-        return string(rune(48 + n.Bridges))
-    case V1Bridge:
+type EmptyItem struct {}
+
+func (ei *EmptyItem) Render() string {
+    return " "
+}
+
+func (ei *EmptyItem) getCount() int {
+    return 0
+}
+
+func (ei *EmptyItem) setCount(count int) int {
+    return 0
+}
+
+type BridgeItem struct {
+    vertical bool
+    count int
+}
+
+func (bi *BridgeItem) Render() string {
+    if bi.vertical && bi.count == 1 {
         return "|"
-    case V2Bridge:
+    } else if bi.vertical && bi.count == 2 {
         return "‖"
-    case H1Bridge:
+    } else if !bi.vertical && bi.count == 1 {
         return "-"
-    case H2Bridge:
+    } else if !bi.vertical && bi.count == 2 {
         return "="
-    default:
-        return "Go is stupid and doesn't have exhaustive switch"
+    } else {
+        return "?"
     }
 }
 
-func (n *Node) RenderSimple() string {
-    switch n.state {
-    case Island:
-        return string(rune(10111 + n.Bridges))
-    default:
-        return " "
-    }
+func (bi *BridgeItem) getCount() int {
+    return bi.count
+}
+
+func (bi *BridgeItem) setCount(count int) int {
+    bi.count = count
+    return bi.count
+}
+
+type IslandItem struct {
+    count int
+    used int
+}
+
+func (ii *IslandItem) Render() string {
+    return string(rune(48 + ii.count))
+}
+
+func (ii *IslandItem) getCount() int {
+    return ii.count
+}
+
+func (ii *IslandItem) setCount(count int) int {
+    ii.count = count
+    return ii.count
 }
 
 type Board struct {
     Width int
     Height int
-    Nodes []Node
+    Items []BoardItem
     IslandLocs []int
+    Bridges [][2]int
 }
 
 func (b *Board) GetCrossSection(loc int) []int {
     crossSection := []int{}
 
     rowStart := loc / b.Width * b.Width
-    for i := loc - 1; i >= rowStart; i-- {
-        if b.Nodes[i].state == Empty {
+
+    west: for i := loc - 1; i >= rowStart; i-- {
+        switch b.Items[i].(type) {
+        case *EmptyItem:
             crossSection = append(crossSection, i)
-        } else {
-            break
+        default:
+            break west
         }
     }
 
-    for i := loc + 1; i < rowStart + b.Width; i++ {
-        if b.Nodes[i].state == Empty {
+    east: for i := loc + 1; i < rowStart + b.Width; i++ {
+        switch b.Items[i].(type) {
+        case *EmptyItem:
             crossSection = append(crossSection, i)
-        } else {
-            break
+        default:
+            break east
         }
     }
 
-    for i := loc - b.Width; i >= loc - rowStart; i -= b.Width {
-        if b.Nodes[i].state == Empty {
+    north: for i := loc - b.Width; i >= loc - rowStart; i -= b.Width {
+        switch b.Items[i].(type) {
+        case *EmptyItem:
             crossSection = append(crossSection, i)
-        } else {
-            break
+        default:
+            break north
         }
     }
 
-    for i := loc + b.Width; i < len(b.Nodes); i += b.Width {
-        if b.Nodes[i].state == Empty {
+    south: for i := loc + b.Width; i < len(b.Items); i += b.Width {
+        switch b.Items[i].(type) {
+        case *EmptyItem:
             crossSection = append(crossSection, i)
-        } else {
-            break
+        default:
+            break south
         }
     }
 
     return crossSection
 }
 
-func getRandomItem[V int | Node](items []V) V {
+func getRandomItem(items []int) int {
     r := rand.Intn(len(items))
     return items[r]
 }
@@ -111,18 +137,29 @@ func (b *Board) FindValidNode() (int, int) {
 
         i := 0
         for _, loc := range possibleLocations {
-            if (loc < len(b.Nodes) - 1 && b.Nodes[loc + 1].state != Empty) {
-                continue
-            } else if (loc >= 1 && b.Nodes[loc - 1].state != Empty) {
-                continue
-            } else if (loc < len(b.Nodes) - b.Width && b.Nodes[loc + b.Width].state != Empty) {
-                continue
-            } else if (loc >= b.Width && b.Nodes[loc - b.Width].state != Empty) {
-                continue
-            } else {
-                possibleLocations[i] = loc
-                i++
+            if loc < len(b.Items) - 1 {
+                if _, ok := b.Items[loc + 1].(*EmptyItem); !ok {
+                    continue
+                }
             }
+            if (loc >= 1) {
+                if _, ok := b.Items[loc - 1].(*EmptyItem); !ok {
+                    continue
+                }
+            }
+            if (loc < len(b.Items) - b.Width) {
+                if _, ok := b.Items[loc + b.Width].(*EmptyItem); !ok {
+                    continue
+                }
+            }
+            if (loc >= b.Width) {
+                if _, ok := b.Items[loc - b.Width].(*EmptyItem); !ok {
+                    continue
+                }
+            }
+
+            possibleLocations[i] = loc
+            i++
         }
         possibleLocations = possibleLocations[:i]
 
@@ -134,52 +171,80 @@ func (b *Board) FindValidNode() (int, int) {
     return -1, -1
 }
 
-func (b *Board) AddNewNode(twoBridgesChance float32) bool {
-    fromLoc, toLoc := b.FindValidNode()
+func (b *Board) ConnectBridges(from, to, count int) {
+    b.Items[from].setCount(b.Items[from].getCount() + count)
+    b.Items[to].setCount(b.Items[to].getCount() + count)
 
-    if fromLoc == -1 || toLoc == -1 { return false }
+    b.Bridges = append(b.Bridges, [2]int{from, to})
+    if count == 2 {
+        b.Bridges = append(b.Bridges, [2]int{from, to})
+    }
 
-    fromNode, toNode := &b.Nodes[fromLoc], &b.Nodes[toLoc]
-
-    smaller, bigger := fromLoc, toLoc
+    smaller, bigger := from, to
     if smaller > bigger {
         smaller, bigger = bigger, smaller
     }
 
-    var lineWeight int
-    if rand.Float32() < twoBridgesChance {
-        lineWeight = 2
+    vertical := bigger - smaller > b.Width
+    var step int
+    if vertical {
+      step = b.Width
     } else {
-        lineWeight = 1
+      step = 1
     }
 
-    states := [4]NodeState{V1Bridge, V2Bridge, H1Bridge, H2Bridge}
-    if fromNode.x == toNode.x {
-        for i := smaller + b.Width; i < bigger; i += b.Width {
-            b.Nodes[i].state = states[lineWeight - 1]
+    smaller += step
+    for smaller < bigger {
+        switch b.Items[smaller].(type) {
+            case *BridgeItem:
+                b.Items[smaller].setCount(b.Items[smaller].getCount() + count)
+            case *EmptyItem:
+                b.Items[smaller] = &BridgeItem {vertical, count}
+            default:
         }
-    } else if fromNode.y == toNode.y {
-        for i := smaller + 1; i < bigger; i++ {
-            b.Nodes[i].state = states[lineWeight + 1]
-        }
+        smaller += step
+    }
+}
+
+func (b *Board) AddNewNode(twoBridgesChance float32) bool {
+    from, to := b.FindValidNode()
+
+    if from == -1 || to == -1 { return false }
+
+    var bridgeCount int
+    if rand.Float32() < twoBridgesChance {
+        bridgeCount = 2
+    } else {
+        bridgeCount = 1
     }
 
-    fromNode.Bridges += lineWeight
-    toNode.state = Island
-    toNode.Bridges = lineWeight
-    b.IslandLocs = append(b.IslandLocs, toLoc)
+    b.Items[to] = &IslandItem{0, 0}
+    b.IslandLocs = append(b.IslandLocs, to)
+
+    b.ConnectBridges(from, to, bridgeCount)
 
     return true
 }
 
-func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32) Board {
-    board := NewBoard(width, height)
-    startNode := getRandomItem(board.Nodes)
-    startLoc := startNode.y * width + startNode.x
-    board.Nodes[startLoc].state = Island
-    board.IslandLocs = append(board.IslandLocs, startLoc)
+func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32, difficulty int) Board {
+    var board Board
+    correct := false
 
-    for board.AddNewNode(twoBridgesChance) && len(board.IslandLocs) <= noNodes {}
+    for !correct {
+        board = NewBoard(width, height)
+        start := rand.Intn(len(board.Items))
+        board.Items[start] = &IslandItem{0, 0};
+        board.IslandLocs = append(board.IslandLocs, start)
+
+        for board.AddNewNode(twoBridgesChance) && len(board.IslandLocs) <= noNodes {}
+
+        switch difficulty {
+        case 0:
+            correct = board.SolveEasy()
+        default:
+            correct = true
+        }
+    }
 
     return board
 }
@@ -189,7 +254,7 @@ func (b *Board) Render() string {
 
     for y := 0; y < b.Height; y++ {
         for x := 0; x < b.Width; x++ {
-            ret += b.Nodes[y * b.Width + x].RenderSimple() + " "
+            ret += b.Items[y * b.Width + x].Render() + " "
         }
         ret += "\n"
     }
@@ -200,10 +265,11 @@ func (b *Board) Render() string {
 func (b *Board) Encode() string {
     ret := fmt.Sprintf("%dx%d:", b.Width, b.Height)
 
-    for _, n := range b.Nodes {
-        if (n.state == Island) {
-            ret += strconv.Itoa(n.Bridges)
-        } else {
+    for _, item := range b.Items {
+        switch item.(type) {
+        case *IslandItem:
+            ret += strconv.Itoa(item.getCount())
+        default:
             ret += "-"
         }
     }
@@ -212,9 +278,9 @@ func (b *Board) Encode() string {
 }
 
 func BoardDecode(code string) Board {
-    sizeAndNodes := strings.Split(code, ":")
+    sizeAndItems := strings.Split(code, ":")
 
-    widthAndHeight := strings.Split(sizeAndNodes[0], "x")
+    widthAndHeight := strings.Split(sizeAndItems[0], "x")
 
     width, err := strconv.Atoi(widthAndHeight[0])
     height, err := strconv.Atoi(widthAndHeight[1])
@@ -225,16 +291,29 @@ func BoardDecode(code string) Board {
 
     for y := 0; y < b.Height; y++ {
         for x := 0; x < b.Width; x++ {
-            c := string(sizeAndNodes[1][y * b.Width + x])
+            c := string(sizeAndItems[1][y * b.Width + x])
             if c == "-" {
-                b.Nodes[y * b.Width + x].state = Empty
+                b.Items[y * b.Width + x] = &EmptyItem{}
             } else if bridges, err := strconv.Atoi(c); err == nil {
-                b.Nodes[y * b.Width + x].state = Island
-                b.Nodes[y * b.Width + x].Bridges = bridges
+                b.Items[y * b.Width + x] = &IslandItem {bridges, 0}
             }
         }
     }
     return b
+}
+
+func (b *Board) Export() []int {
+    exportArr := make([]int, len(b.Items))
+    for loc, item := range b.Items {
+        switch item.(type) {
+        case *IslandItem:
+            exportArr[loc] = item.getCount()
+        default:
+            exportArr[loc] = 0
+        }
+    }
+
+    return exportArr
 }
 
 func NewBoard(width, height int) Board {
@@ -242,24 +321,13 @@ func NewBoard(width, height int) Board {
     ret.Width = width
     ret.Height = height
 
-    ret.Nodes = make([]Node, width * height)
+    ret.Items = make([]BoardItem, width * height)
 
     for y := 0; y < height; y++ {
         for x := 0; x < width; x++ {
-            ret.Nodes[y * width + x].x = x
-            ret.Nodes[y * width + x].y = y
-            ret.Nodes[y * width + x].state = Empty
+            ret.Items[y * width + x] = &EmptyItem{}
         }
     }
 
     return ret
-}
-
-func main() {
-    seed := time.Now().UnixNano()
-    rand.Seed(seed)
-    board := GenerateBoard(9, 11, 25, 0.5)
-
-    fmt.Printf("seed %d:\n%s\n", seed, board.Render())
-    fmt.Printf("%s\n", board.Encode())
 }

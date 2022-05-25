@@ -55,12 +55,9 @@ type InboundCheckBoardData struct {
 // Creates board with given parameters and adds it to given room, returns json with boardData
 func createBoard(c *Client, r *Room) {
 	size := r.boardData.BoardSize
-	board := hashi.GenerateBoard(size, size, int((size*size)/2), 0.5)
-	boardArray := make([]int, size*size)
-	for i, n := range board.Nodes {
-		boardArray[i] = n.Bridges
-	}
-	r.boardData.Array = boardArray
+	difficulty := r.boardData.Difficulty
+	board := hashi.GenerateBoard(size, size, int((size*size)/2), 0.5, difficulty)
+	r.boardData.Array = board.Export()
 	rm := ResponeMessage{Respone: "CreateBoard", Payload: r.boardData}
 	roomBroadcast(r, rm)
 }
@@ -99,14 +96,9 @@ func startGame(c *Client, r *Room) {
 	}
 }
 
-// Return true if board is solved
-func CheckSolution(board []int, bridges [][2]int) bool {
-	return true
-}
-
 // Check if player's solution is good and change appropriate data
 func checkBoard(icbd InboundCheckBoardData, c *Client, r *Room) {
-	if CheckSolution(r.boardData.Array, icbd.Moves) {
+	if hashi.CheckSolution(r.boardData.Array, icbd.Moves) {
 		userGameState := r.gameData[c.uuid]
 		userGameState.Correct = true
 		timeStart, _ := time.Parse(time.RFC1123, userGameState.TimeStart)
