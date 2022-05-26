@@ -54,6 +54,60 @@ type RoomForMulticast struct {
 	GameOn     bool `json:"gameOn"`
 }
 
+// JSON structure for actions such as create room and edit room are identical
+type InboundCreateEditRoom struct {
+	Action                    string                    `json:"action"`
+	InboundCreateEditRoomData InboundCreateEditRoomData `json:"data"`
+}
+
+type InboundCreateEditRoomData struct {
+	Name       string `json:"name"`
+	Password   string `json:"password"`
+	MaxPlayers int    `json:"maxPlayers"`
+	IsPrivate  bool   `json:"isPrivate"`
+	TimeLimit  int    `json:"timeLimit"`
+	Difficulty int    `json:"difficulty"`
+	BoardSize  int    `json:"boardSize"`
+}
+
+// JSON structure for actions such as start game, finish game and delete room are identical
+type InboundRoom struct {
+	Action          string          `json:"action"`
+	InboundRoomData InboundRoomData `json:"data"`
+}
+
+type InboundRoomData struct {
+	RoomName string `json:"roomName"`
+}
+
+type InboundChangeName struct {
+	Action                string                `json:"action"`
+	InboundChangeNameData InboundChangeNameData `json:"data"`
+}
+
+type InboundChangeNameData struct {
+	NewName string `json:"newName"`
+}
+
+type InboundKickUser struct {
+	Action              string              `json:"action"`
+	InboundKickUserData InboundKickUserData `json:"data"`
+}
+
+type InboundKickUserData struct {
+	UserToKick string `json:"userToKick"`
+}
+
+type InboundChangeRoom struct {
+	Action                string                `json:"action"`
+	InboundChangeRoomData InboundChangeRoomData `json:"data"`
+}
+
+type InboundChangeRoomData struct {
+	RoomName string `json:"roomName"`
+	Password string `json:"password"`
+}
+
 // Creates room with given roomSettings
 func newRoom(roomSettings RoomSettings) *Room {
 	return &Room{
@@ -69,134 +123,128 @@ func newRoom(roomSettings RoomSettings) *Room {
 }
 
 // Creates room with given parameters and adds client to it
-func addRoom(data interface{}, userUuid interface{}) {
-	c := clientsMap[userUuid.(string)]
+func addRoom(icerd InboundCreateEditRoomData, c *Client) {
 	if c.room.roomSettings.Name != "lobby" {
 		rm := ResponeMessage{Respone: "CreateRoom", Error: "Client must be in lobby to create room"}
 		sendToClient(c, rm)
 		return
 	}
 	roomSettings := RoomSettings{}
-	roomSettings.Name = data.(map[string]interface{})["name"].(string)
-	roomSettings.Password = data.(map[string]interface{})["password"].(string)
-	roomSettings.Admin = userUuid.(string)
-	roomSettings.MaxPlayers = int(data.(map[string]interface{})["maxPlayers"].(float64))
-	roomSettings.IsPrivate = data.(map[string]interface{})["isPrivate"].(bool)
-	roomSettings.TimeLimit = int(data.(map[string]interface{})["timeLimit"].(float64))
+	roomSettings.Name = icerd.Name
+	roomSettings.Password = icerd.Password
+	roomSettings.Admin = c.uuid
+	roomSettings.MaxPlayers = icerd.MaxPlayers
+	roomSettings.IsPrivate = icerd.IsPrivate
+	roomSettings.TimeLimit = icerd.TimeLimit
 	if _, ok := roomsMap[roomSettings.Name]; ok {
 		rm := ResponeMessage{Respone: "CreateRoom", Error: "Room exists"}
 		sendToClient(c, rm)
 		return
 	}
-	room := newRoom(roomSettings)
-	room.boardData.BoardSettings.BoardSize = int(data.(map[string]interface{})["boardSize"].(float64))
-	room.boardData.BoardSettings.Difficulty = int(data.(map[string]interface{})["difficulty"].(float64))
-	roomsMap[roomSettings.Name] = room
+	r := newRoom(roomSettings)
+	r.boardData.BoardSettings.BoardSize = icerd.BoardSize
+	r.boardData.BoardSettings.Difficulty = icerd.Difficulty
+	roomsMap[roomSettings.Name] = r
 	// delete client from lobby and add to current room
-	r := roomsMap["lobby"]
-	delete(r.clients, c)
-	c.room = room
-	room.clients[c] = true
-	go room.run()
-	rm := ResponeMessage{Respone: "CreateRoom", Payload: room.roomSettings}
+	lobby := roomsMap["lobby"]
+	delete(lobby.clients, c)
+	c.room = r
+	r.clients[c] = true
+	go r.run()
+	rm := ResponeMessage{Respone: "CreateRoom", Payload: r.roomSettings}
 	sendToClient(c, rm)
-	updatedRoomMulticast(room)
+	updatedRoomMulticast(r)
 	stateRm := ResponeMessage{Respone: "IsAdmin"}
 	sendToClient(c, stateRm)
 	stateRm = ResponeMessage{Respone: "InWaitingRoom"}
 	sendToClient(c, stateRm)
+
 	// if it is singleplayer game
-	if room.roomSettings.MaxPlayers == 1 {
-		startGame(data, userUuid)
+	if r.roomSettings.MaxPlayers == 1 {
+		startGame(InboundRoomData{RoomName: r.roomSettings.Name}, c, r)
 	}
 	lobbyBroadcast()
 }
 
 // Edit room with given parameters
-func editRoom(data interface{}, userUuid interface{}) {
-	c := clientsMap[userUuid.(string)]
-	room := roomsMap[c.room.roomSettings.Name]
-	if room.gameOn {
-		rm := ResponeMessage{Respone: "EditRoom", Error: "Room can't be edited during the game"}
-		sendToClient(c, rm)
-		return
-	}
-	roomSettings := RoomSettings{}
-	roomSettings.Name = data.(map[string]interface{})["name"].(string)
-	roomSettings.Password = data.(map[string]interface{})["password"].(string)
-	roomSettings.Admin = userUuid.(string)
-	roomSettings.MaxPlayers = int(data.(map[string]interface{})["maxPlayers"].(float64))
-	roomSettings.IsPrivate = data.(map[string]interface{})["isPrivate"].(bool)
-	roomSettings.TimeLimit = int(data.(map[string]interface{})["timeLimit"].(float64))
-	if room.roomSettings.Name != roomSettings.Name {
-		rm := ResponeMessage{Respone: "EditRoom", Error: "Wrong room name"}
-		sendToClient(c, rm)
-		return
-	}
-	if room.roomSettings.Admin != c.uuid {
+func editRoom(icerd InboundCreateEditRoomData, c *Client, clientRoom *Room) {
+	if clientRoom.roomSettings.Admin != c.uuid {
 		rm := ResponeMessage{Respone: "EditRoom", Error: "Client must be admin to edit room"}
 		sendToClient(c, rm)
 		return
 	}
-	room.roomSettings = roomSettings
-	room.boardData.BoardSettings.BoardSize = int(data.(map[string]interface{})["boardSize"].(float64))
-	room.boardData.BoardSettings.Difficulty = int(data.(map[string]interface{})["difficulty"].(float64))
+	if clientRoom.gameOn {
+		rm := ResponeMessage{Respone: "EditRoom", Error: "Room can't be edited during the game"}
+		sendToClient(c, rm)
+		return
+	}
+	if clientRoom.roomSettings.Name != icerd.Name {
+		rm := ResponeMessage{Respone: "EditRoom", Error: "Wrong room name"}
+		sendToClient(c, rm)
+		return
+	}
+	roomSettings := RoomSettings{}
+	roomSettings.Name = icerd.Name
+	roomSettings.Password = icerd.Password
+	roomSettings.Admin = c.uuid
+	roomSettings.MaxPlayers = icerd.MaxPlayers
+	roomSettings.IsPrivate = icerd.IsPrivate
+	roomSettings.TimeLimit = icerd.TimeLimit
+	clientRoom.roomSettings = roomSettings
+	clientRoom.boardData.BoardSettings.BoardSize = icerd.BoardSize
+	clientRoom.boardData.BoardSettings.Difficulty = icerd.Difficulty
 	rm := ResponeMessage{Respone: "EditRoom", Payload: roomSettings}
 	sendToClient(c, rm)
-	updatedRoomMulticast(room)
+	updatedRoomMulticast(clientRoom)
 	lobbyBroadcast()
 }
 
 // Moves clients from room to lobby and removes the room
-func deleteRoom(roomName string, userUuid interface{}) {
-	room, ok := roomsMap[roomName]
+func deleteRoom(ird InboundRoomData, c *Client) {
+	roomToDelete, ok := roomsMap[ird.RoomName]
 	if !ok {
 		rm := ResponeMessage{Respone: "deleteRoom", Error: "Room does not exist"}
-		sendToClient(clientsMap[userUuid.(string)], rm)
+		sendToClient(c, rm)
 		return
 	}
 	lobby := roomsMap["lobby"]
-	if userUuid.(string) != room.roomSettings.Admin {
+	if c.uuid != roomToDelete.roomSettings.Admin {
 		rm := ResponeMessage{Respone: "deleteRoom", Error: "User is not admin"}
-		sendToClient(clientsMap[userUuid.(string)], rm)
+		sendToClient(c, rm)
 		return
 	}
-	for client := range room.clients {
+	for client := range roomToDelete.clients {
 		client.room = lobby
 		lobby.clients[client] = true
 		stateRm := ResponeMessage{Respone: "ExitWaitingRoom"}
 		sendToClient(client, stateRm)
 	}
-	delete(roomsMap, room.roomSettings.Name)
+	delete(roomsMap, roomToDelete.roomSettings.Name)
 	stateRm := ResponeMessage{Respone: "ExitAdmin"}
-	sendToClient(clientsMap[userUuid.(string)], stateRm)
+	sendToClient(c, stateRm)
 	lobbyBroadcast()
 }
 
 // moves client to given room
-func changeRoom(data interface{}, userUuid interface{}) {
-	roomName := data.(map[string]interface{})["roomName"].(string)
-	roomPassword := data.(map[string]interface{})["password"].(string)
-	c := clientsMap[userUuid.(string)]
-	if c.room.roomSettings.Name == roomName {
+func changeRoom(icrd InboundChangeRoomData, c *Client, oldRoom *Room) {
+	if c.room.roomSettings.Name == icrd.RoomName {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Client already is in this room"}
 		sendToClient(c, rm)
 		return
 	}
-	if c.room.roomSettings.Name != "lobby" && roomName != "lobby" {
+	if c.room.roomSettings.Name != "lobby" && icrd.RoomName != "lobby" {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Client must be in lobby to enter to the room"}
 		sendToClient(c, rm)
 		return
 	}
-	oldRoom := c.room
 	var oldRoomExist bool = true
-	newRoom, ok := roomsMap[roomName]
+	newRoom, ok := roomsMap[icrd.RoomName]
 	if !ok {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Room does not exist"}
 		sendToClient(c, rm)
 		return
 	}
-	if newRoom.roomSettings.Password != roomPassword {
+	if newRoom.roomSettings.Password != icrd.Password {
 		rm := ResponeMessage{Respone: "changeRoom", Error: "Wrong password"}
 		sendToClient(c, rm)
 		return
@@ -211,11 +259,14 @@ func changeRoom(data interface{}, userUuid interface{}) {
 		sendToClient(c, rm)
 		return
 	}
+	if oldRoom.gameOn {
+		userFinished(InboundRoomData{oldRoom.roomSettings.Name}, c, oldRoom)
+	}
 	delete(oldRoom.clients, c)
 	newRoom.clients[c] = true
 	c.room = newRoom
 	if oldRoom.roomSettings.Admin == c.uuid {
-		oldRoomExist = changeAdmin(oldRoom.roomSettings.Name, c.uuid)
+		oldRoomExist = changeAdmin(c, oldRoom)
 	}
 	if oldRoom.roomSettings.Name != "lobby" && oldRoomExist {
 		updatedRoomMulticast(oldRoom)
@@ -236,102 +287,93 @@ func changeRoom(data interface{}, userUuid interface{}) {
 
 // give admin to another user in this room if exist, if not then delete room
 // return false if room is deleted
-func changeAdmin(roomName string, userUuid interface{}) bool {
-	room := roomsMap[roomName]
-	if userUuid.(string) != room.roomSettings.Admin {
+func changeAdmin(c *Client, r *Room) bool {
+	if c.uuid != r.roomSettings.Admin {
 		rm := ResponeMessage{Respone: "changeAdmin", Error: "User is not admin"}
-		sendToClient(clientsMap[userUuid.(string)], rm)
+		sendToClient(c, rm)
 		return true
 	}
-	oldAdmin := clientsMap[userUuid.(string)]
-	if len(room.clients) == 0 {
-		deleteRoom(roomName, userUuid)
+	oldAdmin := c
+	if len(r.clients) == 0 {
+		deleteRoom(InboundRoomData{RoomName: r.roomSettings.Name}, c)
 		return false
 	}
-	for client := range room.clients {
+	for client := range r.clients {
 		if client.uuid == oldAdmin.uuid {
 			continue
 		}
-		room.roomSettings.Admin = client.uuid
+		r.roomSettings.Admin = client.uuid
 		break
 	}
 	stateRm := ResponeMessage{Respone: "ExitAdmin"}
 	sendToClient(oldAdmin, stateRm)
 	stateRm = ResponeMessage{Respone: "IsAdmin"}
-	sendToClient(clientsMap[room.roomSettings.Admin], stateRm)
+	sendToClient(clientsMap[r.roomSettings.Admin], stateRm)
 	return true
 }
 
 // kick user from room to lobby
-func kickUser(data interface{}, userUuid interface{}) {
-	userToKick := data.(map[string]interface{})["userToKick"].(string)
-	c := clientsMap[userUuid.(string)]
-	r := c.room
+func kickUser(ikud InboundKickUserData, c *Client, r *Room) {
+	usernameToKick := ikud.UserToKick
 	if c.uuid != r.roomSettings.Admin {
 		rm := ResponeMessage{Respone: "kickUser", Error: "Only admin can kick users"}
 		sendToClient(c, rm)
 		return
 	}
-	for _, client := range clientsMap {
-		if client.name == userToKick && client.room.roomSettings.Name == r.roomSettings.Name {
-			kick := ClientKick{RoomName: "lobby",
-				Password: ""}
-			info, _ := json.MarshalIndent(kick, "", "  ")
-			var payload map[string]interface{}
-			_ = json.Unmarshal(info, &payload)
-			changeRoom(payload, client.uuid)
-			rm := ResponeMessage{Respone: "kickUser", Error: "You have been kicked from the room"}
-			sendToClient(client, rm)
-			return
-		}
+	clientToKick := clientsMap[usernameToKick]
+	if clientToKick.room.roomSettings.Name == r.roomSettings.Name {
+		changeRoom(InboundChangeRoomData{RoomName: "lobby"}, c, r)
+		rm := ResponeMessage{Respone: "kickUser", Error: "You have been kicked from the room"}
+		sendToClient(clientToKick, rm)
+		return
 	}
 	rm := ResponeMessage{Respone: "kickUser", Error: "Wrong user name"}
 	sendToClient(c, rm)
 }
 
 // Send given json to all clients in given room
-func roomBroadcast(room *Room, rm ResponeMessage) {
+func roomBroadcast(r *Room, rm ResponeMessage) {
 	j, _ := json.MarshalIndent(rm, "", "  ")
-	for client := range room.clients {
+	for client := range r.clients {
 		select {
 		case client.send <- j:
 		default:
 			close(client.send)
-			delete(room.clients, client)
+			delete(r.clients, client)
 		}
 	}
 }
 
 // Send given json to given client
-func sendToClient(client *Client, rm ResponeMessage) {
+func sendToClient(c *Client, rm ResponeMessage) {
 	j, _ := json.MarshalIndent(rm, "", "  ")
 	select {
-	case client.send <- j:
+	case c.send <- j:
 	default:
-		close(client.send)
-		delete(client.room.clients, client)
+		close(c.send)
+		delete(c.room.clients, c)
 	}
 }
 
 // Message with informations about room and players in room
-func updatedRoomMulticast(room *Room) {
+func updatedRoomMulticast(r *Room) {
 	var roomJson RoomForMulticast
 	var structTable []ClientIdData
 	for _, val := range clientsMap {
-		if val.room == room {
+		if val.room == r {
 			structTable = append(structTable, ClientIdData{val.uuid, val.name})
 		}
 	}
-	roomJson.Name = room.roomSettings.Name
-	roomJson.Admin = room.roomSettings.Admin
+	roomJson.Name = r.roomSettings.Name
+	roomJson.Admin = r.roomSettings.Admin
 	roomJson.Players = structTable
-	roomJson.MaxPlayers = room.roomSettings.MaxPlayers
-	roomJson.IsPrivate = room.roomSettings.IsPrivate
-	roomJson.BoardSize = int(room.boardData.BoardSize)
-	roomJson.Difficulty = int(room.boardData.Difficulty)
-	roomJson.GameOn = room.gameOn
+	roomJson.MaxPlayers = r.roomSettings.MaxPlayers
+	roomJson.IsPrivate = r.roomSettings.IsPrivate
+	roomJson.BoardSize = int(r.boardData.BoardSize)
+	roomJson.Difficulty = int(r.boardData.Difficulty)
+	roomJson.GameOn = r.gameOn
 	rm := ResponeMessage{Respone: "UpdateRoom", Payload: roomJson}
-	roomBroadcast(room, rm)
+	roomBroadcast(r, rm)
 }
 
 // Send update about rooms to clients in lobby
@@ -388,9 +430,12 @@ func (r *Room) run() {
 		// when the client disconnected to the server
 		case client := <-r.unregister:
 			if _, ok := r.clients[client]; ok {
+				if r.gameOn {
+					userFinished(InboundRoomData{r.roomSettings.Name}, client, r)
+				}
 				delete(r.clients, client)
 				if client.room.roomSettings.Admin == client.uuid && client.room.roomSettings.Name != "lobby" {
-					changeAdmin(client.room.roomSettings.Name, client.uuid)
+					changeAdmin(client, client.room)
 				} else if client.room != roomsMap["lobby"] {
 					delete(clientsMap, client.uuid)
 					updatedRoomMulticast(r)
@@ -402,45 +447,127 @@ func (r *Room) run() {
 		case message := <-r.broadcast:
 			cid := ClientIdData{}
 			json.Unmarshal(message[0], &cid)
+			c := clientsMap[cid.Uuid]
+			clientRoom := roomsMap[c.room.roomSettings.Name]
 			// this allows us to read json with action and user fields and arbitrary data
 			var payload map[string]interface{}
 			err := json.Unmarshal(message[1], &payload)
 			if err != nil {
 				log.Print("Error during Unmarshal(): ", err)
 				rm := ResponeMessage{Respone: "Error", Error: err.Error()}
-				sendToClient(clientsMap[cid.Uuid], rm)
+				sendToClient(c, rm)
 				break
 			}
 			// check if user uuid from frontend is valid
-			if cid.Uuid != payload["userUuid"] {
-				rm := ResponeMessage{Respone: "Error", Error: "Wrong user uuid"}
-				sendToClient(clientsMap[cid.Uuid], rm)
-				break
-			}
+			// if cid.Uuid != payload["userUuid"] {
+			// 	rm := ResponeMessage{Respone: "Error", Error: "Wrong user uuid"}
+			// 	sendToClient(c, rm)
+			// 	break
+			// }
 			switch payload["action"] {
 			case "createRoom":
-				addRoom(payload["data"], payload["userUuid"])
-			case "generateBoard":
-				createBoard(payload["data"], payload["userUuid"])
-			case "changeRoom":
-				changeRoom(payload["data"], payload["userUuid"])
-			case "deleteRoom":
-				deleteRoom(payload["data"].(map[string]interface{})["roomName"].(string), payload["userUuid"])
+				var icer InboundCreateEditRoom
+				err := json.Unmarshal(message[1], &icer)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				addRoom(icer.InboundCreateEditRoomData, c)
 			case "editRoom":
-				editRoom(payload["data"], payload["userUuid"])
+				var icer InboundCreateEditRoom
+				err := json.Unmarshal(message[1], &icer)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				editRoom(icer.InboundCreateEditRoomData, c, clientRoom)
+			case "deleteRoom":
+				var ir InboundRoom
+				err := json.Unmarshal(message[1], &ir)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				deleteRoom(ir.InboundRoomData, c)
+			case "changeRoom":
+				var icr InboundChangeRoom
+				err := json.Unmarshal(message[1], &icr)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				changeRoom(icr.InboundChangeRoomData, c, clientRoom)
 			case "changeName":
-				changeName(payload["data"], payload["userUuid"])
-			case "startGame":
-				startGame(payload["data"], payload["userUuid"])
-			case "checkBoard":
-				checkBoard(payload["data"], payload["userUuid"])
-			case "finishGame":
-				userFinished(payload["data"], payload["userUuid"])
+				var icn InboundChangeName
+				err := json.Unmarshal(message[1], &icn)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				changeName(icn.InboundChangeNameData, c)
 			case "kickUser":
-				kickUser(payload["data"], payload["userUuid"])
+				var iku InboundKickUser
+				err := json.Unmarshal(message[1], &iku)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				kickUser(iku.InboundKickUserData, c, r)
+			case "generateBoard":
+				var icb InboundCreateBoard
+				err := json.Unmarshal(message[1], &icb)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				createBoard(icb.InboundCreateBoardData, c, clientRoom)
+			case "startGame":
+				var ir InboundRoom
+				err := json.Unmarshal(message[1], &ir)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				startGame(ir.InboundRoomData, c, r)
+			case "checkBoard":
+				var icb InboundCheckBoard
+				err := json.Unmarshal(message[1], &icb)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				checkBoard(icb.InboundCheckBoardData, c, r)
+			case "finishGame":
+				var ir InboundRoom
+				err := json.Unmarshal(message[1], &ir)
+				if err != nil {
+					log.Print("Error during Unmarshal(): ", err)
+					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+					sendToClient(c, rm)
+					break
+				}
+				userFinished(ir.InboundRoomData, c, r)
 			default:
 				rm := ResponeMessage{Respone: "Error", Error: "Wrong response"}
-				sendToClient(clientsMap[cid.Uuid], rm)
+				sendToClient(c, rm)
 			}
 		}
 	}
