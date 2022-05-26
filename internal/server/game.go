@@ -43,38 +43,41 @@ type UserGameData struct {
 	UserGameState UserGameState
 }
 
+type InboundCreateBoard struct {
+	Action                 string                 `json:"action"`
+	InboundCreateBoardData InboundCreateBoardData `json:"data"`
+}
+
+type InboundCreateBoardData struct {
+	Difficulty int `json:"difficulty"`
+	BoardSize  int `json:"boardSize"`
+}
+
+type InboundCheckBoard struct {
+	Action                string                `json:"action"`
+	InboundCheckBoardData InboundCheckBoardData `json:"data"`
+}
+
+type InboundCheckBoardData struct {
+	Moves [][2]int `json:"moves"`
+}
+
 // Creates board with given parameters and adds it to given room, returns json with boardData
-func createBoard(data interface{}, userUuid interface{}) {
-	c := clientsMap[userUuid.(string)]
-	room := roomsMap[c.room.roomSettings.Name]
-	if data.(map[string]interface{})["difficulty"] != nil {
-		room.boardData.BoardSettings.Difficulty = int(data.(map[string]interface{})["difficulty"].(float64))
-	}
-	size := room.boardData.BoardSettings.BoardSize
-	if data.(map[string]interface{})["boardSize"] != nil {
-		size = int(data.(map[string]interface{})["boardSize"].(float64))
-	}
+func createBoard(icbd InboundCreateBoardData, c *Client, r *Room) {
+	size := icbd.BoardSize
 	board := hashi.GenerateBoard(size, size, int((size*size)/2), 0.5)
 	boardArray := make([]int, size*size)
 	for i, n := range board.Nodes {
 		boardArray[i] = n.Bridges
 	}
-	room.boardData.Array = boardArray
-	rm := ResponeMessage{Respone: "CreateBoard", Payload: room.boardData}
-	roomBroadcast(room, rm)
+	r.boardData.Array = boardArray
+	rm := ResponeMessage{Respone: "CreateBoard", Payload: r.boardData}
+	roomBroadcast(r, rm)
 }
 
-func startGame(data interface{}, userUuid interface{}) {
-	c := clientsMap[userUuid.(string)]
-	roomName := c.room.roomSettings.Name
-	r := roomsMap[roomName]
+func startGame(ird InboundRoomData, c *Client, r *Room) {
 	if r.gameOn {
 		rm := ResponeMessage{Respone: "startGame", Error: "Game already is started"}
-		sendToClient(c, rm)
-		return
-	}
-	if roomName != r.roomSettings.Name {
-		rm := ResponeMessage{Respone: "startGame", Error: "Wrong room name"}
 		sendToClient(c, rm)
 		return
 	}
@@ -93,7 +96,9 @@ func startGame(data interface{}, userUuid interface{}) {
 		}
 	}
 	r.gameOn = true
-	createBoard(data, userUuid)
+	createBoard(InboundCreateBoardData{
+		Difficulty: r.boardData.BoardSettings.Difficulty,
+		BoardSize:  r.boardData.BoardSettings.BoardSize}, c, r)
 	updatedRoomMulticast(r)
 	updatedGameMulticast(r)
 	lobbyBroadcast()
@@ -107,16 +112,13 @@ func startGame(data interface{}, userUuid interface{}) {
 }
 
 // Return true if board is solved
-func michalcheck() bool {
+func CheckSolution(board []int, bridges [][2]int) bool {
 	return true
 }
 
 // Check if player's solution is good and change appropriate data
-func checkBoard(data interface{}, userUuid interface{}) {
-	c := clientsMap[userUuid.(string)]
-	r := roomsMap[c.room.roomSettings.Name]
-	//moves := data.(map[string]interface{})["moves"]
-	if michalcheck() {
+func checkBoard(icbd InboundCheckBoardData, c *Client, r *Room) {
+	if CheckSolution(r.boardData.Array, icbd.Moves) {
 		userGameState := r.gameData[c.uuid]
 		userGameState.Correct = true
 		timeStart, _ := time.Parse(time.RFC1123, userGameState.TimeStart)
@@ -129,19 +131,10 @@ func checkBoard(data interface{}, userUuid interface{}) {
 }
 
 // Move client to waiting room
-func userFinished(data interface{}, userUuid interface{}) {
-	c := clientsMap[userUuid.(string)]
-	r := roomsMap[c.room.roomSettings.Name]
-	if r.roomSettings.Name != data.(map[string]interface{})["name"].(string) {
-		rm := ResponeMessage{Respone: "finishGame", Error: "Wrong room name"}
-		sendToClient(c, rm)
-		return
-	}
+func userFinished(ird InboundRoomData, c *Client, r *Room) {
 	userGameState := r.gameData[c.uuid]
 	userGameState.InGame = false
 	r.gameData[c.uuid] = userGameState
-	// TODO front może chcieć żeby tutaj wysłać informacje o pokoju dla danego gracza
-	// ale mają o tym jeszcze porozmawiać
 	stateRm := ResponeMessage{Respone: "InWaitingRoom"}
 	sendToClient(c, stateRm)
 	// check if game should be finished
@@ -166,22 +159,15 @@ func finishGame(r *Room) {
 	lobbyBroadcast()
 }
 
-// Cancel game and clear game data
-/*
-func cancelGame() {
-	finishGame()
-	return
-}
-*/
 // Message with informations about room and players in room
-func updatedGameMulticast(room *Room) {
+func updatedGameMulticast(r *Room) {
 	var userGameData UserGameData
 	var structTable []UserGameData
-	for uuid, gameData := range room.gameData {
+	for uuid, gameData := range r.gameData {
 		userGameData.Uuid = uuid
 		userGameData.UserGameState = gameData
 		structTable = append(structTable, userGameData)
 	}
 	rm := ResponeMessage{Respone: "UpdateGameData", Payload: structTable}
-	roomBroadcast(room, rm)
+	roomBroadcast(r, rm)
 }
