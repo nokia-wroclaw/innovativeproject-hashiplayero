@@ -25,12 +25,17 @@ $light_logo-secondary-color: #8b89ec;
     justify-content: $spacing;
 }
 
+// :root{
+//     scale down body 0.8 time
+//     transform: scale(0.8) translate(0, -100px);
+
+// }
 
 .body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-
+    //scale down body 0.8 time
     &.modal-active {
         overflow: hidden;
     }

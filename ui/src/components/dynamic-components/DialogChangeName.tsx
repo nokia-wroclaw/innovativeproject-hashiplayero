@@ -8,12 +8,18 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
+  Slide,
+  IconButton,
+  Box
 } from "@mui/material";
 
-import Slide from "@mui/material/Slide";
+import CancelIcon from '@mui/icons-material/Cancel';
+
 import { TransitionProps } from "@mui/material/transitions";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import CustomizedSnackbar from "../static-components/SnackBar";
+import { ISnackbar } from "../../interfaces/ISnackbar";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -34,9 +40,15 @@ const DialogChangeName = () => {
 
   const [name, setName] = useState<string>("");
 
+  const [snackbar, setSnackbar] = useState<ISnackbar>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
   useEffect(() => {
     setName(user.name);
-  }, [user])
+  }, [user, open])
 
   const handleSetName = (event: any) => {
     setName(event.target.value);
@@ -51,6 +63,14 @@ const DialogChangeName = () => {
   };
 
   const handleChangeName = () => {
+    if (name.length === 0) {
+      setSnackbar({
+        message: "Name cannot be empty!",
+        open: true,
+        severity: "error",
+      });
+      return;
+    }
     if (webSocket !== undefined) {
       webSocket.send(
         JSON.stringify({
@@ -63,6 +83,14 @@ const DialogChangeName = () => {
       console.log("WebSocket-> Change Name");
     }
     handleClose();
+  };
+
+  const handleClearName = () => {
+    setName("");
+  };
+
+  const handleMouseDownName = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
   };
 
   return (
@@ -85,23 +113,30 @@ const DialogChangeName = () => {
         <DialogTitle>New Name!</DialogTitle>
         <DialogContent>
           <DialogContentText>To change name enter new name.</DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Name"
-            type="email"
-            fullWidth
-            variant="standard"
-            onChange={handleSetName}
+          <Box sx={{ display: 'flex', alignItems: 'flex-end', marginTop:"12px", alignContent:"center" }}>
+            <IconButton
+              aria-label="clear name"
+              onClick={handleClearName}
+              onMouseDown={handleMouseDownName}
+              sx={{ mr: 1, my: 0.5 }}
+            >
+              <CancelIcon />
+            </IconButton>
+            <TextField id="input-name" label="My new shiny name!" variant="standard" 
             value={name}
-          />
+            onChange={handleSetName}/>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleChangeName}>Change</Button>
         </DialogActions>
       </Dialog>
+      <>
+      {snackbar.open ? (
+        <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+      ) : null}
+    </>
     </>
   );
 };

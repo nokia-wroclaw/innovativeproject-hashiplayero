@@ -1,19 +1,11 @@
 import IMember from "../interfaces/IMember";
 import { IGameData } from "../interfaces/IRoomAndBoard";
 import { PersonRemove } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 
-import Box from '@mui/material/Box';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+import { Typography, ListItemText, ListItemIcon, ListItemButton, ListItem, List, Button, SwipeableDrawer, Box } from "@mui/material";
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -60,11 +52,6 @@ const SwipeablePlayerList = ({
                 setState({ ...state, [anchor]: open });
             };
 
-
-    function sendCorrectInGameDataUser(userUuid: string): IGameData | undefined {
-        return gameData.find((elem: IGameData) => elem.uuid === userUuid);
-    };
-
     const list = (anchor: Anchor) => (
         <Box
             sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 350 }}
@@ -77,10 +64,23 @@ const SwipeablePlayerList = ({
                     <ListItem key={player.uuid} disablePadding>
                         <ListItemButton>
                             <ListItemText
-                                {
-                                ...(player.uuid === user.uuid ? { primary: `${player.name} (You)` } : { primary: player.name })
+                                secondary={
+                                    <React.Fragment>
+                                        <Typography
+                                            sx={{ maxWidth: '90%', display: "block" }}
+                                            component="span"
+                                            variant="body2"
+                                            color="text.primary"
+                                            noWrap
+                                        >
+                                            {
+                                                (player.uuid === user.uuid ? `${player.name} (You)` : player.name)
+                                            }
+                                        </Typography>
+                                    </React.Fragment>
                                 }
                             />
+
                             <ListItemIcon
                                 onClick={() => {
                                     handleKickPlayer(player);
