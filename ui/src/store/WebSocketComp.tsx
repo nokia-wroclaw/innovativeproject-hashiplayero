@@ -260,20 +260,6 @@ const WebSocketComp = () => {
     };
   }
 
-  const handleChangeUserName = () => {
-    if (webSocket !== undefined) {
-      webSocket.send(
-        JSON.stringify({
-          action: "changeName",
-          userUuid: user.uuid,
-          data: {
-            roomName: "YourNewName",
-          },
-        })
-      );
-    }
-  };
-
   const consoleLogWebSocket = (mess: string) => {
     console.log("WebSocket-> " + mess);
   };

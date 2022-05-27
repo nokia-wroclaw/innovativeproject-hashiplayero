@@ -18,8 +18,9 @@ export const userSlice = createSlice({
     },
     updateUserName: (state, action: PayloadAction<string>) => {
       return {
+        ...state,
         user: {
-          uuid: state.user.uuid,
+          ...state.user,
           name: action.payload
         }
       }
