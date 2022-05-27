@@ -1,8 +1,9 @@
 import IMember from "../interfaces/IMember";
 import { IGameData } from "../interfaces/IRoomAndBoard";
-import Player from "./Player";
-import InboxIcon from '@mui/icons-material/MoveToInbox';
+import { PersonRemove } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
@@ -28,7 +29,23 @@ const SwipeablePlayerList = ({
         right: false,
     });
 
+    const { user } = useSelector((state: RootState) => state.defaultUser);
+    const { webSocket } = useSelector((state: RootState) => state.webSocket);
+    const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
 
+    const handleKickPlayer = (player: IMember) => {
+        if (webSocket !== undefined && isAdmin) {
+            webSocket.send(
+                JSON.stringify({
+                    action: "kickUser",
+                    userUuid: player.uuid,
+                    data: {
+                        userToKick: player.name,
+                    },
+                })
+            );
+        }
+    };
     const toggleDrawer =
         (anchor: Anchor, open: boolean) =>
             (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -51,23 +68,32 @@ const SwipeablePlayerList = ({
 
     const list = (anchor: Anchor) => (
         <Box
-            sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+            sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 350 }}
             role="presentation"
             onClick={toggleDrawer(anchor, false)}
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                    <ListItem key={text} disablePadding>
+                {players.map((player, index) => (
+                    <ListItem key={player.uuid} disablePadding>
                         <ListItemButton>
-                            <ListItemIcon>
-                                <InboxIcon />
+                            <ListItemText
+                                {
+                                ...(player.uuid === user.uuid ? { primary: `${player.name} (You)` } : { primary: player.name })
+                                }
+                            />
+                            <ListItemIcon
+                                onClick={() => {
+                                    handleKickPlayer(player);
+                                }}
+                            >
+                                <PersonRemove />
                             </ListItemIcon>
-                            <ListItemText primary={text} />
                         </ListItemButton>
                     </ListItem>
                 ))}
             </List>
+
         </Box>
     );
 
