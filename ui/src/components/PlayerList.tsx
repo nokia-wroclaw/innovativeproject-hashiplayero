@@ -15,19 +15,16 @@ const PlayerList = ({
 
   return (
     <>
-      <div className="form-elements-column">
-        <div>List Of Players</div>
-        <div className="header filter players">
-          {players.map((player: IMember) => {
-            return (
-              <Player
-                key={player.uuid}
-                player={player}
-                userGameData={sendCorrectInGameDataUser(player.uuid)}
-              />
-            );
-          })}
-        </div>
+      <div className="player-list">
+        {players.map((player: IMember) => {
+          return (
+            <Player
+              key={player.uuid}
+              player={player}
+              userGameData={sendCorrectInGameDataUser(player.uuid)}
+            />
+          );
+        })}
       </div>
     </>
   );

@@ -14,6 +14,8 @@ $light_logo-secondary-color: #8b89ec;
 @use "./components/_roomData.scss";
 @use "./components/_logo.scss";
 @use "./components/_background.scss";
+@use "./components/_playerList.scss";
+@use "./components/_waitingRoom.scss";
 
 
 @mixin display-flex ($direction, $spacing) {
@@ -35,7 +37,7 @@ $light_logo-secondary-color: #8b89ec;
 }
 
 .main-content {
-    margin: 0px 16px;
+    margin: 36px 16px;
     @include display-flex(column, center);
 }
 
@@ -374,10 +376,6 @@ $light_logo-secondary-color: #8b89ec;
     display: flex;
     align-items: center;
     margin: 16px;
-}
-
-.element {
-    padding: 16px 8px;
 }
 
 .center {

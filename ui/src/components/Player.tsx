@@ -31,50 +31,29 @@ const Player = ({
   };
 
   return (
-    <div className="header-element element">
-      {player.uuid === user.uuid ? (
-        <div style={{ margin: "0px 8px" }}>{player.name} (You)</div>
-      ) : (
-        <div style={{ margin: "0px 8px" }}>{player.name}</div>
-      )}
+    <div className="element">
+      <div className="element-name">
+        {player.uuid === user.uuid ? (
+          <span style={{ width:"100%"}}>{player.name} (You)</span>
+        ) : (
+          <span style={{ width:"100%" }}>{player.name}</span>
+        )}
+      </div>
 
-      <div>
-        <div
-          onClick={() => {
-            handleKickPlayer();
-          }}
+      <div
+        onClick={() => {
+          handleKickPlayer();
+        }}
+        className="element-button"
+      >
+        <IconButton
+          color="secondary"
+          aria-label="upload picture"
+          component="span"
+          size="small"
         >
-          <IconButton
-            color="secondary"
-            aria-label="upload picture"
-            component="span"
-            size="small"
-          >
-            <PersonRemove />
-          </IconButton>
-        </div>
-        <div>
-          {userGameData !== undefined ? (
-            <>
-              {userGameData.UserGameState.correct ? (
-                <div>TRUE</div>
-              ) : (
-                <div>FALSE</div>
-              )}
-              {userGameData.UserGameState.inGame ? (
-                <div>TRUE</div>
-              ) : (
-                <div>FALSE</div>
-              )}
-              {userGameData.UserGameState.solvingTime === 0 ? (
-                <div>NOT END</div>
-              ) : (
-                <div>{userGameData.UserGameState.solvingTime} seconds</div>
-              )}
-              {userGameData.UserGameState.timeStart}
-            </>
-          ) : null}
-        </div>
+          <PersonRemove />
+        </IconButton>
       </div>
     </div>
   );

@@ -342,6 +342,123 @@
   transform: translate(-10%, 15%);
 }
 
+.player-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 360px;
+  padding: 8px;
+  margin: 24px 16px;
+  margin: 8px;
+  min-height: 40px;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  transition: all 0.5s ease-in-out;
+}
+@media screen and (max-width: 1300px) {
+  .player-list {
+    max-width: 100%;
+    max-width: 900px;
+  }
+}
+.player-list:hover {
+  box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 0px 24px 60px rgba(6, 48, 125, 0.295), 0px 12px 24px rgba(27, 59, 119, 0.103);
+  transition: all 0.5s ease-in;
+}
+.player-list div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.player-list > div:not(:first-child) {
+  width: 100%;
+  box-shadow: 0px -2px rgba(6, 4, 146, 0.041);
+}
+
+.element {
+  margin: 16px;
+}
+
+.element-name {
+  max-width: 70%;
+  border: 1px solid;
+  padding: 2px 5px;
+  direction: ltr;
+}
+.element-name span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.element-button {
+  border: none;
+  background-color: transparent;
+}
+
+.waiting-room-header {
+  display: flex;
+  align-items: center;
+  margin: 16px;
+  background-color: black;
+}
+
+.wating-room-container {
+  width: 80%;
+  margin: 0 auto;
+}
+@media screen and (max-width: 1420px) {
+  .wating-room-container {
+    width: 95%;
+  }
+}
+
+.general-info-waitingRoom {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  height: 90%;
+  max-height: 600px;
+  width: 85%;
+  box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+}
+@media screen and (max-width: 420px) {
+  .general-info-waitingRoom .general-info {
+    width: 95%;
+  }
+}
+
+.room-data {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: right;
+  margin: 16px;
+}
+@media screen and (max-width: 1420px) {
+  .room-data {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.players-data {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 16px;
+}
+
 .body {
   width: 100%;
   height: 100%;
@@ -352,7 +469,7 @@
 }
 
 .main-content {
-  margin: 0px 16px;
+  margin: 36px 16px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -697,10 +814,6 @@
   display: flex;
   align-items: center;
   margin: 16px;
-}
-
-.element {
-  padding: 16px 8px;
 }
 
 .center {
