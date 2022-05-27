@@ -69,9 +69,8 @@ func NewClient(room *Room, conn *websocket.Conn, send chan []byte) *Client {
 	}
 }
 
-func changeName(data interface{}, userUuid interface{}) {
-	c := clientsMap[userUuid.(string)]
-	c.name = data.(map[string]interface{})["newName"].(string)
+func changeName(icnd InboundChangeNameData, c *Client) {
+	c.name = icnd.NewName
 	cid := ClientIdData{Uuid: c.uuid, Name: c.name}
 	rm := ResponeMessage{Respone: "ChangeName", Payload: cid}
 	sendToClient(c, rm)
