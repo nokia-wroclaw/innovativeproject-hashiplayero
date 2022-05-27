@@ -121,9 +121,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
 
   return (
     <>
-      <div className="form-container paper-waitingRoom"
-      style={{ maxHeight: isAdmin === true? '720px': '600px'}}
-      >
+      <div className="form-container paper-waitingRoom">
         <div className="general-info-waitingRoom">
           <div className="form-element">
             <NameInput
@@ -131,6 +129,33 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
               handleChange={handleChange("roomNameInput")}
               isAdmin={false}
             />
+          </div>
+
+          <div className="form-element">
+            <PlayersInput
+              value={values.amountOfPlayersInput}
+              handleChange={handleSliderChange}
+              isAdmin={isAdmin}
+            />
+          </div>
+
+          <div className="form-elements-options">
+
+            <div className="form-element">
+              <DifficultyInput
+                value={values.difficultyInput}
+                handleChange={handleChange("difficultyInput")}
+                isAdmin={isAdmin}
+              />
+            </div>
+
+            <div className="form-element">
+              <BoardInput
+                value={values.boardSizeInput}
+                handleChange={handleChange("boardSizeInput")}
+                isAdmin={isAdmin}
+              />
+            </div>
           </div>
 
           {isAdmin ? (
@@ -158,29 +183,6 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
             </div>
           ) : null}
 
-          <div className="form-element">
-            <PlayersInput
-              value={values.amountOfPlayersInput}
-              handleChange={handleSliderChange}
-              isAdmin={isAdmin}
-            />
-          </div>
-
-          <div className="form-element">
-            <DifficultyInput
-              value={values.difficultyInput}
-              handleChange={handleChange("difficultyInput")}
-              isAdmin={isAdmin}
-            />
-          </div>
-
-          <div className="form-element">
-            <BoardInput
-              value={values.boardSizeInput}
-              handleChange={handleChange("boardSizeInput")}
-              isAdmin={isAdmin}
-            />
-          </div>
           <div className="form-elements">
             {isAdmin ? (
               <Button
