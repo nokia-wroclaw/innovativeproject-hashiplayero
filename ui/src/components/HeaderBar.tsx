@@ -110,9 +110,14 @@ const HeaderBar = () => {
             >
               <DialogChangeName />
               {pages.map((page, index) => (
-                <MenuItem key={index} onClick={() => handleCloseNavMenu(page)}>
+                <Button key={index} onClick={() => handleCloseNavMenu(page)} 
+                sx={{ my: 2, display: "block", width:"100%", height:"100%" }}
+                {...(page.type === "secondary"
+                  ? { color: "secondary" }
+                  : { color: "primary" })}
+                >
                   <Typography textAlign="center">{page.name}</Typography>
-                </MenuItem>
+                </Button>
               ))}
             </Menu>
           </Box>

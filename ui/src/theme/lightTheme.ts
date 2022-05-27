@@ -85,6 +85,19 @@ const lightTheme = createTheme({
                 }
             }
         },
+        MuiList:{
+            styleOverrides:{
+                root:{
+                    paddingTop: "0px",
+                    paddingBottom: "0px",
+                    button:{
+                        marginTop: "0px",
+                        marginBottom: "0px",
+                        padding: "24px 38px",
+                    }
+                }
+            }
+        }
     }
 });
 
