@@ -28,23 +28,23 @@ const WaitingRoom = () => {
 
   return (
     <>
-      <h1>Waiting Room</h1>
-      {/* className="waiting-room-header"  */}
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={16}>
-        <Grid item xs sm={16} md={12} lg={10} >
-          <RoomData room={roomAndBoard} key="roomData" />
+      <div className="wating-room-container">
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={24}>
+          <Grid item xs={24} sm={24} md={24} lg={16} className="room-data">
+            <RoomData room={roomAndBoard} key="roomData" />
+          </Grid>
+          <Grid item xs={24} sm={24} md={24} lg={8} className="players-data">
+            <PlayerList
+              players={roomAndBoard.members}
+              gameData={roomAndBoard.gameData}
+            />
+            {/* <SwipeablePlayerList
+              players={roomAndBoard.members}
+              gameData={roomAndBoard.gameData}
+            /> */}
+          </Grid>
         </Grid>
-        <Grid item xs="auto" sm={16} md={4} lg={6}>
-          <PlayerList
-            players={roomAndBoard.members}
-            gameData={roomAndBoard.gameData}
-          />
-          <SwipeablePlayerList
-            players={roomAndBoard.members}
-            gameData={roomAndBoard.gameData}
-          />
-        </Grid>
-      </Grid>
+      </div>
     </>
   );
 };

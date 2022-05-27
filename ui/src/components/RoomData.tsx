@@ -128,7 +128,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
   return (
     <>
       <div className="form-container paper">
-        <div className="general-info">
+        <div className="general-info-waitingRoom">
           <div className="form-element">
             <NameInput
               value={values.roomNameInput}
