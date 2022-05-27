@@ -83,13 +83,11 @@ const CreateRoom = () => {
         webSocket.send(
           JSON.stringify({
             action: "createRoom",
-            userUuid: user.uuid,
             data: {
               name: values.roomNameInput,
               password: values.passwordInput,
               maxPlayers: values.amountOfPlayersInput,
               isPrivate: values.isPrivate,
-              timeLimit: values.timeLimitInput.getMinutes(),
               difficulty: values.difficultyInput,
               boardSize: values.boardSizeInput,
             },

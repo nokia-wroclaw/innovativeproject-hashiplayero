@@ -21,9 +21,8 @@ const Player = ({
       webSocket.send(
         JSON.stringify({
           action: "kickUser",
-          userUuid: user.uuid,
           data: {
-            userToKick: player.name,
+            userToKick: player.uuid,
           },
         })
       );

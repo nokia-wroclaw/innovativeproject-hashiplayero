@@ -47,18 +47,16 @@ const SinglePlay = () => {
   };
 
   const handleCreateSingleGame = () => {
-    let nameOfRoom = "Pokoj-" + user.uuid;
+    let nameOfRoom = "PrivateSinglePlayerRoom:" + user.uuid;
     if (webSocket !== undefined) {
       webSocket.send(
         JSON.stringify({
           action: "createRoom",
-          userUuid: user.uuid,
           data: {
             name: nameOfRoom,
-            password: "haslos",
+            password: user.uuid,
             maxPlayers: 1,
             isPrivate: true,
-            timeLimit: values.timeLimit.getMinutes(),
             difficulty: values.difficulty,
             boardSize: values.boardSize,
           },

@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { DialogProps } from "@mui/material/Dialog";
 import {
   TextField,
@@ -24,15 +24,7 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const DialogInput = ({
-  isPrivate,
-  handleClick,
-  roomName,
-}: {
-  isPrivate: boolean;
-  handleClick: any;
-  roomName: string;
-}) => {
+const DialogChangeName = () => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const [open, setOpen] = useState(false);
@@ -40,50 +32,47 @@ const DialogInput = ({
   const [fullWidth] = useState(true);
   const [maxWidth] = useState<DialogProps["maxWidth"]>("md");
 
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState<string>("");
 
-  const handleSetPassword = (event: any) => {
-    setPassword(event.target.value);
+  useEffect(() => {
+    setName(user.name);
+  }, [user])
+
+  const handleSetName = (event: any) => {
+    setName(event.target.value);
   };
 
   const handleClickOpen = () => {
-    if (isPrivate) {
-      // handleClick(true);
-
-      setOpen(true);
-    } else {
-      handleChangeRoom();
-    }
+    setOpen(true);
   };
 
   const handleClose = () => {
-    // handleClick(false);
     setOpen(false);
   };
 
-  const handleChangeRoom = () => {
+  const handleChangeName = () => {
     if (webSocket !== undefined) {
       webSocket.send(
         JSON.stringify({
-          action: "changeRoom",
+          action: "changeName",
           data: {
-            roomName: roomName,
-            password: password,
+            newName: name,
           },
         })
       );
-      console.log("WebSocket-> Change Room");
+      console.log("WebSocket-> Change Name");
     }
+    handleClose();
   };
 
   return (
     <>
       <Button
-        color="secondary"
+        color="primary"
         onClick={handleClickOpen}
-        sx={{ width: "100%" }}
+        sx={{ my: 2, display: "block" }}
       >
-        JOIN
+        Change Name
       </Button>
       <Dialog
         open={open}
@@ -93,30 +82,28 @@ const DialogInput = ({
         fullWidth={fullWidth}
         maxWidth={maxWidth}
       >
-        <DialogTitle>Enter the room!</DialogTitle>
+        <DialogTitle>New Name!</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            This room is private. You have to enter the password to join.
-          </DialogContentText>
+          <DialogContentText>To change name enter new name.</DialogContentText>
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Password"
+            label="Name"
             type="email"
             fullWidth
             variant="standard"
-            onChange={handleSetPassword}
-            value={password}
+            onChange={handleSetName}
+            value={name}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleChangeRoom}>Join</Button>
+          <Button onClick={handleChangeName}>Change</Button>
         </DialogActions>
       </Dialog>
     </>
   );
 };
 
-export default DialogInput;
+export default DialogChangeName;

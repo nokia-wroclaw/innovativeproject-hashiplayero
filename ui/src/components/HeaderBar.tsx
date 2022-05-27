@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
+import DialogChangeName from "./dynamic-components/DialogChangeName";
 
 const HeaderBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -48,10 +49,13 @@ const HeaderBar = () => {
   ];
 
   return (
-    <AppBar position="static" sx={{ height: 100 }} style={{background:"white"}}>
+    <AppBar
+      position="static"
+      sx={{ height: 100 }}
+      style={{ background: "white" }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ height: 80 }}>
-
           <div className="logo">
             <div className="logo-inner" onClick={() => navigate("/")}>
               <h5 className="logo-first-half">Hashi</h5>
@@ -60,6 +64,7 @@ const HeaderBar = () => {
           </div>
 
           <Box sx={{ flexGrow: 0, display: { xs: "none", md: "flex" } }}>
+            <DialogChangeName />
             {pages.map((page, index) => (
               <Button
                 {...(page.type === "secondary"
@@ -103,6 +108,7 @@ const HeaderBar = () => {
                 display: { xs: "block", md: "none" },
               }}
             >
+              <DialogChangeName />
               {pages.map((page, index) => (
                 <MenuItem key={index} onClick={() => handleCloseNavMenu(page)}>
                   <Typography textAlign="center">{page.name}</Typography>
