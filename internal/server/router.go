@@ -41,5 +41,13 @@ func setRouter() *gin.Engine {
 
 	router.Use(gin.WrapH(http.FileServer(appBox.HTTPBox())))
 
+	// wss, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws/", nil)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// _, message, err := wss.ReadMessage()
+	// rmm := ResponeMessage{}
+	// json.Unmarshal(message, &rmm)
+	// log.Print(rmm.Respone)
 	return router
 }
