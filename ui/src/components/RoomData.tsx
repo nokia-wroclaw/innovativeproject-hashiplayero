@@ -121,7 +121,9 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
 
   return (
     <>
-      <div className="form-container paper">
+      <div className="form-container paper-waitingRoom"
+      style={{ maxHeight: isAdmin === true? '720px': '600px'}}
+      >
         <div className="general-info-waitingRoom">
           <div className="form-element">
             <NameInput

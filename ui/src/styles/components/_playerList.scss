@@ -29,6 +29,7 @@
         transition: all 0.5s ease-in;
     }
 
+
     div{
         display: flex;
         flex-direction: row;
@@ -37,20 +38,24 @@
     }
     
     & > div:not(:first-child) {
-        width: 100%;
+        padding-top: 16px;
         box-shadow: 0px -2px rgba(6, 4, 146, 0.041);
     }
 }
 
 .element{
     margin: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .element-name{
-    max-width: 70%;
-    border: 1px solid;
     padding: 2px 5px;
     direction: ltr;
+    max-width: 70%;
     span{
         overflow: hidden;
         text-overflow: ellipsis;
