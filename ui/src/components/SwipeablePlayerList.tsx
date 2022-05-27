@@ -38,9 +38,8 @@ const SwipeablePlayerList = ({
             webSocket.send(
                 JSON.stringify({
                     action: "kickUser",
-                    userUuid: player.uuid,
                     data: {
-                        userToKick: player.name,
+                        userToKick: player.uuid,
                     },
                 })
             );

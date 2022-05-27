@@ -46,7 +46,6 @@ const Game = () => {
       webSocket.send(
         JSON.stringify({
           action: "changeRoom",
-          userUuid: user.uuid,
           data: {
             roomName: "lobby",
             password: "",
@@ -62,7 +61,6 @@ const Game = () => {
       webSocket.send(
         JSON.stringify({
           action: "changeRoom",
-          userUuid: user.uuid,
           data: {
             roomName: "lobby",
             password: "",
@@ -83,7 +81,6 @@ const Game = () => {
       webSocket.send(
         JSON.stringify({
           action: "finishGame",
-          userUuid: user.uuid,
           data: {
             name: roomAndBoard.name,
           },
@@ -99,7 +96,6 @@ const Game = () => {
       webSocket.send(
         JSON.stringify({
           action: "checkBoard",
-          userUuid: user.uuid,
           data: {
             moves: [],
           },

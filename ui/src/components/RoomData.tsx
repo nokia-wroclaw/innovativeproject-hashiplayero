@@ -64,7 +64,6 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
       webSocket.send(
         JSON.stringify({
           action: "editRoom",
-          userUuid: user.uuid,
           data: {
             name: roomAndBoard.name,
             password: values.isPrivate ? values.passwordInput : "",
@@ -84,10 +83,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
       webSocket.send(
         JSON.stringify({
           action: "startGame",
-          userUuid: user.uuid,
-          data: {
-            name: roomAndBoard.name,
-          },
+          data: {},
         })
       );
     }
@@ -98,7 +94,6 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
       webSocket.send(
         JSON.stringify({
           action: "changeRoom",
-          userUuid: user.uuid,
           data: {
             roomName: "lobby",
             password: "",
@@ -116,7 +111,6 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
       webSocket.send(
         JSON.stringify({
           action: "deleteRoom",
-          userUuid: user.uuid,
           data: {
             roomName: roomAndBoard.name,
           },
