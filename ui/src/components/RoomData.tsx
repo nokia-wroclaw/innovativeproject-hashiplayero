@@ -7,13 +7,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useAppDispatch } from "../store/hooks";
 import { setInitialRoomBoard } from "../store/RoomGameSlice";
+import { changeWaitingRoom } from "../store/StateMachineSlice";
 import NameInput from "./dynamic-components/NameInput";
 import PasswordInput from "./dynamic-components/PasswordInput";
 import PlayersInput from "./dynamic-components/PlayersInput";
 import DifficultyInput from "./dynamic-components/DifficultyInput";
 import BoardInput from "./dynamic-components/BardSizeInput";
-import { changeWaitingRoom } from "../store/StateMachineSlice";
 import VisibilityInput from "./dynamic-components/VisibilityInput";
+import SwipeablePlayerList from "../components/SwipeablePlayerList";
 
 const RoomData = ({ room }: { room: IRoomAndBoard }) => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
@@ -58,7 +59,6 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
     }
   };
 
-  // mają istnieć wszystkie wartości, jeśli nie chce zmieniać to ma być wysłane to samo co było
   const handleEditRoom = () => {
     if (webSocket !== undefined) {
       webSocket.send(
@@ -215,6 +215,10 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
             >
               Exit Room
             </Button>
+            <SwipeablePlayerList
+              players={roomAndBoard.members}
+              gameData={roomAndBoard.gameData}
+            />
             {isAdmin ? (
               <Button
                 className="m-2"

@@ -5,7 +5,6 @@ import PlayerList from "../components/PlayerList";
 import { Grid } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SwipeablePlayerList from "../components/SwipeablePlayerList";
 
 const WaitingRoom = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
@@ -38,10 +37,6 @@ const WaitingRoom = () => {
               players={roomAndBoard.members}
               gameData={roomAndBoard.gameData}
             />
-            {/* <SwipeablePlayerList
-              players={roomAndBoard.members}
-              gameData={roomAndBoard.gameData}
-            /> */}
           </Grid>
         </Grid>
       </div>
