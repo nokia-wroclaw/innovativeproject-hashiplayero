@@ -43,16 +43,6 @@ type UserGameData struct {
 	UserGameState UserGameState
 }
 
-type InboundCreateBoard struct {
-	Action                 string                 `json:"action"`
-	InboundCreateBoardData InboundCreateBoardData `json:"data"`
-}
-
-type InboundCreateBoardData struct {
-	Difficulty int `json:"difficulty"`
-	BoardSize  int `json:"boardSize"`
-}
-
 type InboundCheckBoard struct {
 	Action                string                `json:"action"`
 	InboundCheckBoardData InboundCheckBoardData `json:"data"`
@@ -63,8 +53,8 @@ type InboundCheckBoardData struct {
 }
 
 // Creates board with given parameters and adds it to given room, returns json with boardData
-func createBoard(icbd InboundCreateBoardData, c *Client, r *Room) {
-	size := icbd.BoardSize
+func createBoard(c *Client, r *Room) {
+	size := r.boardData.BoardSize
 	board := hashi.GenerateBoard(size, size, int((size*size)/2), 0.5)
 	boardArray := make([]int, size*size)
 	for i, n := range board.Nodes {
@@ -75,7 +65,7 @@ func createBoard(icbd InboundCreateBoardData, c *Client, r *Room) {
 	roomBroadcast(r, rm)
 }
 
-func startGame(ird InboundRoomData, c *Client, r *Room) {
+func startGame(c *Client, r *Room) {
 	if r.gameOn {
 		rm := ResponeMessage{Respone: "startGame", Error: "Game already is started"}
 		sendToClient(c, rm)
@@ -96,9 +86,7 @@ func startGame(ird InboundRoomData, c *Client, r *Room) {
 		}
 	}
 	r.gameOn = true
-	createBoard(InboundCreateBoardData{
-		Difficulty: r.boardData.BoardSettings.Difficulty,
-		BoardSize:  r.boardData.BoardSettings.BoardSize}, c, r)
+	createBoard(c, r)
 	updatedRoomMulticast(r)
 	updatedGameMulticast(r)
 	lobbyBroadcast()

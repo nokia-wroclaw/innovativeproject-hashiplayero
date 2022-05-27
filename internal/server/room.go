@@ -22,7 +22,6 @@ type RoomSettings struct {
 	Admin      string `json:"admin"`
 	MaxPlayers int    `json:"maxPlayers"`
 	IsPrivate  bool   `json:"isPrivate"`
-	TimeLimit  int    `json:"timeLimit"`
 }
 
 type ResponeMessage struct {
@@ -65,7 +64,6 @@ type InboundCreateEditRoomData struct {
 	Password   string `json:"password"`
 	MaxPlayers int    `json:"maxPlayers"`
 	IsPrivate  bool   `json:"isPrivate"`
-	TimeLimit  int    `json:"timeLimit"`
 	Difficulty int    `json:"difficulty"`
 	BoardSize  int    `json:"boardSize"`
 }
@@ -135,7 +133,6 @@ func addRoom(icerd InboundCreateEditRoomData, c *Client) {
 	roomSettings.Admin = c.uuid
 	roomSettings.MaxPlayers = icerd.MaxPlayers
 	roomSettings.IsPrivate = icerd.IsPrivate
-	roomSettings.TimeLimit = icerd.TimeLimit
 	if _, ok := roomsMap[roomSettings.Name]; ok {
 		rm := ResponeMessage{Respone: "CreateRoom", Error: "Room exists"}
 		sendToClient(c, rm)
@@ -161,7 +158,7 @@ func addRoom(icerd InboundCreateEditRoomData, c *Client) {
 
 	// if it is singleplayer game
 	if r.roomSettings.MaxPlayers == 1 {
-		startGame(InboundRoomData{RoomName: r.roomSettings.Name}, c, r)
+		startGame(c, r)
 	}
 	lobbyBroadcast()
 }
@@ -189,7 +186,6 @@ func editRoom(icerd InboundCreateEditRoomData, c *Client, clientRoom *Room) {
 	roomSettings.Admin = c.uuid
 	roomSettings.MaxPlayers = icerd.MaxPlayers
 	roomSettings.IsPrivate = icerd.IsPrivate
-	roomSettings.TimeLimit = icerd.TimeLimit
 	clientRoom.roomSettings = roomSettings
 	clientRoom.boardData.BoardSettings.BoardSize = icerd.BoardSize
 	clientRoom.boardData.BoardSettings.Difficulty = icerd.Difficulty
@@ -314,13 +310,13 @@ func changeAdmin(c *Client, r *Room) bool {
 
 // kick user from room to lobby
 func kickUser(ikud InboundKickUserData, c *Client, r *Room) {
-	usernameToKick := ikud.UserToKick
+	userkuuidToKick := ikud.UserToKick
 	if c.uuid != r.roomSettings.Admin {
 		rm := ResponeMessage{Respone: "kickUser", Error: "Only admin can kick users"}
 		sendToClient(c, rm)
 		return
 	}
-	clientToKick := clientsMap[usernameToKick]
+	clientToKick := clientsMap[userkuuidToKick]
 	if clientToKick.room.roomSettings.Name == r.roomSettings.Name {
 		changeRoom(InboundChangeRoomData{RoomName: "lobby"}, c, r)
 		rm := ResponeMessage{Respone: "kickUser", Error: "You have been kicked from the room"}
@@ -458,12 +454,6 @@ func (r *Room) run() {
 				sendToClient(c, rm)
 				break
 			}
-			// check if user uuid from frontend is valid
-			// if cid.Uuid != payload["userUuid"] {
-			// 	rm := ResponeMessage{Respone: "Error", Error: "Wrong user uuid"}
-			// 	sendToClient(c, rm)
-			// 	break
-			// }
 			switch payload["action"] {
 			case "createRoom":
 				var icer InboundCreateEditRoom
@@ -525,16 +515,6 @@ func (r *Room) run() {
 					break
 				}
 				kickUser(iku.InboundKickUserData, c, r)
-			case "generateBoard":
-				var icb InboundCreateBoard
-				err := json.Unmarshal(message[1], &icb)
-				if err != nil {
-					log.Print("Error during Unmarshal(): ", err)
-					rm := ResponeMessage{Respone: "Error", Error: err.Error()}
-					sendToClient(c, rm)
-					break
-				}
-				createBoard(icb.InboundCreateBoardData, c, clientRoom)
 			case "startGame":
 				var ir InboundRoom
 				err := json.Unmarshal(message[1], &ir)
@@ -544,7 +524,7 @@ func (r *Room) run() {
 					sendToClient(c, rm)
 					break
 				}
-				startGame(ir.InboundRoomData, c, r)
+				startGame(c, r)
 			case "checkBoard":
 				var icb InboundCheckBoard
 				err := json.Unmarshal(message[1], &icb)
