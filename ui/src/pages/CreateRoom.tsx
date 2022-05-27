@@ -118,7 +118,7 @@ const CreateRoom = () => {
               isAdmin={true}
             />
           </div>
-          <div className="form-elements">
+          <div className="form-elements-options">
             <div className="form-element">
               <DifficultyInput
                 value={values.difficultyInput}
