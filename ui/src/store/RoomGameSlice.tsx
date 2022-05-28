@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { cloneDeep } from "lodash";
 import {
+  Bridge,
   ICreateBoard,
   ICreateRoom,
   IDefaultRoomAndBoard,
@@ -23,6 +25,7 @@ const initialState: IDefaultRoomAndBoard = {
       size: -1,
     },
     gameData: [],
+    bridges: [],
   },
 };
 
@@ -57,6 +60,7 @@ export const RoomBoardSlice = createSlice({
           password: action.payload.password,
           timeLimit: action.payload.timeLimit,
           admin: action.payload.admin,
+          bridges: [],
         },
       };
     },
@@ -118,6 +122,61 @@ export const RoomBoardSlice = createSlice({
         },
       };
     },
+    updateMove: (state, action: PayloadAction<Bridge[]>) => {
+      return {
+        ...state,
+        roomAndBoard: {
+          ...state.roomAndBoard,
+          bridges: action.payload,
+        },
+      };
+    },
+    increaseValueOnBridge: (state, action: PayloadAction<Bridge>) => {
+      let newBridges: Bridge[] = state.roomAndBoard.bridges.map(
+        (item: Bridge) => {
+          const oldValue = item.value;
+          if (
+            (item.nodeFrom === action.payload.nodeFrom &&
+              item.nodeTo === action.payload.nodeTo) ||
+            (item.nodeTo === action.payload.nodeTo &&
+              item.nodeFrom === action.payload.nodeFrom)
+          ) {
+            return { ...item, value: oldValue + 1 };
+          }
+          return item;
+        }
+      );
+      return {
+        ...state,
+        roomAndBoard: {
+          ...state.roomAndBoard,
+          bridges: newBridges,
+        },
+      };
+    },
+    deleteBridge: (state, action: PayloadAction<Bridge>) => {
+      const bridgeIndexToDelete = state.roomAndBoard.bridges.findIndex(
+        (item) => {
+          return (
+            (item.nodeFrom === action.payload.nodeFrom &&
+              item.nodeTo === action.payload.nodeTo) ||
+            (item.nodeTo === action.payload.nodeFrom &&
+              item.nodeFrom === action.payload.nodeTo)
+          );
+        }
+      );
+      let newValueBridges = cloneDeep(state.roomAndBoard.bridges);
+      if (bridgeIndexToDelete > -1) {
+        newValueBridges.splice(bridgeIndexToDelete, 1);
+      }
+      return {
+        ...state,
+        roomAndBoard: {
+          ...state.roomAndBoard,
+          bridges: newValueBridges,
+        },
+      };
+    },
   },
 });
 
@@ -130,6 +189,9 @@ export const {
   updateGameData,
   updateAsPlayer,
   editRoom,
+  updateMove,
+  deleteBridge,
+  increaseValueOnBridge,
 } = RoomBoardSlice.actions;
 
 export const selectRooms = (state: RootState) => state.RoomGame;

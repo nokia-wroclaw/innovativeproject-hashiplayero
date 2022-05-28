@@ -129,6 +129,7 @@ const WebSocketComp = () => {
                   },
                   members: json.Payload.Players,
                   gameData: [],
+                  bridges: [],
                 },
               };
               dispatch(updateAsAdmin(updateAdminRoom));
@@ -150,6 +151,7 @@ const WebSocketComp = () => {
                   },
                   members: json.Payload.Players,
                   gameData: [],
+                  bridges: [],
                 },
               };
               if (roomAndBoard.maxPlayers >= 1) {
@@ -200,6 +202,7 @@ const WebSocketComp = () => {
                 },
                 members: json.Payload.Players,
                 gameData: [],
+                bridges: [],
               },
             };
             dispatch(editRoom(updateAdminRoom));

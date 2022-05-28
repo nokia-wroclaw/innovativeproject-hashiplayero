@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
 import { useSelector } from "react-redux";
+import { Bridge } from "../interfaces/IRoomAndBoard";
+import { useAppDispatch } from "../store/hooks";
 import { RootState } from "../store/store";
-
-
-interface Bridge {
-  nodeFrom: number;
-  nodeTo: number;
-  value: number;
-}
+import {
+  updateMove,
+  deleteBridge,
+  increaseValueOnBridge,
+} from "./../store/RoomGameSlice";
+import cloneDeep from "lodash/cloneDeep";
 
 const getPossibleNodes = (board: number[], width: number, loc: number) => {
   const rowStart = Math.floor(loc / width) * width;
@@ -56,8 +57,9 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
 
 const Board = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
+  const dispatch = useAppDispatch();
 
-  const [lines, setLines] = useState([{}] as Bridge[]);
+  // const [lines, setLines] = useState([{}] as Bridge[]);
 
   let arr: number[] = [];
 
@@ -83,7 +85,7 @@ const Board = () => {
 
     return () => {
       resizeObserver.disconnect();
-    }
+    };
   }, [stageCanvasRef]);
 
   const INITIAL_STATE = generateShapes();
@@ -115,11 +117,11 @@ const Board = () => {
         radius: width / roomAndBoard.settings.size / 2,
         x:
           ((index % roomAndBoard.settings.size) * width) /
-          roomAndBoard.settings.size +
+            roomAndBoard.settings.size +
           width / roomAndBoard.settings.size / 2,
         y:
           (Math.floor(index / roomAndBoard.settings.size) * height) /
-          roomAndBoard.settings.size +
+            roomAndBoard.settings.size +
           width / roomAndBoard.settings.size / 2,
         fontSize: width / roomAndBoard.settings.size / 3,
         isSelected: false,
@@ -146,15 +148,19 @@ const Board = () => {
       getPossibleNodes(arr, roomAndBoard.settings.size, indexToRemember).map(
         (node) => {
           if (node === index) {
-            const line = lines.find(
-              (line) =>
-                (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
-                (line.nodeFrom === node && line.nodeTo === indexToRemember)
+            let line: Bridge | undefined = cloneDeep(
+              roomAndBoard.bridges.find(
+                (line) =>
+                  (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
+                  (line.nodeFrom === node && line.nodeTo === indexToRemember)
+              )
             );
             if (line) {
-              line.value = line.value + 1;
+              line.value += 1;
               if (line.value >= 3) {
-                line.value = 0;
+                dispatch(deleteBridge(line));
+              } else {
+                dispatch(increaseValueOnBridge(line));
               }
             } else {
               let [smaller, bigger] = [indexToRemember, node];
@@ -172,14 +178,16 @@ const Board = () => {
                   arr[i] = -1;
                 }
               }
-              setLines([
-                ...lines,
-                {
-                  nodeFrom: indexToRemember,
-                  nodeTo: node,
-                  value: 1,
-                },
-              ]);
+              dispatch(
+                updateMove([
+                  ...roomAndBoard.bridges,
+                  {
+                    nodeFrom: indexToRemember,
+                    nodeTo: node,
+                    value: 1,
+                  },
+                ])
+              );
             }
           }
         }
@@ -204,24 +212,24 @@ const Board = () => {
           <Layer>
             {hoveredNode >= 0
               ? getPossibleNodes(
-                arr,
-                roomAndBoard.settings.size,
-                hoveredNode
-              ).map((node) => (
-                <Line
-                  key={node}
-                  points={[
-                    shapes[hoveredNode].x,
-                    shapes[hoveredNode].y,
-                    shapes[node].x,
-                    shapes[node].y,
-                  ]}
-                  stroke="yellow"
-                  strokeWidth={20}
-                />
-              ))
+                  arr,
+                  roomAndBoard.settings.size,
+                  hoveredNode
+                ).map((node) => (
+                  <Line
+                    key={node}
+                    points={[
+                      shapes[hoveredNode].x,
+                      shapes[hoveredNode].y,
+                      shapes[node].x,
+                      shapes[node].y,
+                    ]}
+                    stroke="yellow"
+                    strokeWidth={20}
+                  />
+                ))
               : null}
-            {lines.map((line: Bridge, index: number) => {
+            {roomAndBoard.bridges.map((line: Bridge, index: number) => {
               if (line.value === 1) {
                 return (
                   <Line
@@ -243,13 +251,13 @@ const Board = () => {
                       // key={index}
                       points={[
                         shapes[line.nodeFrom].x -
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeFrom].y -
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].x -
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].y -
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                       ]}
                       stroke="black"
                       strokeWidth={3}
@@ -258,13 +266,13 @@ const Board = () => {
                       // key={index}
                       points={[
                         shapes[line.nodeFrom].x +
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeFrom].y +
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].x +
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].y +
-                        shapes[line.nodeFrom].radius / 4,
+                          shapes[line.nodeFrom].radius / 4,
                       ]}
                       stroke="black"
                       strokeWidth={3}
@@ -285,7 +293,7 @@ const Board = () => {
                     stroke="black"
                     fill={(() => {
                       // add different colors based on amount of bridges
-                      const connections = lines
+                      const connections = roomAndBoard.bridges
                         .filter(
                           (line) =>
                             line.nodeFrom === shape.id ||

@@ -14,7 +14,8 @@ import {
 import Board from "./Board";
 import PlayerList from "../components/PlayerList";
 
-import { Grid, useMediaQuery } from '@mui/material';
+import { Grid, useMediaQuery } from "@mui/material";
+import ParseBridgesModel from "../services/ParseBridgesModel";
 // import useMediaQuery from '@mui/material/useMediaQuery';
 
 const Game = () => {
@@ -24,7 +25,7 @@ const Game = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const navigate = useNavigate();
 
-  const matches = useMediaQuery('(min-width:900px)');
+  const matches = useMediaQuery("(min-width:900px)");
 
   const { isBoardCorrect, inSingleGame, inWaitingRoom, isAdmin, inMultiGame } =
     useSelector((state: RootState) => state.StateMachine);
@@ -103,7 +104,7 @@ const Game = () => {
         JSON.stringify({
           action: "checkBoard",
           data: {
-            moves: [],
+            moves: ParseBridgesModel(roomAndBoard.bridges),
           },
         })
       );
@@ -113,14 +114,21 @@ const Game = () => {
   return (
     <>
       <Grid container columns={24} spacing={1}>
-        
-        <Grid item xs={3} sx={{ background: "blue", display: !matches ? "none" : "block" }}>
+        <Grid
+          item
+          xs={3}
+          sx={{ background: "blue", display: !matches ? "none" : "block" }}
+        >
           <span>xs</span>
         </Grid>
         <Grid item xs={24} md={18} sx={{ background: "pink" }}>
           <Board />
         </Grid>
-        <Grid item xs={3} sx={{ background: "blue", display: !matches ? "none" : "block" }}>
+        <Grid
+          item
+          xs={3}
+          sx={{ background: "blue", display: !matches ? "none" : "block" }}
+        >
           <span>xs</span>
         </Grid>
       </Grid>
@@ -170,7 +178,12 @@ const Game = () => {
           </Button>
         </>
       ) : null}
-      {!inSingleGame ? <PlayerList players={roomAndBoard.members} gameData={roomAndBoard.gameData} /> : null}
+      {!inSingleGame ? (
+        <PlayerList
+          players={roomAndBoard.members}
+          gameData={roomAndBoard.gameData}
+        />
+      ) : null}
     </>
   );
 };
