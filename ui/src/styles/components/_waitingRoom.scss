@@ -5,7 +5,7 @@
     background-color: black;
 }
 
-.wating-room-container{
+.wating-room-container {
     width: 80%;
     margin: 0 auto;
 
@@ -14,13 +14,12 @@
     }
 }
 
-.general-info-waitingRoom{
+.general-info-waitingRoom {
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: center;
     height: 90%;
-    max-height: 600px;
     width: 85%;
     box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
     margin-bottom: 24px;
@@ -54,26 +53,30 @@
     }
 }
 
-.room-data{
+.room-data {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: right;
     margin: 16px;
+
     @media screen and (max-width: 1420px) {
         width: 100%;
         justify-content: center;
     }
 }
 
-.players-data{
-    // make content center 
+.players-data {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     margin: 16px;
+}
 
-
-
+.button-placment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
