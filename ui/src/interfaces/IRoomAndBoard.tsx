@@ -13,6 +13,7 @@ export interface IRoomAndBoard {
     size: number;
   };
   gameData: IGameData[];
+  bridges: Bridge[];
 }
 
 export interface IDefaultRoomAndBoard {
@@ -46,4 +47,10 @@ export interface IUserGameState {
   inGame: boolean;
   solvingTime: number;
   timeStart: string;
+}
+
+export interface Bridge {
+  nodeFrom: number;
+  nodeTo: number;
+  value: number;
 }
