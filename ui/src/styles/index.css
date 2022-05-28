@@ -496,6 +496,7 @@
 
 .main-content {
   margin: 0px 16px;
+  margin-bottom: 54px;
   display: flex;
   align-items: center;
   flex-direction: column;
