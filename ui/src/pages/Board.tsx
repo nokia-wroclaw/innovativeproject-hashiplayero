@@ -3,6 +3,7 @@ import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 
+
 interface Bridge {
   nodeFrom: number;
   nodeTo: number;
@@ -77,6 +78,12 @@ const Board = () => {
     if (stageCanvasRef.current) {
       resizeObserver.observe(stageCanvasRef.current);
     }
+
+    setShapes(INITIAL_STATE);
+
+    return () => {
+      resizeObserver.disconnect();
+    }
   }, [stageCanvasRef]);
 
   const INITIAL_STATE = generateShapes();
@@ -84,7 +91,6 @@ const Board = () => {
 
   useEffect(() => {
     setShapes(INITIAL_STATE);
-    // setShapes(()=>[...shapes, ...generateShapes()]);
   }, [
     width,
     height,
@@ -109,11 +115,11 @@ const Board = () => {
         radius: width / roomAndBoard.settings.size / 2,
         x:
           ((index % roomAndBoard.settings.size) * width) /
-            roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
           width / roomAndBoard.settings.size / 2,
         y:
           (Math.floor(index / roomAndBoard.settings.size) * height) /
-            roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
           width / roomAndBoard.settings.size / 2,
         fontSize: width / roomAndBoard.settings.size / 3,
         isSelected: false,
@@ -187,7 +193,7 @@ const Board = () => {
     <>
       <div
         style={{
-          width: "75%",
+          width: "100%",
           border: "1px solid grey",
           margin: "auto",
           maxWidth: "800px",
@@ -198,22 +204,22 @@ const Board = () => {
           <Layer>
             {hoveredNode >= 0
               ? getPossibleNodes(
-                  arr,
-                  roomAndBoard.settings.size,
-                  hoveredNode
-                ).map((node) => (
-                  <Line
-                    key={node}
-                    points={[
-                      shapes[hoveredNode].x,
-                      shapes[hoveredNode].y,
-                      shapes[node].x,
-                      shapes[node].y,
-                    ]}
-                    stroke="yellow"
-                    strokeWidth={20}
-                  />
-                ))
+                arr,
+                roomAndBoard.settings.size,
+                hoveredNode
+              ).map((node) => (
+                <Line
+                  key={node}
+                  points={[
+                    shapes[hoveredNode].x,
+                    shapes[hoveredNode].y,
+                    shapes[node].x,
+                    shapes[node].y,
+                  ]}
+                  stroke="yellow"
+                  strokeWidth={20}
+                />
+              ))
               : null}
             {lines.map((line: Bridge, index: number) => {
               if (line.value === 1) {
@@ -237,13 +243,13 @@ const Board = () => {
                       // key={index}
                       points={[
                         shapes[line.nodeFrom].x -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeFrom].y -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].x -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].y -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                       ]}
                       stroke="black"
                       strokeWidth={3}
@@ -252,13 +258,13 @@ const Board = () => {
                       // key={index}
                       points={[
                         shapes[line.nodeFrom].x +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeFrom].y +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].x +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].y +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                       ]}
                       stroke="black"
                       strokeWidth={3}

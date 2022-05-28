@@ -232,7 +232,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
             </Grid>
           ) : null}
 
-          {/* {!isAdmin ? (
+          {!isAdmin ? (
             <Grid container>
               <Grid item xs={24} sm={12} md={6} className="button-placment">
                 <Button
@@ -252,8 +252,8 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
                 />
               </Grid>
             </Grid>
-          ) : null} */}
-          {!isAdmin ? (
+          ) : null}
+          {/* {!isAdmin ? (
             <Grid container>
               <Grid item xs={24} className="button-placment">
                 <Button
@@ -267,7 +267,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
                 </Button>
               </Grid>
             </Grid>
-          ) : null}
+          ) : null} */}
         </div>
       </div>
     </>
