@@ -35,14 +35,20 @@ $light_logo-secondary-color: #8b89ec;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    //scale down body 0.8 time
     &.modal-active {
         overflow: hidden;
     }
 }
 
 .main-content {
-    margin: 36px 16px;
+    margin: 0px 16px;
+
+    @media screen and (max-width: 600px) {
+        .main-content{
+            margin: 0px 8px;
+        }
+    }
+    
     @include display-flex(column, center);
 }
 
@@ -120,6 +126,11 @@ $light_logo-secondary-color: #8b89ec;
     margin: 24px 16px;
     margin-top: 10vh;
     @include boarder();
+
+    @media screen and (max-width: 600px) {
+        margin-top: 0px;
+    }
+
 }
 
 @mixin about-pages {
