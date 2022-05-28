@@ -4,6 +4,7 @@ import { PersonRemove } from "@mui/icons-material";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { IGameData } from "../interfaces/IRoomAndBoard";
+import { Icon } from '@iconify/react';
 
 const Player = ({
   player,
@@ -33,27 +34,33 @@ const Player = ({
     <div className="element">
       <div className="element-name">
         {player.uuid === user.uuid ? (
-          <span style={{ width:"100%"}}>{player.name} (You)</span>
+          <div style={{ width: "100%" }}>
+            <span style={{ maxWidth: "80%" }}>{player.name}</span>
+            <span style={{ marginLeft: "8px" }}>(You)</span>
+          </div>
         ) : (
-          <span style={{ width:"100%" }}>{player.name}</span>
+          <span style={{ maxWidth: "100%" }}>{player.name}</span>
         )}
       </div>
-
-      <div
-        onClick={() => {
-          handleKickPlayer();
-        }}
-        className="element-button"
-      >
-        <IconButton
-          color="secondary"
-          aria-label="upload picture"
-          component="span"
-          size="small"
+      {
+        isAdmin &&
+        <div
+          onClick={() => {
+            handleKickPlayer();
+          }}
+          className="element-button"
         >
-          <PersonRemove />
-        </IconButton>
-      </div>
+          <IconButton
+            color="secondary"
+            aria-label="upload picture"
+            component="span"
+            size="small"
+          >
+            <PersonRemove />
+          </IconButton>
+        </div>
+      }
+      {/* <Icon icon="emojione:crown" width="128" height="128" /> */}
     </div>
   );
 };
