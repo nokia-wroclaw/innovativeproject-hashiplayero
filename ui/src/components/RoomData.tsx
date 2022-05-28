@@ -1,6 +1,6 @@
 import { IRoomAndBoard } from "../interfaces/IRoomAndBoard";
 import { IState } from "../interfaces/IState";
-import { Button } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -182,55 +182,92 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
               </div>
             </div>
           ) : null}
+          {isAdmin ? (
+            <Grid container columns={24}>
+              <Grid item xs={24} sm={12} md={6} className="button-placment">
+                <Button
+                  className="m-2"
+                  onClick={() => {
+                    handleEditRoom();
+                  }}
+                  color="secondary"
+                >
+                  Edit
+                </Button>
+              </Grid>
+              <Grid item xs={24} sm={12} md={6} className="button-placment">
+                <Button
+                  className="m-2"
+                  onClick={() => {
+                    handleStartGame();
+                  }}
+                  color="secondary"
+                  sx={{ width: "100%" }}
+                >
+                  Start
+                </Button>
+              </Grid>
+              <Grid item xs={24} sm={12} md={6} className="button-placment">
+                <Button
+                  className="m-2"
+                  onClick={() => {
+                    handleDeleteRoom();
+                  }}
+                  color="secondary"
+                >
+                  Delete
+                </Button>
+              </Grid>
+              <Grid item xs={24} sm={12} md={6} className="button-placment">
+                <Button
+                  className="m-2"
+                  onClick={() => {
+                    handleExitRoom();
+                  }}
+                  color="secondary"
+                >
+                  Exit
+                </Button>
+              </Grid>
+            </Grid>
+          ) : null}
 
-          <div className="form-elements">
-            {isAdmin ? (
-              <Button
-                className="m-2"
-                onClick={() => {
-                  handleEditRoom();
-                }}
-                color="secondary"
-              >
-                Edit
-              </Button>
-            ) : null}
-            {isAdmin ? (
-              <Button
-                className="m-2"
-                onClick={() => {
-                  handleStartGame();
-                }}
-                color="secondary"
-              >
-                Start Game
-              </Button>
-            ) : null}
-            <Button
-              className="m-2"
-              onClick={() => {
-                handleExitRoom();
-              }}
-              color="secondary"
-            >
-              Exit Room
-            </Button>
-            <SwipeablePlayerList
-              players={roomAndBoard.members}
-              gameData={roomAndBoard.gameData}
-            />
-            {isAdmin ? (
-              <Button
-                className="m-2"
-                onClick={() => {
-                  handleDeleteRoom();
-                }}
-                color="secondary"
-              >
-                Delete Room
-              </Button>
-            ) : null}
-          </div>
+          {/* {!isAdmin ? (
+            <Grid container>
+              <Grid item xs={24} sm={12} md={6} className="button-placment">
+                <Button
+                  className="m-2"
+                  onClick={() => {
+                    handleExitRoom();
+                  }}
+                  color="secondary"
+                >
+                  Exit
+                </Button>
+              </Grid>
+              <Grid item xs={24} sm={12} md={6} className="button-placment">
+                <SwipeablePlayerList
+                  players={roomAndBoard.members}
+                  gameData={roomAndBoard.gameData}
+                />
+              </Grid>
+            </Grid>
+          ) : null} */}
+          {!isAdmin ? (
+            <Grid container>
+              <Grid item xs={24} className="button-placment">
+                <Button
+                  className="m-2"
+                  onClick={() => {
+                    handleExitRoom();
+                  }}
+                  color="secondary"
+                >
+                  Exit
+                </Button>
+              </Grid>
+            </Grid>
+          ) : null}
         </div>
       </div>
     </>

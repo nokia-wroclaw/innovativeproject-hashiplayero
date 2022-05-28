@@ -80,14 +80,17 @@ const SwipeablePlayerList = ({
                                     </React.Fragment>
                                 }
                             />
+                            {
+                                isAdmin &&
+                                <ListItemIcon
+                                    onClick={() => {
+                                        handleKickPlayer(player);
+                                    }}
+                                >
+                                    <PersonRemove />
+                                </ListItemIcon>
+                            }
 
-                            <ListItemIcon
-                                onClick={() => {
-                                    handleKickPlayer(player);
-                                }}
-                            >
-                                <PersonRemove />
-                            </ListItemIcon>
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -100,7 +103,7 @@ const SwipeablePlayerList = ({
         <>
             <div>
                 <React.Fragment key={'right'}>
-                    <Button onClick={toggleDrawer('right', true)}>Player</Button>
+                    <Button color="secondary" onClick={toggleDrawer('right', true)}>Players</Button>
                     <SwipeableDrawer
                         anchor={'right'}
                         open={state['right']}
