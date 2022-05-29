@@ -1,43 +1,47 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import ReactCanvasConfetti from "react-canvas-confetti";
 import { Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import {
-  changeAdmin,
   changeBoardCorrect,
-  changeMultiGame,
-  changeSingleGame,
   setInitialState,
 } from "../store/StateMachineSlice";
 import Board from "./Board";
 import PlayerList from "../components/PlayerList";
-
 import { Grid, useMediaQuery } from "@mui/material";
-import ParseBridgesModel from "../services/ParseBridgesModel";
 import DialogWin from "../components/static-components/DialogWin";
-// import useMediaQuery from '@mui/material/useMediaQuery';
 
 const Game = () => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const { user } = useSelector((state: RootState) => state.defaultUser);
-  const dispatch = useAppDispatch();
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
+  const { isBoardCorrect, inSingleGame, inWaitingRoom, isAdmin, inMultiGame } =
+    useSelector((state: RootState) => state.StateMachine);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const matches = useMediaQuery("(min-width:900px)");
 
-  const { isBoardCorrect, inSingleGame, inWaitingRoom, isAdmin, inMultiGame } =
-    useSelector((state: RootState) => state.StateMachine);
+  const [openWinDialog, setOpenWinDialog] = useState<boolean>(false);
+  const [openWin, setOpenWin] = useState<boolean>(true);
+
+  const handleSetOpenWinClose = () => {
+    setOpenWin(false);
+  };
 
   useEffect(() => {
-    //TODO: zrobić zeby single player mogł wrocic do poczekalni do kolejnej gry (teraz zawsze zrobi nowy pokoj)
     if (!inWaitingRoom && !isAdmin) {
       navigate("/");
     }
     if (inWaitingRoom && !inMultiGame && !inSingleGame) {
       navigate(`/waitingroom/${roomAndBoard.name}`);
+    }
+    //debugger;
+    if (isBoardCorrect && openWin) {
+      setOpenWinDialog(true);
+      fire();
     }
   }, [
     roomAndBoard,
@@ -47,6 +51,7 @@ const Game = () => {
     inWaitingRoom,
     isAdmin,
     inMultiGame,
+    openWin,
   ]);
 
   const handleExitGame = () => {
@@ -99,18 +104,49 @@ const Game = () => {
     }
   };
 
-  const handleCheckBoard = () => {
-    if (webSocket !== undefined) {
-      webSocket.send(
-        JSON.stringify({
-          action: "checkBoard",
-          data: {
-            moves: ParseBridgesModel(roomAndBoard.bridges),
-          },
-        })
-      );
-    }
-  };
+  const refAnimationInstance = useRef<any>(null);
+
+  const getInstance = useCallback((instance) => {
+    refAnimationInstance.current = instance;
+  }, []);
+
+  const makeShot = useCallback((particleRatio, opts) => {
+    refAnimationInstance.current &&
+      refAnimationInstance.current({
+        ...opts,
+        origin: { y: 0.7 },
+        particleCount: Math.floor(200 * particleRatio),
+      });
+  }, []);
+
+  const fire = useCallback(() => {
+    makeShot(0.25, {
+      spread: 26,
+      startVelocity: 55,
+    });
+
+    makeShot(0.2, {
+      spread: 60,
+    });
+
+    makeShot(0.35, {
+      spread: 100,
+      decay: 0.91,
+      scalar: 0.8,
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 25,
+      decay: 0.92,
+      scalar: 1.2,
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 45,
+    });
+  }, [makeShot]);
 
   return (
     <>
@@ -133,13 +169,6 @@ const Game = () => {
           <span>xs</span>
         </Grid>
       </Grid>
-      <Button
-        onClick={() => {
-          handleCheckBoard();
-        }}
-      >
-        Check Board
-      </Button>
       {!inSingleGame && inMultiGame ? (
         <>
           <Button
@@ -185,7 +214,22 @@ const Game = () => {
           gameData={roomAndBoard.gameData}
         />
       ) : null}
-      <DialogWin/>
+      <DialogWin
+        open={openWinDialog}
+        handleSetOpenWinClose={handleSetOpenWinClose}
+        setOpenWinDialog={setOpenWinDialog}
+      />
+      <ReactCanvasConfetti
+        refConfetti={getInstance}
+        style={{
+          position: "fixed",
+          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          top: 0,
+          left: 0,
+        }}
+      />
     </>
   );
 };

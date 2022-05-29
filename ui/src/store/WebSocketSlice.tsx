@@ -4,6 +4,8 @@ import { RootState } from "./store";
 
 const initialState: IWebSocket = {
   webSocket: new WebSocket("ws://localhost:8080/ws/"),
+  // webSocket: new WebSocket("wss://dockerhash.azurewebsites.net/ws/"),
+  // webSocket: new WebSocket("wss://hash-carpenipl.koyeb.app/ws/"),
 };
 
 export const WebSocketSlice = createSlice({
@@ -11,7 +13,7 @@ export const WebSocketSlice = createSlice({
   initialState,
   reducers: {
     setWebSocket: (state, action: PayloadAction<IWebSocket>) => {
-        return action.payload;
+      return action.payload;
     },
   },
 });
