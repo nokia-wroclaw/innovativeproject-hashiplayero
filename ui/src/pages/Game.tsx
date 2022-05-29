@@ -16,6 +16,7 @@ import PlayerList from "../components/PlayerList";
 
 import { Grid, useMediaQuery } from "@mui/material";
 import ParseBridgesModel from "../services/ParseBridgesModel";
+import DialogWin from "../components/static-components/DialogWin";
 // import useMediaQuery from '@mui/material/useMediaQuery';
 
 const Game = () => {
@@ -184,6 +185,7 @@ const Game = () => {
           gameData={roomAndBoard.gameData}
         />
       ) : null}
+      <DialogWin/>
     </>
   );
 };
