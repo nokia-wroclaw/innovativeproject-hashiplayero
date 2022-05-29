@@ -118,24 +118,31 @@ const Board = () => {
   };
 
   const updateShapes = () => {
-    const newShapes = shapes;
-    
+    const newShapes = cloneDeep(shapes);
+    newShapes.forEach((shape: any, index: number) => {
+      shape.x = ((index % roomAndBoard.settings.size) * width) /
+        roomAndBoard.settings.size +
+        width / roomAndBoard.settings.size / 2;
+      shape.y = (Math.floor(index / roomAndBoard.settings.size) * width) /
+        roomAndBoard.settings.size +
+        width / roomAndBoard.settings.size / 2;
+      shape.fontSize = width / roomAndBoard.settings.size / 3;
+      shape.radius = width / roomAndBoard.settings.size / 2;
+    });
+    setShapes(newShapes);
   }
 
   useEffect(() => {
-    setShapes(shapes);
+    // setShapes(shapes);
+    updateShapes();
     let counter: number = 0;
     shapes.map((shape: any) => {
-      const connections = roomAndBoard.bridges
-        .filter(
-          (line) => line.nodeFrom === shape.id || line.nodeTo === shape.id
-        )
-        .reduce((acc, curr) => acc + curr.value, 0);
-      if (connections === shape.value) {
+      // console.log(shape.color);
+      if (shape.color === "green") {
         counter++;
       }
     });
-    if (counter === numberOfNodes) {
+    if (counter === numberOfNodes-1) {
       handleCheckBoard();
     }
     console.log(counter);
@@ -165,11 +172,11 @@ const Board = () => {
         radius: parentWidht / roomAndBoard.settings.size / 2,
         x:
           ((index % roomAndBoard.settings.size) * parentWidht) /
-            roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         y:
           (Math.floor(index / roomAndBoard.settings.size) * parentWidht) /
-            roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         fontSize: parentWidht / roomAndBoard.settings.size / 3,
         isSelected: false,
@@ -311,26 +318,26 @@ const Board = () => {
           <Layer>
             {hoveredNode >= 0
               ? getPossibleNodes(
-                  board,
-                  roomAndBoard.settings.size,
-                  hoveredNode
-                ).map((node) => (
-                  <Line
-                    key={node}
-                    points={
-                      shapes.length !== undefined
-                        ? [
-                            shapes[hoveredNode].x,
-                            shapes[hoveredNode].y,
-                            shapes[node].x,
-                            shapes[node].y,
-                          ]
-                        : []
-                    }
-                    stroke="yellow"
-                    strokeWidth={20}
-                  />
-                ))
+                board,
+                roomAndBoard.settings.size,
+                hoveredNode
+              ).map((node) => (
+                <Line
+                  key={node}
+                  points={
+                    shapes.length !== undefined
+                      ? [
+                        shapes[hoveredNode].x,
+                        shapes[hoveredNode].y,
+                        shapes[node].x,
+                        shapes[node].y,
+                      ]
+                      : []
+                  }
+                  stroke="yellow"
+                  strokeWidth={20}
+                />
+              ))
               : null}
             {roomAndBoard.bridges.map((line: Bridge, index: number) => {
               if (line.value === 1) {
@@ -340,11 +347,11 @@ const Board = () => {
                     points={
                       shapes !== undefined
                         ? [
-                            shapes[line.nodeFrom]?.x,
-                            shapes[line.nodeFrom]?.y,
-                            shapes[line.nodeTo]?.x,
-                            shapes[line.nodeTo]?.y,
-                          ]
+                          shapes[line.nodeFrom]?.x,
+                          shapes[line.nodeFrom]?.y,
+                          shapes[line.nodeTo]?.x,
+                          shapes[line.nodeTo]?.y,
+                        ]
                         : []
                     }
                     stroke="black"
@@ -359,15 +366,15 @@ const Board = () => {
                       points={
                         shapes !== undefined
                           ? [
-                              shapes[line.nodeFrom]?.x -
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeFrom]?.y -
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.x -
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.y -
-                                shapes[line.nodeFrom]?.radius / 4,
-                            ]
+                            shapes[line.nodeFrom]?.x -
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeFrom]?.y -
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.x -
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.y -
+                            shapes[line.nodeFrom]?.radius / 4,
+                          ]
                           : []
                       }
                       stroke="black"
@@ -378,15 +385,15 @@ const Board = () => {
                       points={
                         shapes !== undefined
                           ? [
-                              shapes[line.nodeFrom]?.x +
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeFrom]?.y +
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.x +
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.y +
-                                shapes[line.nodeFrom]?.radius / 4,
-                            ]
+                            shapes[line.nodeFrom]?.x +
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeFrom]?.y +
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.x +
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.y +
+                            shapes[line.nodeFrom]?.radius / 4,
+                          ]
                           : []
                       }
                       stroke="black"
@@ -419,10 +426,13 @@ const Board = () => {
                         shape.color = "blue";
                         return "blue";
                       } else if (connections > shape.value) {
+                        shape.color = "red";
                         return "red";
                       } else if (connections === shape.value) {
+                        shape.color = "green";
                         return "green";
                       } else {
+                        shape.color = "white";
                         return "white";
                       }
                     })()}
