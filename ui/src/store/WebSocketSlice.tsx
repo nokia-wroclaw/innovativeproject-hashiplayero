@@ -3,9 +3,8 @@ import IWebSocket from "../interfaces/IWebSocket";
 import { RootState } from "./store";
 
 const initialState: IWebSocket = {
-  webSocket: new WebSocket("ws://localhost:8080/ws/"),
-  // webSocket: new WebSocket("wss://dockerhash.azurewebsites.net/ws/"),
-  // webSocket: new WebSocket("wss://hash-carpenipl.koyeb.app/ws/"),
+  // webSocket: new WebSocket("ws://localhost:8080/ws/"),
+  webSocket: new WebSocket("wss://hashiplayero-nokia.koyeb.app/ws/"),
 };
 
 export const WebSocketSlice = createSlice({

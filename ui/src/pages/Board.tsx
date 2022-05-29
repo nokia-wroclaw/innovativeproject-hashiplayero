@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Text, Circle, Group, Line } from "react-konva";
 import { useSelector } from "react-redux";
 import { Bridge } from "../interfaces/IRoomAndBoard";
@@ -69,7 +69,13 @@ const getPossibleNodes = (
   return output;
 };
 
-const Board = () => {
+const Board = ({
+  gameEnded,
+  disableHints,
+}: {
+  gameEnded: boolean;
+  disableHints: boolean;
+}) => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const dispatch = useAppDispatch();
@@ -84,7 +90,6 @@ const Board = () => {
   const [hoveredNode, setHoveredNode] = useState<number>(-1);
   const [lastNode, setLastNode] = useState<number>(-1);
   const [numberOfNodes, setNumberOfNodes] = useState<number>(-1);
-  // const [numberOfGreenNodes, setNumberOfGreenNodes] = useState<number>(0);
 
   const [width, setWidth] = useState<number>(-1);
   const stageCanvasRef = useRef(null);
@@ -120,32 +125,31 @@ const Board = () => {
   const updateShapes = () => {
     const newShapes = cloneDeep(shapes);
     newShapes.forEach((shape: any, index: number) => {
-      shape.x = ((index % roomAndBoard.settings.size) * width) /
-        roomAndBoard.settings.size +
+      shape.x =
+        ((index % roomAndBoard.settings.size) * width) /
+          roomAndBoard.settings.size +
         width / roomAndBoard.settings.size / 2;
-      shape.y = (Math.floor(index / roomAndBoard.settings.size) * width) /
-        roomAndBoard.settings.size +
+      shape.y =
+        (Math.floor(index / roomAndBoard.settings.size) * width) /
+          roomAndBoard.settings.size +
         width / roomAndBoard.settings.size / 2;
       shape.fontSize = width / roomAndBoard.settings.size / 3;
       shape.radius = width / roomAndBoard.settings.size / 2;
     });
     setShapes(newShapes);
-  }
+  };
 
   useEffect(() => {
-    // setShapes(shapes);
     updateShapes();
     let counter: number = 0;
     shapes.map((shape: any) => {
-      // console.log(shape.color);
       if (shape.color === "green") {
         counter++;
       }
     });
-    if (counter === numberOfNodes-1) {
+    if (counter === numberOfNodes - 1) {
       handleCheckBoard();
     }
-    console.log(counter);
   }, [lastNode, width]);
 
   const handleCheckBoard = () => {
@@ -172,11 +176,11 @@ const Board = () => {
         radius: parentWidht / roomAndBoard.settings.size / 2,
         x:
           ((index % roomAndBoard.settings.size) * parentWidht) /
-          roomAndBoard.settings.size +
+            roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         y:
           (Math.floor(index / roomAndBoard.settings.size) * parentWidht) /
-          roomAndBoard.settings.size +
+            roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         fontSize: parentWidht / roomAndBoard.settings.size / 3,
         isSelected: false,
@@ -223,14 +227,11 @@ const Board = () => {
               const isVertical =
                 smaller % roomAndBoard.settings.size ===
                 bigger % roomAndBoard.settings.size;
-              console.log(isVertical);
               if (!isVertical) {
                 const tempBridges = [...board];
                 for (let i = smaller + 1; i < bigger; i++) {
                   tempBridges[i] = 0;
                 }
-                console.log("horyzontalnie - naprawa");
-                console.log(tempBridges);
                 setBoard(tempBridges);
               } else {
                 const tempBridges = [...board];
@@ -241,8 +242,6 @@ const Board = () => {
                 ) {
                   tempBridges[i] = 0;
                 }
-                console.log("werykalnie - naprawa");
-                console.log(tempBridges);
                 setBoard(tempBridges);
               }
               dispatch(deleteBridge(line));
@@ -257,7 +256,6 @@ const Board = () => {
             const isVertical =
               smaller % roomAndBoard.settings.size ===
               bigger % roomAndBoard.settings.size;
-            console.log(isVertical);
             if (!isVertical) {
               const tempBridges = [...board];
               for (let i = smaller + 1; i < bigger; i++) {
@@ -266,8 +264,6 @@ const Board = () => {
                 }
                 tempBridges[i] = -1;
               }
-              console.log("horyzontalnie");
-              console.log(tempBridges);
               setBoard(tempBridges);
             } else {
               const tempBridges = [...board];
@@ -281,8 +277,6 @@ const Board = () => {
                 }
                 tempBridges[i] = -1;
               }
-              console.log("werykalnie");
-              console.log(tempBridges);
               setBoard(tempBridges);
             }
             dispatch(
@@ -316,28 +310,28 @@ const Board = () => {
       >
         <Stage width={width + 10} height={width + 10}>
           <Layer>
-            {hoveredNode >= 0
+            {hoveredNode >= 0 && disableHints && !gameEnded
               ? getPossibleNodes(
-                board,
-                roomAndBoard.settings.size,
-                hoveredNode
-              ).map((node) => (
-                <Line
-                  key={node}
-                  points={
-                    shapes.length !== undefined
-                      ? [
-                        shapes[hoveredNode].x,
-                        shapes[hoveredNode].y,
-                        shapes[node].x,
-                        shapes[node].y,
-                      ]
-                      : []
-                  }
-                  stroke="yellow"
-                  strokeWidth={20}
-                />
-              ))
+                  board,
+                  roomAndBoard.settings.size,
+                  hoveredNode
+                ).map((node) => (
+                  <Line
+                    key={node}
+                    points={
+                      shapes.length !== undefined
+                        ? [
+                            shapes[hoveredNode].x,
+                            shapes[hoveredNode].y,
+                            shapes[node].x,
+                            shapes[node].y,
+                          ]
+                        : []
+                    }
+                    stroke="yellow"
+                    strokeWidth={20}
+                  />
+                ))
               : null}
             {roomAndBoard.bridges.map((line: Bridge, index: number) => {
               if (line.value === 1) {
@@ -347,11 +341,11 @@ const Board = () => {
                     points={
                       shapes !== undefined
                         ? [
-                          shapes[line.nodeFrom]?.x,
-                          shapes[line.nodeFrom]?.y,
-                          shapes[line.nodeTo]?.x,
-                          shapes[line.nodeTo]?.y,
-                        ]
+                            shapes[line.nodeFrom]?.x,
+                            shapes[line.nodeFrom]?.y,
+                            shapes[line.nodeTo]?.x,
+                            shapes[line.nodeTo]?.y,
+                          ]
                         : []
                     }
                     stroke="black"
@@ -366,15 +360,15 @@ const Board = () => {
                       points={
                         shapes !== undefined
                           ? [
-                            shapes[line.nodeFrom]?.x -
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeFrom]?.y -
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.x -
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.y -
-                            shapes[line.nodeFrom]?.radius / 4,
-                          ]
+                              shapes[line.nodeFrom]?.x -
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeFrom]?.y -
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.x -
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.y -
+                                shapes[line.nodeFrom]?.radius / 4,
+                            ]
                           : []
                       }
                       stroke="black"
@@ -385,15 +379,15 @@ const Board = () => {
                       points={
                         shapes !== undefined
                           ? [
-                            shapes[line.nodeFrom]?.x +
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeFrom]?.y +
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.x +
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.y +
-                            shapes[line.nodeFrom]?.radius / 4,
-                          ]
+                              shapes[line.nodeFrom]?.x +
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeFrom]?.y +
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.x +
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.y +
+                                shapes[line.nodeFrom]?.radius / 4,
+                            ]
                           : []
                       }
                       stroke="black"
@@ -437,12 +431,20 @@ const Board = () => {
                       }
                     })()}
                     onMouseOver={() => {
-                      setHoveredNode(index);
+                      if (!gameEnded) {
+                        setHoveredNode(index);
+                      }
                     }}
                     onMouseLeave={() => {
-                      setHoveredNode(-1);
+                      if (!gameEnded) {
+                        setHoveredNode(-1);
+                      }
                     }}
-                    onMouseUp={() => drawLine(index)}
+                    onMouseUp={() => {
+                      if (!gameEnded) {
+                        drawLine(index);
+                      }
+                    }}
                   />
                   <Text
                     text={shape.value.toString()}
@@ -452,12 +454,20 @@ const Board = () => {
                     offsetX={shape.fontSize / 4}
                     offsetY={shape.fontSize / 3}
                     onMouseEnter={() => {
-                      setHoveredNode(index);
+                      if (!gameEnded) {
+                        setHoveredNode(index);
+                      }
                     }}
                     onMouseLeave={() => {
-                      setHoveredNode(-1);
+                      if (!gameEnded) {
+                        setHoveredNode(-1);
+                      }
                     }}
-                    onMouseUp={() => drawLine(index)}
+                    onMouseUp={() => {
+                      if (!gameEnded) {
+                        drawLine(index);
+                      }
+                    }}
                   />
                 </Group>
               ) : null
