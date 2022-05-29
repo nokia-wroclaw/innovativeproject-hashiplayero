@@ -10,9 +10,13 @@ import {
   increaseValueOnBridge,
 } from "./../store/RoomGameSlice";
 import cloneDeep from "lodash/cloneDeep";
-import { shape } from "@mui/system";
 
-const getPossibleNodes = (board: number[], width: number, loc: number, checkBridge: boolean = false) => {
+const getPossibleNodes = (
+  board: number[],
+  width: number,
+  loc: number,
+  checkBridge: boolean = false
+) => {
   const rowStart = Math.floor(loc / width) * width;
 
   const output: number[] = [];
@@ -68,15 +72,12 @@ const Board = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const dispatch = useAppDispatch();
 
-  // const arr: number[] = roomAndBoard.array.reduce(
-  //   (acc: number[], curr: number) => acc.concat(curr),
-  //   []
-  // );
-  
-  const [board, setBoard] = useState(roomAndBoard.array.reduce(
-    (acc: number[], curr: number) => acc.concat(curr),
-    []
-  ));
+  const [board, setBoard] = useState(
+    roomAndBoard.array.reduce(
+      (acc: number[], curr: number) => acc.concat(curr),
+      []
+    )
+  );
 
   const [hoveredNode, setHoveredNode] = useState<number>(-1);
 
@@ -104,11 +105,11 @@ const Board = () => {
 
   useEffect(() => {
     setShapes(shapes);
-    console.log("zmiana wielkosci, albo klick")
-  }, [lastNode,width]);
+    console.log("zmiana wielkosci, albo klick");
+  }, [lastNode, width]);
 
-  function generateShapes(parentWidht : number) {
-    if(parentWidht === -1) {
+  function generateShapes(parentWidht: number) {
+    if (parentWidht === -1) {
       return [];
     }
     const nodes = roomAndBoard.array.map((value: any, index: number) => {
@@ -132,7 +133,6 @@ const Board = () => {
     return nodes;
   }
 
-
   function drawLine(index: number) {
     let indexToRemember = lastNode;
     if (lastNode === -1) {
@@ -146,62 +146,105 @@ const Board = () => {
     } else {
       shapes[lastNode].isSelected = false;
       shapes[index].isSelected = true;
-      getPossibleNodes(board, roomAndBoard.settings.size, indexToRemember, true).map(
-        (node) => {
-          if (node === index) {
-            let line: Bridge | undefined = cloneDeep(
-              roomAndBoard.bridges.find(
-                (line) =>
-                  (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
-                  (line.nodeFrom === node && line.nodeTo === indexToRemember)
-              )
-            );
-            if (line) {
-              line.value += 1;
-              if (line.value >= 3) {
-                dispatch(deleteBridge(line));
-              } else {
-                dispatch(increaseValueOnBridge(line));
-              }
-            } else {
+      getPossibleNodes(
+        board,
+        roomAndBoard.settings.size,
+        indexToRemember,
+        true
+      ).map((node) => {
+        if (node === index) {
+          let line: Bridge | undefined = cloneDeep(
+            roomAndBoard.bridges.find(
+              (line) =>
+                (line.nodeFrom === indexToRemember && line.nodeTo === node) ||
+                (line.nodeFrom === node && line.nodeTo === indexToRemember)
+            )
+          );
+          if (line) {
+            line.value += 1;
+            if (line.value >= 3) {
               let [smaller, bigger] = [indexToRemember, node];
               if (bigger < smaller) {
                 [smaller, bigger] = [bigger, smaller];
               }
               const isVertical =
-                (smaller % roomAndBoard.settings.size) === (bigger % roomAndBoard.settings.size);
+                smaller % roomAndBoard.settings.size ===
+                bigger % roomAndBoard.settings.size;
               console.log(isVertical);
               if (!isVertical) {
                 const tempBridges = [...board];
                 for (let i = smaller + 1; i < bigger; i++) {
-                  tempBridges[i] = -1;
+                  tempBridges[i] = 0;
                 }
-                console.log("horyzontalnie");
+                console.log("horyzontalnie - naprawa");
                 console.log(tempBridges);
                 setBoard(tempBridges);
               } else {
                 const tempBridges = [...board];
-                for (let i = smaller + roomAndBoard.settings.size; i < bigger - roomAndBoard.settings.size; i += roomAndBoard.settings.size) {
-                  tempBridges[i] = -1;
+                for (
+                  let i = smaller + roomAndBoard.settings.size;
+                  i < bigger - roomAndBoard.settings.size;
+                  i += roomAndBoard.settings.size
+                ) {
+                  tempBridges[i] = 0;
                 }
-                console.log("werykalnie");
+                console.log("werykalnie - naprawa");
                 console.log(tempBridges);
                 setBoard(tempBridges);
               }
-              dispatch(
-                updateMove([
-                  ...roomAndBoard.bridges,
-                  {
-                    nodeFrom: indexToRemember,
-                    nodeTo: node,
-                    value: 1,
-                  },
-                ])
-              );
+              dispatch(deleteBridge(line));
+            } else {
+              dispatch(increaseValueOnBridge(line));
             }
+          } else {
+            let [smaller, bigger] = [indexToRemember, node];
+            if (bigger < smaller) {
+              [smaller, bigger] = [bigger, smaller];
+            }
+            const isVertical =
+              smaller % roomAndBoard.settings.size ===
+              bigger % roomAndBoard.settings.size;
+            console.log(isVertical);
+            if (!isVertical) {
+              const tempBridges = [...board];
+              for (let i = smaller + 1; i < bigger; i++) {
+                if (tempBridges[i] === -1) {
+                  return;
+                }
+                tempBridges[i] = -1;
+              }
+              console.log("horyzontalnie");
+              console.log(tempBridges);
+              setBoard(tempBridges);
+            } else {
+              const tempBridges = [...board];
+              for (
+                let i = smaller + roomAndBoard.settings.size;
+                i < bigger - roomAndBoard.settings.size;
+                i += roomAndBoard.settings.size
+              ) {
+                if (tempBridges[i] === -1) {
+                  return;
+                }
+                tempBridges[i] = -1;
+              }
+              console.log("werykalnie");
+              console.log(tempBridges);
+              setBoard(tempBridges);
+            }
+            dispatch(
+              updateMove([
+                ...roomAndBoard.bridges,
+                {
+                  nodeFrom: indexToRemember,
+                  nodeTo: node,
+                  value: 1,
+                },
+              ])
+            );
           }
         }
-      );
+      });
       setLastNode(index);
       return;
     }
@@ -245,10 +288,10 @@ const Board = () => {
                   <Line
                     key={index}
                     points={[
-                      shapes[line.nodeFrom].x,
-                      shapes[line.nodeFrom].y,
-                      shapes[line.nodeTo].x,
-                      shapes[line.nodeTo].y,
+                      shapes[line.nodeFrom]?.x,
+                      shapes[line.nodeFrom]?.y,
+                      shapes[line.nodeTo]?.x,
+                      shapes[line.nodeTo]?.y,
                     ]}
                     stroke="black"
                     strokeWidth={3}
