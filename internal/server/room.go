@@ -318,7 +318,7 @@ func kickUser(ikud InboundKickUserData, c *Client, r *Room) {
 	}
 	clientToKick := clientsMap[userkuuidToKick]
 	if clientToKick.room.roomSettings.Name == r.roomSettings.Name {
-		changeRoom(InboundChangeRoomData{RoomName: "lobby"}, c, r)
+		changeRoom(InboundChangeRoomData{RoomName: "lobby"}, clientToKick, r)
 		rm := ResponeMessage{Respone: "kickUser", Error: "You have been kicked from the room"}
 		sendToClient(clientToKick, rm)
 		return

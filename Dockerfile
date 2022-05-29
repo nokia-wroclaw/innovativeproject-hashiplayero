@@ -1,8 +1,7 @@
 # Stage 0 - Pull app repo
 FROM alpine/git:latest
 WORKDIR /
-RUN git clone -b basic_websocket https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
-# RUN git clone https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
+RUN git clone https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
 
 # Stage 1 - Build web app from artifacts from previous stage
 FROM node:current-alpine
@@ -27,3 +26,4 @@ RUN go get github.com/GeertJohan/go.rice \
 FROM alpine:latest
 COPY --from=2 /innovativeproject-hashiplayero/hashiplayero /usr/bin/hashiplayero
 ENTRYPOINT ["/usr/bin/hashiplayero"]
+
