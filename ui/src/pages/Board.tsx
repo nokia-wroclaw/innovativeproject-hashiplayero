@@ -183,7 +183,7 @@ const Board = () => {
                 const tempBridges = [...board];
                 for (
                   let i = smaller + roomAndBoard.settings.size;
-                  i < bigger - roomAndBoard.settings.size;
+                  i < bigger - roomAndBoard.settings.size + 1;
                   i += roomAndBoard.settings.size
                 ) {
                   tempBridges[i] = 0;
@@ -220,7 +220,7 @@ const Board = () => {
               const tempBridges = [...board];
               for (
                 let i = smaller + roomAndBoard.settings.size;
-                i < bigger - roomAndBoard.settings.size;
+                i < bigger - roomAndBoard.settings.size + 1;
                 i += roomAndBoard.settings.size
               ) {
                 if (tempBridges[i] === -1) {
