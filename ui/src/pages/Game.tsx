@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
-import { Button } from "@mui/material";
+import { Button, Switch } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +22,9 @@ const Game = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const [gameEnded, setGameEnded] = useState<boolean>(false);
+  const [disableHints, setDisableHints] = useState<boolean>(true);
+
   const matches = useMediaQuery("(min-width:900px)");
 
   const [openWinDialog, setOpenWinDialog] = useState<boolean>(false);
@@ -31,6 +34,12 @@ const Game = () => {
     setOpenWin(false);
   };
 
+  const handleSetDisableHints = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDisableHints(event.target.checked);
+  };
+
   useEffect(() => {
     if (!inWaitingRoom && !isAdmin) {
       navigate("/");
@@ -38,10 +47,10 @@ const Game = () => {
     if (inWaitingRoom && !inMultiGame && !inSingleGame) {
       navigate(`/waitingroom/${roomAndBoard.name}`);
     }
-    //debugger;
     if (isBoardCorrect && openWin) {
       setOpenWinDialog(true);
       fire();
+      setGameEnded(true);
     }
   }, [
     roomAndBoard,
@@ -159,7 +168,7 @@ const Game = () => {
           <span>xs</span>
         </Grid>
         <Grid item xs={24} md={18} sx={{ background: "pink" }}>
-          <Board />
+          <Board gameEnded={gameEnded} disableHints={disableHints} />
         </Grid>
         <Grid
           item
@@ -188,7 +197,7 @@ const Game = () => {
           </Button>
         </>
       ) : null}
-
+      <Switch checked={disableHints} onChange={handleSetDisableHints} />
       {inSingleGame && !inMultiGame ? (
         <>
           <Button
