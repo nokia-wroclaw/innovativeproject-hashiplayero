@@ -192,7 +192,7 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
                   }}
                   color="secondary"
                 >
-                  Edit
+                  Save
                 </Button>
               </Grid>
               <Grid item xs={24} sm={12} md={6} className="button-placment">

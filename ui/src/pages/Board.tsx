@@ -10,8 +10,9 @@ import {
   increaseValueOnBridge,
 } from "./../store/RoomGameSlice";
 import cloneDeep from "lodash/cloneDeep";
+import { shape } from "@mui/system";
 
-const getPossibleNodes = (board: number[], width: number, loc: number) => {
+const getPossibleNodes = (board: number[], width: number, loc: number, checkBridge: boolean = false) => {
   const rowStart = Math.floor(loc / width) * width;
 
   const output: number[] = [];
@@ -22,6 +23,8 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
     } else if (board[i] > 0) {
       output.push(i);
       break;
+    } else if (board[i] === -1 && !checkBridge) {
+      break;
     }
   }
 
@@ -30,6 +33,8 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
+      break;
+    } else if (board[i] === -1 && !checkBridge) {
       break;
     }
   }
@@ -40,6 +45,8 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
     } else if (board[i] > 0) {
       output.push(i);
       break;
+    } else if (board[i] === -1 && !checkBridge) {
+      break;
     }
   }
 
@@ -48,6 +55,8 @@ const getPossibleNodes = (board: number[], width: number, loc: number) => {
       continue;
     } else if (board[i] > 0) {
       output.push(i);
+      break;
+    } else if (board[i] === -1 && !checkBridge) {
       break;
     }
   }
@@ -59,78 +68,70 @@ const Board = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const dispatch = useAppDispatch();
 
-  // const [lines, setLines] = useState([{}] as Bridge[]);
-
-  let arr: number[] = [];
+  // const arr: number[] = roomAndBoard.array.reduce(
+  //   (acc: number[], curr: number) => acc.concat(curr),
+  //   []
+  // );
+  
+  const [board, setBoard] = useState(roomAndBoard.array.reduce(
+    (acc: number[], curr: number) => acc.concat(curr),
+    []
+  ));
 
   const [hoveredNode, setHoveredNode] = useState<number>(-1);
 
   const [lastNode, setLastNode] = useState<number>(-1);
 
-  const [width, setWidth] = useState(100);
-  const [height, setHeight] = useState(100);
+  const [width, setWidth] = useState<number>(-1);
   const stageCanvasRef = useRef(null);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((event) => {
       setWidth(event[0].contentBoxSize[0].inlineSize);
-      setHeight(event[0].contentBoxSize[0].inlineSize);
+      setShapes(generateShapes(event[0].contentBoxSize[0].inlineSize));
     });
 
     if (stageCanvasRef.current) {
       resizeObserver.observe(stageCanvasRef.current);
     }
 
-    setShapes(INITIAL_STATE);
-
     return () => {
       resizeObserver.disconnect();
     };
   }, [stageCanvasRef]);
 
-  const INITIAL_STATE = generateShapes();
-  const [shapes, setShapes] = useState(INITIAL_STATE);
-
-  useEffect(() => {
-    setShapes(INITIAL_STATE);
-  }, [
-    width,
-    height,
-    roomAndBoard.settings.size,
-    roomAndBoard.array,
-    INITIAL_STATE,
-  ]);
+  const [shapes, setShapes] = useState(generateShapes(width));
 
   useEffect(() => {
     setShapes(shapes);
-  }, [lastNode, shapes]);
+    console.log("zmiana wielkosci, albo klick")
+  }, [lastNode,width]);
 
-  function generateShapes() {
-    arr = roomAndBoard.array.reduce(
-      (acc: number[], curr: number) => acc.concat(curr),
-      []
-    );
+  function generateShapes(parentWidht : number) {
+    if(parentWidht === -1) {
+      return [];
+    }
     const nodes = roomAndBoard.array.map((value: any, index: number) => {
       return {
         id: index,
         value: value,
-        radius: width / roomAndBoard.settings.size / 2,
+        radius: parentWidht / roomAndBoard.settings.size / 2,
         x:
-          ((index % roomAndBoard.settings.size) * width) /
-            roomAndBoard.settings.size +
-          width / roomAndBoard.settings.size / 2,
+          ((index % roomAndBoard.settings.size) * parentWidht) /
+          roomAndBoard.settings.size +
+          parentWidht / roomAndBoard.settings.size / 2,
         y:
-          (Math.floor(index / roomAndBoard.settings.size) * height) /
-            roomAndBoard.settings.size +
-          width / roomAndBoard.settings.size / 2,
-        fontSize: width / roomAndBoard.settings.size / 3,
+          (Math.floor(index / roomAndBoard.settings.size) * parentWidht) /
+          roomAndBoard.settings.size +
+          parentWidht / roomAndBoard.settings.size / 2,
+        fontSize: parentWidht / roomAndBoard.settings.size / 3,
         isSelected: false,
         color: "white",
       };
     });
-
     return nodes;
   }
+
 
   function drawLine(index: number) {
     let indexToRemember = lastNode;
@@ -145,7 +146,7 @@ const Board = () => {
     } else {
       shapes[lastNode].isSelected = false;
       shapes[index].isSelected = true;
-      getPossibleNodes(arr, roomAndBoard.settings.size, indexToRemember).map(
+      getPossibleNodes(board, roomAndBoard.settings.size, indexToRemember, true).map(
         (node) => {
           if (node === index) {
             let line: Bridge | undefined = cloneDeep(
@@ -167,16 +168,25 @@ const Board = () => {
               if (bigger < smaller) {
                 [smaller, bigger] = [bigger, smaller];
               }
-              const isHorizontal =
-                Math.floor(smaller / width) === Math.floor(bigger / width);
-              if (isHorizontal) {
-                for (let i = smaller + 1; i < bigger - 1; i++) {
-                  arr[i] = -1;
+              const isVertical =
+                (smaller % roomAndBoard.settings.size) === (bigger % roomAndBoard.settings.size);
+              console.log(isVertical);
+              if (!isVertical) {
+                const tempBridges = [...board];
+                for (let i = smaller + 1; i < bigger; i++) {
+                  tempBridges[i] = -1;
                 }
+                console.log("horyzontalnie");
+                console.log(tempBridges);
+                setBoard(tempBridges);
               } else {
-                for (let i = smaller + width; i < bigger - width; i += width) {
-                  arr[i] = -1;
+                const tempBridges = [...board];
+                for (let i = smaller + roomAndBoard.settings.size; i < bigger - roomAndBoard.settings.size; i += roomAndBoard.settings.size) {
+                  tempBridges[i] = -1;
                 }
+                console.log("werykalnie");
+                console.log(tempBridges);
+                setBoard(tempBridges);
               }
               dispatch(
                 updateMove([
@@ -212,22 +222,22 @@ const Board = () => {
           <Layer>
             {hoveredNode >= 0
               ? getPossibleNodes(
-                  arr,
-                  roomAndBoard.settings.size,
-                  hoveredNode
-                ).map((node) => (
-                  <Line
-                    key={node}
-                    points={[
-                      shapes[hoveredNode].x,
-                      shapes[hoveredNode].y,
-                      shapes[node].x,
-                      shapes[node].y,
-                    ]}
-                    stroke="yellow"
-                    strokeWidth={20}
-                  />
-                ))
+                board,
+                roomAndBoard.settings.size,
+                hoveredNode
+              ).map((node) => (
+                <Line
+                  key={node}
+                  points={[
+                    shapes[hoveredNode].x,
+                    shapes[hoveredNode].y,
+                    shapes[node].x,
+                    shapes[node].y,
+                  ]}
+                  stroke="yellow"
+                  strokeWidth={20}
+                />
+              ))
               : null}
             {roomAndBoard.bridges.map((line: Bridge, index: number) => {
               if (line.value === 1) {
@@ -251,13 +261,13 @@ const Board = () => {
                       // key={index}
                       points={[
                         shapes[line.nodeFrom].x -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeFrom].y -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].x -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].y -
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                       ]}
                       stroke="black"
                       strokeWidth={3}
@@ -266,13 +276,13 @@ const Board = () => {
                       // key={index}
                       points={[
                         shapes[line.nodeFrom].x +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeFrom].y +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].x +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                         shapes[line.nodeTo].y +
-                          shapes[line.nodeFrom].radius / 4,
+                        shapes[line.nodeFrom].radius / 4,
                       ]}
                       stroke="black"
                       strokeWidth={3}
