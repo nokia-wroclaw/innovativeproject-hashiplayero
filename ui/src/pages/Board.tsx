@@ -445,6 +445,16 @@ const Board = ({
                         drawLine(index);
                       }
                     }}
+                    touchstart={() => {
+                      if (!gameEnded) {
+                        drawLine(index);
+                      }
+                    }}
+                    touchend={() => {
+                      if (!gameEnded) {
+                        setHoveredNode(-1);
+                      }
+                    }}
                   />
                   <Text
                     text={shape.value.toString()}
@@ -466,6 +476,16 @@ const Board = ({
                     onMouseUp={() => {
                       if (!gameEnded) {
                         drawLine(index);
+                      }
+                    }}
+                    touchstart={() => {
+                      if (!gameEnded) {
+                        drawLine(index);
+                      }
+                    }}
+                    touchend={() => {
+                      if (!gameEnded) {
+                        setHoveredNode(-1);
                       }
                     }}
                   />
