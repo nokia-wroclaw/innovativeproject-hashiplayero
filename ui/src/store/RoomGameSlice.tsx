@@ -46,6 +46,7 @@ export const RoomBoardSlice = createSlice({
           ...state.roomAndBoard,
           array: action.payload.array,
           settings: action.payload.settings,
+          bridges: [],
         },
       };
     },

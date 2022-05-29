@@ -79,7 +79,6 @@ const Board = ({
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const dispatch = useAppDispatch();
-
   const [board, setBoard] = useState(
     roomAndBoard.array.reduce(
       (acc: number[], curr: number) => acc.concat(curr),
@@ -308,7 +307,9 @@ const Board = ({
         }}
         ref={stageCanvasRef}
       >
-        <Stage width={width + 10} height={width + 10}>
+        <Stage width={width + 10} height={width + 10}
+          captureTouchEventsEnabled={true}
+        >
           <Layer>
             {hoveredNode >= 0 && disableHints && !gameEnded
               ? getPossibleNodes(
@@ -445,14 +446,19 @@ const Board = ({
                         drawLine(index);
                       }
                     }}
-                    touchstart={() => {
+                    // touchstart={() => {
+                    //   if (!gameEnded) {
+                    //     drawLine(index);
+                    //   }
+                    // }}
+                    // touchend={() => {
+                    //   if (!gameEnded) {
+                    //     setHoveredNode(-1);
+                    //   }
+                    // }}
+                    onTap={() => {
                       if (!gameEnded) {
                         drawLine(index);
-                      }
-                    }}
-                    touchend={() => {
-                      if (!gameEnded) {
-                        setHoveredNode(-1);
                       }
                     }}
                   />
@@ -478,14 +484,19 @@ const Board = ({
                         drawLine(index);
                       }
                     }}
-                    touchstart={() => {
+                    // touchstart={() => {
+                    //   if (!gameEnded) {
+                    //     drawLine(index);
+                    //   }
+                    // }}
+                    // touchend={() => {
+                    //   if (!gameEnded) {
+                    //     setHoveredNode(-1);
+                    //   }
+                    // }}
+                    onTap={() => {
                       if (!gameEnded) {
                         drawLine(index);
-                      }
-                    }}
-                    touchend={() => {
-                      if (!gameEnded) {
-                        setHoveredNode(-1);
                       }
                     }}
                   />
