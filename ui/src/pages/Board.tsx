@@ -133,7 +133,7 @@ const Board = ({
         roomAndBoard.settings.size +
         width / roomAndBoard.settings.size / 2;
       shape.fontSize = width / roomAndBoard.settings.size / 3;
-      shape.radius = width / roomAndBoard.settings.size / 2;
+      shape.radius = width / roomAndBoard.settings.size / 2 - 2;
     });
     setShapes(newShapes);
   };
@@ -172,7 +172,7 @@ const Board = ({
       return {
         id: index,
         value: value,
-        radius: parentWidht / roomAndBoard.settings.size / 2,
+        radius: parentWidht / roomAndBoard.settings.size / 2 - 2,
         x:
           ((index % roomAndBoard.settings.size) * parentWidht) /
           roomAndBoard.settings.size +
@@ -337,13 +337,18 @@ const Board = ({
       <div
         style={{
           width: "100%",
-          border: "1px solid grey",
           margin: "auto",
           maxWidth: "800px",
+          borderRadius: "10px",
+          backgroundColor: "white",
+          padding: "12px",
+          boxShadow: "1px 2px 10px 0px rgba(0,0,0,0.75)",
+          // background: "linear-gradient(to right, white, #e1f5fe)",
+          // background: "#eeeeee"
         }}
         ref={stageCanvasRef}
       >
-        <Stage width={width + 10} height={width + 10}
+        <Stage width={width} height={width}
           captureTouchEventsEnabled={true}
           onClick={(e) => {
             clickOutside(e)
@@ -509,13 +514,13 @@ const Board = ({
                         .reduce((acc, curr) => acc + curr.value, 0);
                       if (shape.isSelected) {
                         shape.color = "blue";
-                        return "blue";
+                        return "#5452E4";
                       } else if (connections > shape.value) {
                         shape.color = "red";
-                        return "red";
+                        return "#dd2c00";
                       } else if (connections === shape.value) {
                         shape.color = "green";
-                        return "green";
+                        return "#76ff03";
                       } else {
                         shape.color = "white";
                         return "white";

@@ -5,13 +5,17 @@ import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { IGameData } from "../interfaces/IRoomAndBoard";
 import { Icon } from '@iconify/react';
+import playerStatus from "../interfaces/PlayerStatus";
 
 const Player = ({
   player,
   userGameData,
+  state,
 }: {
   player: IMember;
   userGameData: IGameData | undefined;
+  state: playerStatus;
+
 }) => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
@@ -60,7 +64,25 @@ const Player = ({
           </IconButton>
         </div>
       }
-      {/* <Icon icon="emojione:crown" width="128" height="128" /> */}
+      {
+        // tutaj porównać z uuid admina
+        isAdmin &&
+        <Icon icon="emojione:crown" width="32" height="32" />
+      }
+      {
+        state === playerStatus.firstPlace &&
+        <Icon icon="noto:1st-place-medal" width="32" height="32" />
+      }
+      {
+        state === playerStatus.secondPlace &&
+        <Icon icon="noto:2nd-place-medal" width="32" height="32" />
+      }
+      {
+        state === playerStatus.thirdPlace &&
+        <Icon icon="noto:3rd-place-medal" width="32" height="32" />
+      }
+
+
     </div>
   );
 };
