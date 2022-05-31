@@ -1,7 +1,8 @@
 # Stage 0 - Pull app repo
 FROM alpine/git:latest
 WORKDIR /
-RUN git clone https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
+#RUN git clone https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
+RUN git clone -b many_logs https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
 
 # Stage 1 - Build web app from artifacts from previous stage
 FROM node:lts-alpine

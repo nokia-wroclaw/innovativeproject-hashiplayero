@@ -419,6 +419,7 @@ func (r *Room) run() {
 		select {
 		// when the client connected to the server
 		case client := <-r.register:
+			log.Printf("Client %s joined to room %s", client.name, r.roomSettings.Name)
 			rm := ResponeMessage{Respone: "CreateUser", Payload: ClientIdData{Uuid: client.uuid, Name: client.name}}
 			sendToClient(client, rm)
 			sendToClient(client, collectDataForLobbyBroadcast())
@@ -426,6 +427,7 @@ func (r *Room) run() {
 		// when the client disconnected to the server
 		case client := <-r.unregister:
 			if _, ok := r.clients[client]; ok {
+				log.Printf("Client %s left from room %s and server", client.name, r.roomSettings.Name)
 				if r.gameOn {
 					userFinished(InboundRoomData{r.roomSettings.Name}, client, r)
 				}
@@ -456,6 +458,7 @@ func (r *Room) run() {
 			}
 			switch payload["action"] {
 			case "createRoom":
+				log.Print("Client ", c.name, " is creating room")
 				var icer InboundCreateEditRoom
 				err := json.Unmarshal(message[1], &icer)
 				if err != nil {
@@ -465,7 +468,9 @@ func (r *Room) run() {
 					break
 				}
 				addRoom(icer.InboundCreateEditRoomData, c)
+				log.Print("Client ", c.name, " created room ", icer.InboundCreateEditRoomData.Name)
 			case "editRoom":
+				log.Print("Client ", c.name, " is editing room")
 				var icer InboundCreateEditRoom
 				err := json.Unmarshal(message[1], &icer)
 				if err != nil {
@@ -475,7 +480,9 @@ func (r *Room) run() {
 					break
 				}
 				editRoom(icer.InboundCreateEditRoomData, c, clientRoom)
+				log.Print("Client ", c.name, " edited room ", icer.InboundCreateEditRoomData.Name)
 			case "deleteRoom":
+				log.Print("Client ", c.name, " is deleting room")
 				var ir InboundRoom
 				err := json.Unmarshal(message[1], &ir)
 				if err != nil {
@@ -485,7 +492,9 @@ func (r *Room) run() {
 					break
 				}
 				deleteRoom(ir.InboundRoomData, c)
+				log.Print("Client ", c.name, " deleted room ", ir.InboundRoomData.RoomName)
 			case "changeRoom":
+				log.Print("Client ", c.name, " is changing room")
 				var icr InboundChangeRoom
 				err := json.Unmarshal(message[1], &icr)
 				if err != nil {
@@ -495,7 +504,9 @@ func (r *Room) run() {
 					break
 				}
 				changeRoom(icr.InboundChangeRoomData, c, clientRoom)
+				log.Print("Client ", c.name, " changed room to ", icr.InboundChangeRoomData.RoomName)
 			case "changeName":
+				log.Print("Client ", c.name, " is changing name")
 				var icn InboundChangeName
 				err := json.Unmarshal(message[1], &icn)
 				if err != nil {
@@ -505,7 +516,9 @@ func (r *Room) run() {
 					break
 				}
 				changeName(icn.InboundChangeNameData, c)
+				log.Print("Client ", c.name, " changed name to ", icn.InboundChangeNameData.NewName)
 			case "kickUser":
+				log.Print("Client ", c.name, " is kicking user")
 				var iku InboundKickUser
 				err := json.Unmarshal(message[1], &iku)
 				if err != nil {
@@ -515,7 +528,9 @@ func (r *Room) run() {
 					break
 				}
 				kickUser(iku.InboundKickUserData, c, r)
+				log.Print("Client ", c.name, " kicked user ", iku.InboundKickUserData.UserToKick)
 			case "startGame":
+				log.Print("Client ", c.name, " is starting game")
 				var ir InboundRoom
 				err := json.Unmarshal(message[1], &ir)
 				if err != nil {
@@ -525,7 +540,9 @@ func (r *Room) run() {
 					break
 				}
 				startGame(c, r)
+				log.Print("Client ", c.name, " started game in room ", ir.InboundRoomData.RoomName)
 			case "checkBoard":
+				log.Print("Client ", c.name, " is checking board")
 				var icb InboundCheckBoard
 				err := json.Unmarshal(message[1], &icb)
 				if err != nil {
@@ -535,7 +552,9 @@ func (r *Room) run() {
 					break
 				}
 				checkBoard(icb.InboundCheckBoardData, c, r)
+				log.Print("Client ", c.name, " checked board in room", r.roomSettings.Name)
 			case "finishGame":
+				log.Print("Client ", c.name, " is finishing game")
 				var ir InboundRoom
 				err := json.Unmarshal(message[1], &ir)
 				if err != nil {
@@ -545,7 +564,9 @@ func (r *Room) run() {
 					break
 				}
 				userFinished(ir.InboundRoomData, c, r)
+				log.Print("Client ", c.name, " finished game in room", ir.InboundRoomData.RoomName)
 			default:
+				log.Print("Client ", c.name, " sent unknown message")
 				rm := ResponeMessage{Respone: "Error", Error: "Wrong response"}
 				sendToClient(c, rm)
 			}

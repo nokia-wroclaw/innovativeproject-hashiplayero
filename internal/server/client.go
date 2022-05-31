@@ -81,14 +81,20 @@ func changeName(icnd InboundChangeNameData, c *Client) {
 
 func (c *Client) readPump() {
 	defer func() {
+		log.Printf("Client %s disconnected in readPump\n", c.name)
 		c.room.unregister <- c
 		c.conn.Close()
 	}()
+	log.Print("Before SetReadLimit")
 	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
+	log.Print("After SetReadLimit")
+	err1 := c.conn.SetReadDeadline(time.Now().Add(pongWait))
+	log.Print("After SetReadDeadline, err:", err1)
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	log.Print("After SetPongHandler")
 	for {
 		_, message, err := c.conn.ReadMessage()
+		log.Print("After ReadMessage, error: ", err)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
@@ -101,12 +107,14 @@ func (c *Client) readPump() {
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		messageArray := [][]byte{j, message}
 		c.room.broadcast <- messageArray
+		log.Print("After broadcast")
 	}
 }
 
 func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
+		log.Printf("Client %s disconnected in writePump\n", c.name)
 		ticker.Stop()
 		c.conn.Close()
 	}()
@@ -116,12 +124,14 @@ func (c *Client) writePump() {
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				log.Printf("Client %s disconnected in writePump, not ok from send to channel\n", c.name)
 				return
 			}
 			c.conn.WriteMessage(websocket.TextMessage, message)
 		case <-ticker.C:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				log.Printf("Client %s disconnected in writePump, error during writting ping: %s\n", c.name, err)
 				return
 			}
 		}

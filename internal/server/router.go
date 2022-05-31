@@ -13,6 +13,7 @@ var roomsMap = make(map[string]*Room)
 var clientsMap = make(map[string]*Client)
 
 func setRouter() *gin.Engine {
+	log.Print("Setting up router")
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
 	lobby := newRoom(RoomSettings{Name: "lobby"})
