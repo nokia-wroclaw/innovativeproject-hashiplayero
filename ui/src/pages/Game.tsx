@@ -163,19 +163,17 @@ const Game = () => {
         <Grid
           item
           xs={3}
-          sx={{ background: "blue", display: !matches ? "none" : "block" }}
+          sx={{ display: !matches ? "none" : "block" }}
         >
-          <span>xs</span>
         </Grid>
-        <Grid item xs={24} md={18} sx={{ background: "pink" }}>
+        <Grid item xs={24} md={18}>
           <Board gameEnded={gameEnded} disableHints={disableHints} />
         </Grid>
         <Grid
           item
           xs={3}
-          sx={{ background: "blue", display: !matches ? "none" : "block" }}
+          sx={{ display: !matches ? "none" : "block" }}
         >
-          <span>xs</span>
         </Grid>
       </Grid>
       {!inSingleGame && inMultiGame ? (

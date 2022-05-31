@@ -123,6 +123,7 @@ const DialogChangeName = () => {
               <CancelIcon />
             </IconButton>
             <TextField id="input-name" label="My new shiny name!" variant="standard" 
+            inputProps={{ pattern: '^[a-zA-Z0-9_.-]*$' }}
             value={name}
             onChange={handleSetName}/>
           </Box>
