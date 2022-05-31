@@ -4,7 +4,7 @@ WORKDIR /
 RUN git clone https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
 
 # Stage 1 - Build web app from artifacts from previous stage
-FROM node:current-alpine
+FROM node:lts-alpine
 COPY --from=0 /innovativeproject-hashiplayero/ui /ui
 WORKDIR /ui
 RUN npm install \
