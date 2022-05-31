@@ -165,16 +165,11 @@ const Game = () => {
             item
             xs={3}
             sx={{ display: !matches ? "none" : "block" }}
-          >
-          </Grid>
+          ></Grid>
           <Grid item xs={24} md={18}>
             <Board gameEnded={gameEnded} disableHints={disableHints} />
           </Grid>
-          <Grid
-            item
-            xs={24}
-            lg={3}
-          >
+          <Grid item xs={24} lg={3}>
             {!inSingleGame && inMultiGame ? (
               <div className="buttons-board">
                 <Button
@@ -182,21 +177,24 @@ const Game = () => {
                   onClick={() => {
                     handleFinishGame();
                   }}
-                  color="secondary"
                 >
                   Waiting Room
                 </Button>
                 <FormGroup>
-
-                  <FormControlLabel control={
-                    <Switch checked={disableHints} onChange={handleSetDisableHints} />
-                  } label="Hints" />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={disableHints}
+                        onChange={handleSetDisableHints}
+                      />
+                    }
+                    label="Hints"
+                  />
                 </FormGroup>
                 <Button
                   onClick={() => {
                     handleExitGame();
                   }}
-                  color="secondary"
                 >
                   Exit Game
                 </Button>
@@ -212,9 +210,15 @@ const Game = () => {
                   Exit Game
                 </Button>
                 <FormGroup>
-                  <FormControlLabel control={
-                    <Switch checked={disableHints} onChange={handleSetDisableHints} />
-                  } label="Hints" />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={disableHints}
+                        onChange={handleSetDisableHints}
+                      />
+                    }
+                    label="Hints"
+                  />
                 </FormGroup>
                 <Button
                   disabled={!isBoardCorrect}
@@ -226,35 +230,35 @@ const Game = () => {
                 </Button>
               </div>
             ) : null}
+          </Grid>
         </Grid>
-      </Grid>
 
-      {!inSingleGame ? (
-        <div className="players-data">
-          <PlayerList
-            players={roomAndBoard.members}
-            gameData={roomAndBoard.gameData}
-          />
-        </div>
-      ) : null}
+        {!inSingleGame ? (
+          <div className="players-data">
+            <PlayerList
+              players={roomAndBoard.members}
+              gameData={roomAndBoard.gameData}
+            />
+          </div>
+        ) : null}
 
-      <DialogWin
-        open={openWinDialog}
-        handleSetOpenWinClose={handleSetOpenWinClose}
-        setOpenWinDialog={setOpenWinDialog}
-      />
-      <ReactCanvasConfetti
-        refConfetti={getInstance}
-        style={{
-          position: "fixed",
-          pointerEvents: "none",
-          width: "100%",
-          height: "100%",
-          top: 0,
-          left: 0,
-        }}
-      />
-    </div>
+        <DialogWin
+          open={openWinDialog}
+          handleSetOpenWinClose={handleSetOpenWinClose}
+          setOpenWinDialog={setOpenWinDialog}
+        />
+        <ReactCanvasConfetti
+          refConfetti={getInstance}
+          style={{
+            position: "fixed",
+            pointerEvents: "none",
+            width: "100%",
+            height: "100%",
+            top: 0,
+            left: 0,
+          }}
+        />
+      </div>
     </>
   );
 };

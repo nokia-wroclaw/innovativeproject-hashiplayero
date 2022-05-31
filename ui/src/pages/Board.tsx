@@ -90,6 +90,8 @@ const Board = ({
   const [lastNode, setLastNode] = useState<number>(-1);
   const [numberOfNodes, setNumberOfNodes] = useState<number>(-1);
 
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+
   const [width, setWidth] = useState<number>(-1);
   const stageCanvasRef = useRef(null);
 
@@ -126,11 +128,11 @@ const Board = ({
     newShapes.forEach((shape: any, index: number) => {
       shape.x =
         ((index % roomAndBoard.settings.size) * width) /
-        roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
         width / roomAndBoard.settings.size / 2;
       shape.y =
         (Math.floor(index / roomAndBoard.settings.size) * width) /
-        roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
         width / roomAndBoard.settings.size / 2;
       shape.fontSize = width / roomAndBoard.settings.size / 3;
       shape.radius = width / roomAndBoard.settings.size / 2 - 2;
@@ -146,10 +148,10 @@ const Board = ({
         counter++;
       }
     });
-    if (counter >= numberOfNodes - 2) {
+    if (counter >= numberOfNodes - 2 || counter >= numberOfNodes - 3) {
       handleCheckBoard();
     }
-  }, [lastNode, width]);
+  }, [lastNode, width, isChanged]);
 
   const handleCheckBoard = () => {
     if (webSocket !== undefined) {
@@ -175,11 +177,11 @@ const Board = ({
         radius: parentWidht / roomAndBoard.settings.size / 2 - 2,
         x:
           ((index % roomAndBoard.settings.size) * parentWidht) /
-          roomAndBoard.settings.size +
+            roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         y:
           (Math.floor(index / roomAndBoard.settings.size) * parentWidht) /
-          roomAndBoard.settings.size +
+            roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         fontSize: parentWidht / roomAndBoard.settings.size / 3,
         isSelected: false,
@@ -278,9 +280,7 @@ const Board = ({
           shape.isSelected = false;
           const connections = roomAndBoard.bridges
             .filter(
-              (line) =>
-                line.nodeFrom === shape.id ||
-                line.nodeTo === shape.id
+              (line) => line.nodeFrom === shape.id || line.nodeTo === shape.id
             )
             .reduce((acc, curr) => acc + curr.value, 0);
           if (shape.isSelected) {
@@ -293,10 +293,10 @@ const Board = ({
             shape.color = "white";
           }
         }
-      })
+      });
       setLastNode(-1);
     }
-  }
+  };
 
   const updateLine = (line: Bridge, indexToRemember: number, node: number) => {
     let newLine = cloneDeep(line);
@@ -330,7 +330,8 @@ const Board = ({
     } else {
       dispatch(increaseValueOnBridge(newLine));
     }
-  }
+    setIsChanged(!isChanged);
+  };
 
   return (
     <>
@@ -348,71 +349,75 @@ const Board = ({
         }}
         ref={stageCanvasRef}
       >
-        <Stage width={width} height={width}
+        <Stage
+          width={width}
+          height={width}
           captureTouchEventsEnabled={true}
           onClick={(e) => {
-            clickOutside(e)
+            clickOutside(e);
           }}
-
           onTap={(e) => {
-            clickOutside(e)
+            clickOutside(e);
           }}
           key={`stage_${Math.random().toString}`}
         >
           <Layer>
             {hoveredNode >= 0 && disableHints && !gameEnded
               ? getPossibleNodes(
-                board,
-                roomAndBoard.settings.size,
-                hoveredNode
-              ).map((node, index) => (
-                <Line
-                  key={`${index.toString()}${Math.random().toString}`}
-                  points={
-                    shapes.length !== undefined
-                      ? [
-                        shapes[hoveredNode].x,
-                        shapes[hoveredNode].y,
-                        shapes[node].x,
-                        shapes[node].y,
-                      ]
-                      : []
-                  }
-                  stroke="yellow"
-                  strokeWidth={20}
-                />
-              ))
+                  board,
+                  roomAndBoard.settings.size,
+                  hoveredNode
+                ).map((node, index) => (
+                  <Line
+                    key={`${index.toString()}${Math.random().toString}`}
+                    points={
+                      shapes.length !== undefined
+                        ? [
+                            shapes[hoveredNode].x,
+                            shapes[hoveredNode].y,
+                            shapes[node].x,
+                            shapes[node].y,
+                          ]
+                        : []
+                    }
+                    stroke="yellow"
+                    strokeWidth={20}
+                  />
+                ))
               : null}
             {roomAndBoard.bridges.map((line: Bridge, index: number) => {
               if (line.value === 1) {
                 return (
                   <>
                     <Line
-                      key={`${index.toString()}_first_one_line_${Math.random().toString}`}
-
+                      key={`${index.toString()}_first_one_line_${
+                        Math.random().toString
+                      }`}
                       points={
                         shapes !== undefined
                           ? [
-                            shapes[line.nodeFrom]?.x,
-                            shapes[line.nodeFrom]?.y,
-                            shapes[line.nodeTo]?.x,
-                            shapes[line.nodeTo]?.y,
-                          ]
+                              shapes[line.nodeFrom]?.x,
+                              shapes[line.nodeFrom]?.y,
+                              shapes[line.nodeTo]?.x,
+                              shapes[line.nodeTo]?.y,
+                            ]
                           : []
                       }
                       stroke="black"
                       strokeWidth={3}
                     />
                     <Line
-                      key={`${index.toString()}_second_one_line${Math.random().toString}`}
+                      key={`${index.toString()}_second_one_line${
+                        Math.random().toString
+                      }`}
                       points={
                         shapes !== undefined
                           ? [
-                            shapes[line.nodeFrom]?.x,
-                            shapes[line.nodeFrom]?.y,
-                            shapes[line.nodeTo]?.x,
-                            shapes[line.nodeTo]?.y,
-                          ]
+                              shapes[line.nodeFrom]?.x,
+                              shapes[line.nodeFrom]?.y,
+                              shapes[line.nodeTo]?.x,
+                              shapes[line.nodeTo]?.y,
+                            ]
                           : []
                       }
                       stroke="rgba(255, 255, 255, 0.0)"
@@ -430,53 +435,59 @@ const Board = ({
                 return (
                   <>
                     <Line
-                      key={`${index.toString()}_first_two_line${Math.random().toString}`}
+                      key={`${index.toString()}_first_two_line${
+                        Math.random().toString
+                      }`}
                       points={
                         shapes !== undefined
                           ? [
-                            shapes[line.nodeFrom]?.x -
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeFrom]?.y -
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.x -
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.y -
-                            shapes[line.nodeFrom]?.radius / 4,
-                          ]
+                              shapes[line.nodeFrom]?.x -
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeFrom]?.y -
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.x -
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.y -
+                                shapes[line.nodeFrom]?.radius / 4,
+                            ]
                           : []
                       }
                       stroke="black"
                       strokeWidth={3}
                     />
                     <Line
-                      key={`${index.toString()}_second_two_line${Math.random().toString}`}
+                      key={`${index.toString()}_second_two_line${
+                        Math.random().toString
+                      }`}
                       points={
                         shapes !== undefined
                           ? [
-                            shapes[line.nodeFrom]?.x +
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeFrom]?.y +
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.x +
-                            shapes[line.nodeFrom]?.radius / 4,
-                            shapes[line.nodeTo]?.y +
-                            shapes[line.nodeFrom]?.radius / 4,
-                          ]
+                              shapes[line.nodeFrom]?.x +
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeFrom]?.y +
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.x +
+                                shapes[line.nodeFrom]?.radius / 4,
+                              shapes[line.nodeTo]?.y +
+                                shapes[line.nodeFrom]?.radius / 4,
+                            ]
                           : []
                       }
                       stroke="black"
                       strokeWidth={3}
                     />
                     <Line
-                      key={`${index.toString()}_third_two_line${Math.random().toString}`}
+                      key={`${index.toString()}_third_two_line${
+                        Math.random().toString
+                      }`}
                       points={
                         shapes !== undefined
                           ? [
-                            shapes[line.nodeFrom]?.x,
-                            shapes[line.nodeFrom]?.y,
-                            shapes[line.nodeTo]?.x,
-                            shapes[line.nodeTo]?.y,
-                          ]
+                              shapes[line.nodeFrom]?.x,
+                              shapes[line.nodeFrom]?.y,
+                              shapes[line.nodeTo]?.x,
+                              shapes[line.nodeTo]?.y,
+                            ]
                           : []
                       }
                       stroke="rgba(255, 255, 255, 0.0)"
@@ -554,7 +565,6 @@ const Board = ({
                     fontSize={shape.fontSize}
                     offsetX={shape.fontSize / 4}
                     offsetY={shape.fontSize / 3}
-
                     onMouseEnter={() => {
                       if (!gameEnded) {
                         setHoveredNode(index);
