@@ -14,7 +14,7 @@ const initialState: IDefaultRoomAndBoard = {
     name: "name",
     maxPlayers: -1,
     isPrivate: false,
-    password: "password",
+    password: "",
     timeLimit: -1,
     members: [],
     array: [],
