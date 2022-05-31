@@ -20,6 +20,7 @@ const Player = ({
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
+  const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
   const handleKickPlayer = () => {
     if (webSocket !== undefined && isAdmin) {
@@ -66,7 +67,7 @@ const Player = ({
       }
       {
         // tutaj porównać z uuid admina
-        isAdmin &&
+        player.uuid === roomAndBoard.admin &&
         <Icon icon="emojione:crown" width="32" height="32" />
       }
       {

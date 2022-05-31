@@ -146,7 +146,7 @@ const Board = ({
         counter++;
       }
     });
-    if (counter === numberOfNodes - 1) {
+    if (counter >= numberOfNodes - 2) {
       handleCheckBoard();
     }
   }, [lastNode, width]);
