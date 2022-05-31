@@ -55,7 +55,7 @@ const getPossibleNodes = (
     }
   }
 
-  for (let i = loc - width; i > 0; i -= width) {
+  for (let i = loc - width; i >= 0; i -= width) {
     if (board[i] === 0) {
       continue;
     } else if (board[i] > 0) {
@@ -126,11 +126,11 @@ const Board = ({
     newShapes.forEach((shape: any, index: number) => {
       shape.x =
         ((index % roomAndBoard.settings.size) * width) /
-          roomAndBoard.settings.size +
+        roomAndBoard.settings.size +
         width / roomAndBoard.settings.size / 2;
       shape.y =
         (Math.floor(index / roomAndBoard.settings.size) * width) /
-          roomAndBoard.settings.size +
+        roomAndBoard.settings.size +
         width / roomAndBoard.settings.size / 2;
       shape.fontSize = width / roomAndBoard.settings.size / 3;
       shape.radius = width / roomAndBoard.settings.size / 2;
@@ -175,11 +175,11 @@ const Board = ({
         radius: parentWidht / roomAndBoard.settings.size / 2,
         x:
           ((index % roomAndBoard.settings.size) * parentWidht) /
-            roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         y:
           (Math.floor(index / roomAndBoard.settings.size) * parentWidht) /
-            roomAndBoard.settings.size +
+          roomAndBoard.settings.size +
           parentWidht / roomAndBoard.settings.size / 2,
         fontSize: parentWidht / roomAndBoard.settings.size / 3,
         isSelected: false,
@@ -217,36 +217,7 @@ const Board = ({
             )
           );
           if (line) {
-            line.value += 1;
-            if (line.value >= 3) {
-              let [smaller, bigger] = [indexToRemember, node];
-              if (bigger < smaller) {
-                [smaller, bigger] = [bigger, smaller];
-              }
-              const isVertical =
-                smaller % roomAndBoard.settings.size ===
-                bigger % roomAndBoard.settings.size;
-              if (!isVertical) {
-                const tempBridges = [...board];
-                for (let i = smaller + 1; i < bigger; i++) {
-                  tempBridges[i] = 0;
-                }
-                setBoard(tempBridges);
-              } else {
-                const tempBridges = [...board];
-                for (
-                  let i = smaller + roomAndBoard.settings.size;
-                  i < bigger - roomAndBoard.settings.size + 1;
-                  i += roomAndBoard.settings.size
-                ) {
-                  tempBridges[i] = 0;
-                }
-                setBoard(tempBridges);
-              }
-              dispatch(deleteBridge(line));
-            } else {
-              dispatch(increaseValueOnBridge(line));
-            }
+            updateLine(line, indexToRemember, node);
           } else {
             let [smaller, bigger] = [indexToRemember, node];
             if (bigger < smaller) {
@@ -296,6 +267,71 @@ const Board = ({
     }
   }
 
+  const clickOutside = (e: any) => {
+    const emptySpace = e.target === e.target.getStage();
+    if (!emptySpace) {
+      return;
+    }
+    if (!gameEnded) {
+      shapes.map((shape: any) => {
+        if (shape.id === lastNode) {
+          shape.isSelected = false;
+          const connections = roomAndBoard.bridges
+            .filter(
+              (line) =>
+                line.nodeFrom === shape.id ||
+                line.nodeTo === shape.id
+            )
+            .reduce((acc, curr) => acc + curr.value, 0);
+          if (shape.isSelected) {
+            shape.color = "blue";
+          } else if (connections > shape.value) {
+            shape.color = "red";
+          } else if (connections === shape.value) {
+            shape.color = "green";
+          } else {
+            shape.color = "white";
+          }
+        }
+      })
+      setLastNode(-1);
+    }
+  }
+
+  const updateLine = (line: Bridge, indexToRemember: number, node: number) => {
+    let newLine = cloneDeep(line);
+    newLine.value += 1;
+    if (newLine.value >= 3) {
+      let [smaller, bigger] = [indexToRemember, node];
+      if (bigger < smaller) {
+        [smaller, bigger] = [bigger, smaller];
+      }
+      const isVertical =
+        smaller % roomAndBoard.settings.size ===
+        bigger % roomAndBoard.settings.size;
+      if (!isVertical) {
+        const tempBridges = [...board];
+        for (let i = smaller + 1; i < bigger; i++) {
+          tempBridges[i] = 0;
+        }
+        setBoard(tempBridges);
+      } else {
+        const tempBridges = [...board];
+        for (
+          let i = smaller + roomAndBoard.settings.size;
+          i < bigger - roomAndBoard.settings.size + 1;
+          i += roomAndBoard.settings.size
+        ) {
+          tempBridges[i] = 0;
+        }
+        setBoard(tempBridges);
+      }
+      dispatch(deleteBridge(newLine));
+    } else {
+      dispatch(increaseValueOnBridge(newLine));
+    }
+  }
+
   return (
     <>
       <div
@@ -309,93 +345,148 @@ const Board = ({
       >
         <Stage width={width + 10} height={width + 10}
           captureTouchEventsEnabled={true}
+          onClick={(e) => {
+            clickOutside(e)
+          }}
+
+          onTap={(e) => {
+            clickOutside(e)
+          }}
+          key={`stage_${Math.random().toString}`}
         >
           <Layer>
             {hoveredNode >= 0 && disableHints && !gameEnded
               ? getPossibleNodes(
-                  board,
-                  roomAndBoard.settings.size,
-                  hoveredNode
-                ).map((node) => (
-                  <Line
-                    key={node}
-                    points={
-                      shapes.length !== undefined
-                        ? [
-                            shapes[hoveredNode].x,
-                            shapes[hoveredNode].y,
-                            shapes[node].x,
-                            shapes[node].y,
-                          ]
-                        : []
-                    }
-                    stroke="yellow"
-                    strokeWidth={20}
-                  />
-                ))
+                board,
+                roomAndBoard.settings.size,
+                hoveredNode
+              ).map((node, index) => (
+                <Line
+                  key={`${index.toString()}${Math.random().toString}`}
+                  points={
+                    shapes.length !== undefined
+                      ? [
+                        shapes[hoveredNode].x,
+                        shapes[hoveredNode].y,
+                        shapes[node].x,
+                        shapes[node].y,
+                      ]
+                      : []
+                  }
+                  stroke="yellow"
+                  strokeWidth={20}
+                />
+              ))
               : null}
             {roomAndBoard.bridges.map((line: Bridge, index: number) => {
               if (line.value === 1) {
                 return (
-                  <Line
-                    key={index}
-                    points={
-                      shapes !== undefined
-                        ? [
+                  <>
+                    <Line
+                      key={`${index.toString()}_first_one_line_${Math.random().toString}`}
+
+                      points={
+                        shapes !== undefined
+                          ? [
                             shapes[line.nodeFrom]?.x,
                             shapes[line.nodeFrom]?.y,
                             shapes[line.nodeTo]?.x,
                             shapes[line.nodeTo]?.y,
                           ]
-                        : []
-                    }
-                    stroke="black"
-                    strokeWidth={3}
-                  />
+                          : []
+                      }
+                      stroke="black"
+                      strokeWidth={3}
+                    />
+                    <Line
+                      key={`${index.toString()}_second_one_line${Math.random().toString}`}
+                      points={
+                        shapes !== undefined
+                          ? [
+                            shapes[line.nodeFrom]?.x,
+                            shapes[line.nodeFrom]?.y,
+                            shapes[line.nodeTo]?.x,
+                            shapes[line.nodeTo]?.y,
+                          ]
+                          : []
+                      }
+                      stroke="rgba(255, 255, 255, 0.0)"
+                      strokeWidth={shapes[0].radius * 1.25}
+                      onClick={(e) => {
+                        updateLine(line, line.nodeFrom, line.nodeTo);
+                      }}
+                      onTap={(e) => {
+                        updateLine(line, line.nodeFrom, line.nodeTo);
+                      }}
+                    />
+                  </>
                 );
               } else if (line.value === 2) {
                 return (
                   <>
                     <Line
-                      // key={index}
+                      key={`${index.toString()}_first_two_line${Math.random().toString}`}
                       points={
                         shapes !== undefined
                           ? [
-                              shapes[line.nodeFrom]?.x -
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeFrom]?.y -
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.x -
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.y -
-                                shapes[line.nodeFrom]?.radius / 4,
-                            ]
+                            shapes[line.nodeFrom]?.x -
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeFrom]?.y -
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.x -
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.y -
+                            shapes[line.nodeFrom]?.radius / 4,
+                          ]
                           : []
                       }
                       stroke="black"
                       strokeWidth={3}
                     />
                     <Line
-                      // key={index}
+                      key={`${index.toString()}_second_two_line${Math.random().toString}`}
                       points={
                         shapes !== undefined
                           ? [
-                              shapes[line.nodeFrom]?.x +
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeFrom]?.y +
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.x +
-                                shapes[line.nodeFrom]?.radius / 4,
-                              shapes[line.nodeTo]?.y +
-                                shapes[line.nodeFrom]?.radius / 4,
-                            ]
+                            shapes[line.nodeFrom]?.x +
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeFrom]?.y +
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.x +
+                            shapes[line.nodeFrom]?.radius / 4,
+                            shapes[line.nodeTo]?.y +
+                            shapes[line.nodeFrom]?.radius / 4,
+                          ]
                           : []
                       }
                       stroke="black"
                       strokeWidth={3}
                     />
+                    <Line
+                      key={`${index.toString()}_third_two_line${Math.random().toString}`}
+                      points={
+                        shapes !== undefined
+                          ? [
+                            shapes[line.nodeFrom]?.x,
+                            shapes[line.nodeFrom]?.y,
+                            shapes[line.nodeTo]?.x,
+                            shapes[line.nodeTo]?.y,
+                          ]
+                          : []
+                      }
+                      stroke="rgba(255, 255, 255, 0.0)"
+                      strokeWidth={shapes[0].radius * 1.25}
+                      onClick={(e) => {
+                        updateLine(line, line.nodeFrom, line.nodeTo);
+                      }}
+                      onTap={(e) => {
+                        updateLine(line, line.nodeFrom, line.nodeTo);
+                      }}
+                    />
                   </>
                 );
+              } else {
+                return;
               }
             })}
 
@@ -409,7 +500,6 @@ const Board = ({
                     radius={shape.radius}
                     stroke="black"
                     fill={(() => {
-                      // add different colors based on amount of bridges
                       const connections = roomAndBoard.bridges
                         .filter(
                           (line) =>
@@ -446,16 +536,6 @@ const Board = ({
                         drawLine(index);
                       }
                     }}
-                    // touchstart={() => {
-                    //   if (!gameEnded) {
-                    //     drawLine(index);
-                    //   }
-                    // }}
-                    // touchend={() => {
-                    //   if (!gameEnded) {
-                    //     setHoveredNode(-1);
-                    //   }
-                    // }}
                     onTap={() => {
                       if (!gameEnded) {
                         drawLine(index);
@@ -469,6 +549,7 @@ const Board = ({
                     fontSize={shape.fontSize}
                     offsetX={shape.fontSize / 4}
                     offsetY={shape.fontSize / 3}
+
                     onMouseEnter={() => {
                       if (!gameEnded) {
                         setHoveredNode(index);
@@ -484,16 +565,6 @@ const Board = ({
                         drawLine(index);
                       }
                     }}
-                    // touchstart={() => {
-                    //   if (!gameEnded) {
-                    //     drawLine(index);
-                    //   }
-                    // }}
-                    // touchend={() => {
-                    //   if (!gameEnded) {
-                    //     setHoveredNode(-1);
-                    //   }
-                    // }}
                     onTap={() => {
                       if (!gameEnded) {
                         drawLine(index);
