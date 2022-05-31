@@ -4,7 +4,7 @@ import { RootState } from "./store";
 
 const initialState: IWebSocket = {
   //webSocket: new WebSocket("ws://localhost:8080/ws/"),
-  webSocket: new WebSocket("wss://hashiplayero.herokuapp.com/ws/"),
+  webSocket: new WebSocket("wss://hashiplayero.herokuapp.com/ws/
 };
 
 export const WebSocketSlice = createSlice({
