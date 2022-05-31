@@ -7,7 +7,7 @@ const DifficultyDisplay = ({ value }: { value: Number }) => {
         <>
             <Analytics />
             {
-                value === 1 ? <Typography noWrap>Easy</Typography> : value === 2 ? <Typography noWrap>Normal</Typography> : <Typography noWrap>Hard</Typography>
+                value === 0 ? <Typography noWrap>Easy</Typography> : value === 1 ? <Typography noWrap>Normal</Typography> : <Typography noWrap>Hard</Typography>
             }
         </>
     );
