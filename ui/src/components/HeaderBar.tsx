@@ -3,24 +3,26 @@ import { useNavigate } from "react-router-dom";
 
 import {
   AppBar,
-  MenuItem,
   Box,
   Toolbar,
   IconButton,
   Typography,
   Menu,
   Container,
-  Avatar,
   Button,
-  Tooltip,
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import DialogChangeName from "./dynamic-components/DialogChangeName";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 const HeaderBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
+  );
+  const { inWaitingRoom, isAdmin } = useSelector(
+    (state: RootState) => state.StateMachine
   );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -73,6 +75,7 @@ const HeaderBar = () => {
                 key={index}
                 onClick={() => handleCloseNavMenu(page)}
                 sx={{ my: 2, display: "block" }}
+                disabled={inWaitingRoom || isAdmin}
               >
                 {page.name}
               </Button>
