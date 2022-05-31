@@ -16,7 +16,7 @@ $light_logo-secondary-color: #8b89ec;
 @use "./components/_background.scss";
 @use "./components/_playerList.scss";
 @use "./components/_waitingRoom.scss";
-
+@use "./components/_buttonsLayout.scss";
 
 @mixin display-flex ($direction, $spacing) {
     display: flex;

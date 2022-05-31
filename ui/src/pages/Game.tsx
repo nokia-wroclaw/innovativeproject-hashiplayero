@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
-import { Button, Switch } from "@mui/material";
+import { Button, Switch, FormGroup, FormControlLabel } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
@@ -159,84 +159,95 @@ const Game = () => {
 
   return (
     <>
-      <Grid container columns={24} spacing={1}>
-        <Grid
-          item
-          xs={3}
-          sx={{ display: !matches ? "none" : "block" }}
-        >
+      <div style={{ width: "100%", maxWidth:"1300px" }}>
+        <Grid container columns={24} spacing={1}>
+          <Grid
+            item
+            xs={3}
+            sx={{ display: !matches ? "none" : "block" }}
+          >
+          </Grid>
+          <Grid item xs={24} md={18}>
+            <Board gameEnded={gameEnded} disableHints={disableHints} />
+          </Grid>
+          <Grid
+            item
+            xs={24}
+            lg={3}
+          >
+            {!inSingleGame && inMultiGame ? (
+              <div className="buttons-board">
+                <Button
+                  disabled={!isBoardCorrect}
+                  onClick={() => {
+                    handleFinishGame();
+                  }}
+                >
+                  Waiting Room
+                </Button>
+                <FormGroup>
+
+                  <FormControlLabel control={
+                    <Switch checked={disableHints} onChange={handleSetDisableHints} />
+                  } label="Hints" />
+                </FormGroup>
+                <Button
+                  onClick={() => {
+                    handleExitGame();
+                  }}
+                >
+                  Exit Game
+                </Button>
+              </div>
+            ) : null}
+            {inSingleGame && !inMultiGame ? (
+              <>
+                <Button
+                  onClick={() => {
+                    handleExitGameSingle();
+                  }}
+                >
+                  Exit Game
+                </Button>
+                <Button
+                  disabled={!isBoardCorrect}
+                  onClick={() => {
+                    handlePlayAgain();
+                  }}
+                >
+                  Play Again
+                </Button>
+              </>
+            ) : null}
+          </Grid>
         </Grid>
-        <Grid item xs={24} md={18}>
-          <Board gameEnded={gameEnded} disableHints={disableHints} />
-        </Grid>
-        <Grid
-          item
-          xs={3}
-          sx={{ display: !matches ? "none" : "block" }}
-        >
-        </Grid>
-      </Grid>
-      {!inSingleGame && inMultiGame ? (
-        <>
-          <Button
-            disabled={!isBoardCorrect}
-            onClick={() => {
-              handleFinishGame();
-            }}
-          >
-            Waiting Room
-          </Button>
-          <Button
-            onClick={() => {
-              handleExitGame();
-            }}
-          >
-            Exit Game
-          </Button>
-        </>
-      ) : null}
-      <Switch checked={disableHints} onChange={handleSetDisableHints} />
-      {inSingleGame && !inMultiGame ? (
-        <>
-          <Button
-            onClick={() => {
-              handleExitGameSingle();
-            }}
-          >
-            Exit Game
-          </Button>
-          <Button
-            disabled={!isBoardCorrect}
-            onClick={() => {
-              handlePlayAgain();
-            }}
-          >
-            Play Again
-          </Button>
-        </>
-      ) : null}
-      {!inSingleGame ? (
-        <PlayerList
-          players={roomAndBoard.members}
-          gameData={roomAndBoard.gameData}
+
+        {!inSingleGame ? (
+          <div className="players-data">
+            <PlayerList
+              players={roomAndBoard.members}
+              gameData={roomAndBoard.gameData}
+            />
+          </div>
+        ) : null}
+
+        <DialogWin
+          open={openWinDialog}
+          handleSetOpenWinClose={handleSetOpenWinClose}
+          setOpenWinDialog={setOpenWinDialog}
         />
-      ) : null}
-      <DialogWin
-        open={openWinDialog}
-        handleSetOpenWinClose={handleSetOpenWinClose}
-        setOpenWinDialog={setOpenWinDialog}
-      />
-      <ReactCanvasConfetti
-        refConfetti={getInstance}
-        style={{
-          position: "fixed",
-          pointerEvents: "none",
-          width: "100%",
-          height: "100%",
-          top: 0,
-          left: 0,
-        }}
-      />
+        <ReactCanvasConfetti
+          refConfetti={getInstance}
+          style={{
+            position: "fixed",
+            pointerEvents: "none",
+            width: "100%",
+            height: "100%",
+            top: 0,
+            left: 0,
+          }}
+        />
+      </div>
     </>
   );
 };
