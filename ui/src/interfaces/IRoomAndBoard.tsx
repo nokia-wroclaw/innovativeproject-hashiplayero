@@ -1,3 +1,5 @@
+import playerStatus from "./PlayerStatus";
+
 export interface IRoomAndBoard {
   name: string;
   maxPlayers: number;
@@ -53,4 +55,10 @@ export interface Bridge {
   nodeFrom: number;
   nodeTo: number;
   value: number;
+}
+
+export interface IGameDataWithStatus {
+  uuid: string;
+  status: playerStatus;
+  UserGameState: IUserGameState;
 }

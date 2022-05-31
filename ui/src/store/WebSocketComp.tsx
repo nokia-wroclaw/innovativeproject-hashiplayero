@@ -16,6 +16,7 @@ import {
   updateGameData,
   updateAsPlayer,
   editRoom,
+  setInitialRoomBoard,
 } from "./RoomGameSlice";
 import {
   IDefaultRoomAndBoard,
@@ -224,6 +225,7 @@ const WebSocketComp = () => {
           case "ExitAdmin":
             consoleLogWebSocket("ExitAdmin");
             dispatch(changeAdmin(false));
+            dispatch(setInitialRoomBoard());
             break;
           case "InSingleGame":
             consoleLogWebSocket("InSingleGame");
