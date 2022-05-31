@@ -1,0 +1,11 @@
+app:
+  # Should be the same as backend.baseUrl when using the `app-backend` plugin
+  baseUrl: https://hashiplayero.herokuapp.com
+
+backend:
+  baseUrl: https://hashiplayero.herokuapp.com
+  listen:
+    port:
+      $env: PORT
+      # The $PORT environment variable is a feature of Heroku
+      # https://devcenter.heroku.com/articles/dynos#web-dynos
