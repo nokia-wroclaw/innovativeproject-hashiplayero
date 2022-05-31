@@ -42,7 +42,7 @@ $light_logo-secondary-color: #8b89ec;
 
 .main-content {
     margin: 0px 16px;
-    margin-bottom: 54px;
+    margin-bottom: 88px;
 
     @media screen and (max-width: 600px) {
         .main-content{
@@ -128,8 +128,8 @@ $light_logo-secondary-color: #8b89ec;
     margin-top: 10vh;
     @include boarder();
 
-    @media screen and (max-width: 600px) {
-        margin-top: 0px;
+    @media screen and (max-width: 700px) {
+        margin: 0px;
     }
 
 }
@@ -234,9 +234,9 @@ $light_logo-secondary-color: #8b89ec;
     border-radius: 6px;
     background-color: #FFFFFF;
 
-    @media screen and (max-width: 420px) {
+    @media screen and (max-width: 700px){    
         .general-info {
-            width: 95%;
+            width: 100%;
         }
     }
 }

@@ -418,7 +418,7 @@
 }
 @media screen and (max-width: 1420px) {
   .wating-room-container {
-    width: 95%;
+    width: 100%;
   }
 }
 
@@ -435,8 +435,11 @@
   border-radius: 6px;
   background-color: #FFFFFF;
 }
-@media screen and (max-width: 420px) {
-  .general-info-waitingRoom .general-info {
+@media screen and (max-width: 700px) {
+  .general-info-waitingRoom {
+    width: 95%;
+  }
+  .general-info-waitingRoom .general-info-waitingRoom {
     width: 95%;
   }
 }
@@ -454,6 +457,11 @@
 .paper-waitingRoom:hover {
   box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 0px 24px 60px rgba(6, 48, 125, 0.295), 0px 12px 24px rgba(27, 59, 119, 0.103);
   transition: all 0.5s ease-in;
+}
+@media screen and (max-width: 700px) {
+  .paper-waitingRoom .paper-waitingRoom {
+    margin: 0px 16px;
+  }
 }
 
 .room-data {
@@ -495,9 +503,17 @@
   padding: 0;
   margin: 0;
 }
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .buttons-board {
     flex-direction: row;
+    justify-content: center;
+    margin: 8px 12px;
+  }
+}
+@media (max-width: 400px) {
+  .buttons-board {
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     margin: 8px 12px;
   }
@@ -514,7 +530,7 @@
 
 .main-content {
   margin: 0px 16px;
-  margin-bottom: 54px;
+  margin-bottom: 88px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -609,9 +625,9 @@
   box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 0px 24px 60px rgba(6, 48, 125, 0.295), 0px 12px 24px rgba(27, 59, 119, 0.103);
   transition: all 0.5s ease-in;
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
   .paper-create {
-    margin-top: 0px;
+    margin: 0px;
   }
 }
 
@@ -716,9 +732,9 @@
   border-radius: 6px;
   background-color: #FFFFFF;
 }
-@media screen and (max-width: 420px) {
+@media screen and (max-width: 700px) {
   .general-info .general-info {
-    width: 95%;
+    width: 100%;
   }
 }
 

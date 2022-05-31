@@ -128,9 +128,9 @@ const FindRoom = () => {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={1}>Easy</MenuItem>
-                <MenuItem value={2}>Normal</MenuItem>
-                <MenuItem value={3}>Hard</MenuItem>
+                <MenuItem value={0}>Easy</MenuItem>
+                <MenuItem value={1}>Normal</MenuItem>
+                <MenuItem value={2}>Hard</MenuItem>
               </Select>
             </FormControl>
           </Grid>

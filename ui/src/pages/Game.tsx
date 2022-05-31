@@ -159,7 +159,7 @@ const Game = () => {
 
   return (
     <>
-      <div style={{ width: "100%", maxWidth:"1300px" }}>
+      <div style={{ width: "100%", maxWidth: "1300px" }}>
         <Grid container columns={24} spacing={1}>
           <Grid
             item
@@ -182,6 +182,7 @@ const Game = () => {
                   onClick={() => {
                     handleFinishGame();
                   }}
+                  color="secondary"
                 >
                   Waiting Room
                 </Button>
@@ -195,13 +196,14 @@ const Game = () => {
                   onClick={() => {
                     handleExitGame();
                   }}
+                  color="secondary"
                 >
                   Exit Game
                 </Button>
               </div>
             ) : null}
             {inSingleGame && !inMultiGame ? (
-              <>
+              <div className="buttons-board">
                 <Button
                   onClick={() => {
                     handleExitGameSingle();
@@ -209,6 +211,11 @@ const Game = () => {
                 >
                   Exit Game
                 </Button>
+                <FormGroup>
+                  <FormControlLabel control={
+                    <Switch checked={disableHints} onChange={handleSetDisableHints} />
+                  } label="Hints" />
+                </FormGroup>
                 <Button
                   disabled={!isBoardCorrect}
                   onClick={() => {
@@ -217,37 +224,37 @@ const Game = () => {
                 >
                   Play Again
                 </Button>
-              </>
+              </div>
             ) : null}
-          </Grid>
         </Grid>
+      </Grid>
 
-        {!inSingleGame ? (
-          <div className="players-data">
-            <PlayerList
-              players={roomAndBoard.members}
-              gameData={roomAndBoard.gameData}
-            />
-          </div>
-        ) : null}
+      {!inSingleGame ? (
+        <div className="players-data">
+          <PlayerList
+            players={roomAndBoard.members}
+            gameData={roomAndBoard.gameData}
+          />
+        </div>
+      ) : null}
 
-        <DialogWin
-          open={openWinDialog}
-          handleSetOpenWinClose={handleSetOpenWinClose}
-          setOpenWinDialog={setOpenWinDialog}
-        />
-        <ReactCanvasConfetti
-          refConfetti={getInstance}
-          style={{
-            position: "fixed",
-            pointerEvents: "none",
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-          }}
-        />
-      </div>
+      <DialogWin
+        open={openWinDialog}
+        handleSetOpenWinClose={handleSetOpenWinClose}
+        setOpenWinDialog={setOpenWinDialog}
+      />
+      <ReactCanvasConfetti
+        refConfetti={getInstance}
+        style={{
+          position: "fixed",
+          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          top: 0,
+          left: 0,
+        }}
+      />
+    </div>
     </>
   );
 };
