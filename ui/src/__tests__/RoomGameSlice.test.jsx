@@ -1,4 +1,4 @@
-import reducer, {  updateRoomGame  } from '../store/RoomGameSlice'
+import reducer, { updateRoomGame } from '../store/RoomGameSlice'
 
 
 test('should return the initial state', () => {
@@ -13,17 +13,20 @@ test('should return the initial state', () => {
                 members: [],
                 array: [],
                 admin: "",
+                gameOn: false,
                 settings: {
                     difficulty: -1,
                     size: -1,
                 },
+                gameData: [],
+                bridges: [],
             },
         }
     )
 })
 
-test('should update room in game with correct data', () => {
-    const previousState = {
+test('should update room and board in game with correct data', () => {
+    const state = {
         roomAndBoard: {
             name: "name",
             maxPlayers: -1,
@@ -33,41 +36,50 @@ test('should update room in game with correct data', () => {
             members: [],
             array: [],
             admin: "",
+            gameOn: false,
             settings: {
                 difficulty: -1,
                 size: -1,
             },
+            gameData: [],
+            bridges: [],
         },
     }
-    expect(reducer(previousState, updateRoomGame({
+    expect(reducer(state, updateRoomGame({
         roomAndBoard: {
-            name: "TEST-mdnliu1g23o1",
-            maxPlayers: 5,
+            name: "pokoj",
+            maxPlayers: 2,
             isPrivate: false,
-            password: "pjo1ui231",
-            timeLimit: 10,
+            password: "12345",
+            timeLimit: 3,
             members: [],
             array: [],
-            admin: "h1b3yu1234k1324bk",
+            admin: "",
+            gameOn: false,
             settings: {
                 difficulty: 3,
                 size: 5,
             },
+            gameData: [],
+            bridges: [],
         },
     }))).toEqual({
         roomAndBoard: {
-            name: "TEST-mdnliu1g23o1",
-            maxPlayers: 5,
+            name: "pokoj",
+            maxPlayers: 2,
             isPrivate: false,
-            password: "pjo1ui231",
-            timeLimit: 10,
+            password: "12345",
+            timeLimit: 3,
             members: [],
             array: [],
-            admin: "h1b3yu1234k1324bk",
+            admin: "",
+            gameOn: false,
             settings: {
                 difficulty: 3,
                 size: 5,
             },
+            gameData: [],
+            bridges: [],
         },
     })
 })

@@ -1,64 +1,109 @@
-import reducer, { enterRoom, exitRoom, enterAdmin, exitAdmin } from '../store/StateMachineSlice'
+import reducer, { changeWaitingRoom, changeAdmin, changeMultiGame, changeSingleGame, changeBoardCorrect } from '../store/StateMachineSlice'
 
 
 test('should return the initial state', () => {
     expect(reducer(undefined, {})).toEqual(
         {
-            inRoom: false,
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
             isAdmin: false,
+            isBoardCorrect: false,
         }
     )
 })
 
-test('should return enter room state', () => {
+test('should return change waiting room state', () => {
     const state = {
-        inRoom: false,
-        isAdmin: false
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
+            isAdmin: false,
+            isBoardCorrect: false
     }
-    expect(reducer(state, enterRoom())).toEqual(
+    expect(reducer(state, changeWaitingRoom(true))).toEqual(
         {
-            inRoom: true,
-            isAdmin: state.isAdmin,
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: true,
+            isAdmin: false,
+            isBoardCorrect: false
         }
     )
 })
 
-test('should return exit room state', () => {
+test('should return change admin state', () => {
     const state = {
-        inRoom: true,
-        isAdmin: true
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
+            isAdmin: false,
+            isBoardCorrect: false
     }
-    expect(reducer(state, exitRoom())).toEqual(
+    expect(reducer(state, changeAdmin(true))).toEqual(
         {
-            inRoom: false,
-            isAdmin: state.isAdmin,
-        }
-    )
-})
-
-test('should return enter admin state', () => {
-    const state = {
-        inRoom: true,
-        isAdmin: false
-    }
-    expect(reducer(state, enterAdmin())).toEqual(
-        {
-            inRoom: true,
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
             isAdmin: true,
+            isBoardCorrect: false
         }
     )
 })
 
-test('should return exit admin state', () => {
+test('should return change multi game state', () => {
     const state = {
-        inRoom: true,
-        isAdmin: true
-    }
-    expect(reducer(state, exitAdmin())).toEqual(
-        {
-            inRoom: true,
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
             isAdmin: false,
+            isBoardCorrect: false
+    }
+    expect(reducer(state, changeMultiGame(true))).toEqual(
+        {
+            inMultiGame: true,
+            inSingleGame: false,
+            inWaitingRoom: false,
+            isAdmin: false,
+            isBoardCorrect: false
         }
     )
 })
 
+test('should return change single game state', () => {
+    const state = {
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
+            isAdmin: false,
+            isBoardCorrect: false
+    }
+    expect(reducer(state, changeSingleGame(true))).toEqual(
+        {
+            inMultiGame: false,
+            inSingleGame: true,
+            inWaitingRoom: false,
+            isAdmin: false,
+            isBoardCorrect: false
+        }
+    )
+})
+
+test('should return change single game state', () => {
+    const state = {
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
+            isAdmin: false,
+            isBoardCorrect: false
+    }
+    expect(reducer(state, changeBoardCorrect(true))).toEqual(
+        {
+            inMultiGame: false,
+            inSingleGame: false,
+            inWaitingRoom: false,
+            isAdmin: false,
+            isBoardCorrect: true
+        }
+    )
+})
