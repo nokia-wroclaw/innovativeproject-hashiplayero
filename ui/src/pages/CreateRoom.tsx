@@ -14,11 +14,9 @@ import { ISnackbar } from "../interfaces/ISnackbar";
 import CustomizedSnackbar from "../components/static-components/SnackBar";
 
 import VisibilityInput from "../components/dynamic-components/VisibilityInput";
-import { style } from "@mui/system";
 
 const CreateRoom = () => {
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-  const { user } = useSelector((state: RootState) => state.defaultUser);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const navigate = useNavigate();
   const { inWaitingRoom } = useSelector(
