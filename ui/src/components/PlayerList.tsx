@@ -1,6 +1,7 @@
 import IMember from "../interfaces/IMember";
 import { IGameData } from "../interfaces/IRoomAndBoard";
 import Player from "./Player";
+import playerStatus from "../interfaces/PlayerStatus";
 
 const PlayerList = ({
   players,
@@ -13,6 +14,15 @@ const PlayerList = ({
     return gameData.find((elem: IGameData) => elem.uuid === userUuid);
   };
 
+  function assignPlayerToStatus(gameData: IGameData[]): playerStatus {
+
+    gameData.forEach((data: IGameData) => {
+
+    });
+
+    return playerStatus.none;
+  }
+
   return (
     <>
       <div className="player-list">
@@ -22,6 +32,7 @@ const PlayerList = ({
               key={player.uuid}
               player={player}
               userGameData={sendCorrectInGameDataUser(player.uuid)}
+              state={playerStatus.none}
             />
           );
         })}
