@@ -13,17 +13,9 @@ const (
 	BigSize    BoardSize = 15
 )
 
-type Difficulty int
-
-const (
-	Easy Difficulty = iota
-	Medium
-	Hard
-)
-
 type BoardSettings struct {
-	Difficulty int `json:"difficulty"`
 	BoardSize  int `json:"size"`
+	hashi.Difficulty `json:"difficulty"`
 }
 
 type BoardData struct {

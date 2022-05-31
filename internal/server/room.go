@@ -1,6 +1,7 @@
 package server
 
 import (
+	"innovativeproject-hashiplayero/hashi"
 	"encoding/json"
 	"log"
 )
@@ -60,12 +61,12 @@ type InboundCreateEditRoom struct {
 }
 
 type InboundCreateEditRoomData struct {
-	Name       string `json:"name"`
-	Password   string `json:"password"`
-	MaxPlayers int    `json:"maxPlayers"`
-	IsPrivate  bool   `json:"isPrivate"`
-	Difficulty int    `json:"difficulty"`
-	BoardSize  int    `json:"boardSize"`
+	Name       string               `json:"name"`
+	Password   string               `json:"password"`
+	MaxPlayers int                  `json:"maxPlayers"`
+	IsPrivate  bool                 `json:"isPrivate"`
+	Difficulty hashi.Difficulty     `json:"difficulty"`
+	BoardSize  int                  `json:"boardSize"`
 }
 
 // JSON structure for actions such as start game, finish game and delete room are identical

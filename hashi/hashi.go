@@ -7,6 +7,14 @@ import (
     "math/rand"
 )
 
+type Difficulty int
+
+const (
+	Easy Difficulty = iota
+	Medium
+	Hard
+)
+
 type BoardItem interface {
     Render() string
     getCount() int
@@ -226,7 +234,7 @@ func (b *Board) AddNewNode(twoBridgesChance float32) bool {
     return true
 }
 
-func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32, difficulty int) Board {
+func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32, difficulty Difficulty) Board {
     var board Board
     correct := false
 
@@ -239,7 +247,7 @@ func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32, dif
         for board.AddNewNode(twoBridgesChance) && len(board.IslandLocs) <= noNodes {}
 
         switch difficulty {
-        case 0:
+        case Easy:
             correct = board.SolveEasy()
         default:
             correct = true
