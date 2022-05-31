@@ -85,7 +85,7 @@ const SwipeablePlayerList = ({
         <>
             <div>
                 <React.Fragment key={'right'}>
-                    <Button color="secondary" onClick={toggleDrawer('right', true)}>Players</Button>
+                    {/* <Button color="secondary" onClick={toggleDrawer('right', true)}>Players</Button> */}
                     <SwipeableDrawer
                         anchor={'right'}
                         open={state['right']}

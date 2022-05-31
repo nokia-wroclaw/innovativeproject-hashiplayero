@@ -1,0 +1,16 @@
+.buttons-board{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+
+    @media (max-width: 900px) {
+        flex-direction: row;
+        justify-content: center;
+        margin: 8px 12px;
+    }
+}
