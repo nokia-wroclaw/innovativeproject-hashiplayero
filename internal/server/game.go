@@ -1,7 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"innovativeproject-hashiplayero/hashi"
+	"innovativeproject-hashiplayero/internal/server/puzzledb"
+	"log"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -52,6 +57,34 @@ func createBoard(c *Client, r *Room) {
 	r.boardData.Array = board.Export()
 	rm := ResponeMessage{Respone: "CreateBoard", Payload: r.boardData}
 	roomBroadcast(r, rm)
+
+	// Change []int to string
+	var b []string
+	for _, i := range board.Export() {
+		b = append(b, strconv.Itoa(i))
+	}
+	brd := strings.Join(b, ", ")
+	// Create puzzle
+	p := puzzledb.Puzzle{
+		Board:      brd,
+		Difficulty: difficulty,
+		Size:       size,
+	}
+	// Add puzzle to database
+	createdRecord, err := puzzlesDB.Create(p)
+	if createdRecord == nil {
+		log.Fatal(err)
+	}
+	// [TEST] Print database
+	puzzles, err := puzzlesDB.GetAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Print("DATABASE LENGTH: ")
+	fmt.Println(len(puzzles))
+	fmt.Print("DATABASE: ")
+	fmt.Println(puzzles)
+	fmt.Println()
 }
 
 func startGame(c *Client, r *Room) {
