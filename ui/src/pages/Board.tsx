@@ -94,6 +94,9 @@ const Board = ({
   const [numberOfNodes, setNumberOfNodes] = useState<number>(-1);
 
   const [isChanged, setIsChanged] = useState<boolean>(false);
+  const [isCrossed, setIsCrossed] = useState<boolean[]>(
+    Array(board.length).fill(false)
+  );
 
   const [width, setWidth] = useState<number>(-1);
   const stageCanvasRef = useRef(null);
@@ -149,7 +152,6 @@ const Board = ({
     shapes.map((shape: any) => {
       if (shape.color === "green") {
         counter++;
-        console.log(counter);
       }
     });
     if (counter >= numberOfNodes - 2 || counter >= numberOfNodes - 3) {
@@ -190,7 +192,7 @@ const Board = ({
         fontSize: parentWidht / roomAndBoard.settings.size / 3,
         isSelected: false,
         color: "white",
-        isCrossed: false,
+        isCrossed: isCrossed[index],
       };
     });
     return nodes;
@@ -204,6 +206,10 @@ const Board = ({
       return;
     } else if (lastNode === index) {
       shapes[index].isSelected = false;
+      const newIsCrossed = cloneDeep(isCrossed);
+      newIsCrossed[index] = !newIsCrossed[index];
+      shapes[index].isCrossed = newIsCrossed[index];
+      setIsCrossed(newIsCrossed);
       setLastNode(-1);
       return;
     } else {
@@ -354,8 +360,6 @@ const Board = ({
           backgroundColor: "white",
           padding: "12px",
           boxShadow: "1px 2px 10px 0px rgba(0,0,0,0.75)",
-          // background: "linear-gradient(to right, white, #e1f5fe)",
-          // background: "#eeeeee"
         }}
         ref={stageCanvasRef}
       >
@@ -531,13 +535,17 @@ const Board = ({
                       if (shape.isSelected) {
                         shape.color = "blue";
                         return "#5452E4";
-                      } else if (disableColors) {
-                        return "white";
                       } else if (connections > shape.value) {
                         shape.color = "red";
+                        if (!disableColors) {
+                          return "white";
+                        }
                         return "#dd2c00";
                       } else if (connections === shape.value) {
                         shape.color = "green";
+                        if (!disableColors) {
+                          return "white";
+                        }
                         return "#76ff03";
                       } else {
                         shape.color = "white";
@@ -620,6 +628,33 @@ const Board = ({
                 </Group>
               ) : null
             )}
+
+            {
+              isCrossed.map((isCross: boolean, index: number) => {
+                {
+                  if (isCross) {
+                    return (
+                      <Line
+                        points={
+                          shapes !== undefined
+                            ? [
+                              shapes[index].x - shapes[index].radius*0.8,
+                              shapes[index].y - shapes[index].radius*0.8,
+                              shapes[index].x + shapes[index].radius*0.8,
+                              shapes[index].y + shapes[index]?.radius*0.8,
+                            ]
+                            : []
+                        }
+                        stroke="black"
+                        strokeWidth={3}
+                      />
+                    )
+                  }
+
+                }
+              })
+            }
+
           </Layer>
         </Stage>
       </div>

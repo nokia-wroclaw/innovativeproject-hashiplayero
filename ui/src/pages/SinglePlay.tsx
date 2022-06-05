@@ -28,7 +28,7 @@ const SinglePlay = () => {
   );
 
   const [values, setValues] = useState<State>({
-    difficulty: 2,
+    difficulty: 0,
     boardSize: 7,
     timeLimit: new Date(0),
     seedInput: "",

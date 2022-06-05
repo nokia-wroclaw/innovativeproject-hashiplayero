@@ -184,6 +184,7 @@ const Game = () => {
                   onClick={() => {
                     handleFinishGame();
                   }}
+                  color="secondary"
                 >
                   Waiting Room
                 </Button>
@@ -256,6 +257,7 @@ const Game = () => {
                   onClick={() => {
                     handlePlayAgain();
                   }}
+                  color="secondary"
                 >
                   Play Again
                 </Button>
