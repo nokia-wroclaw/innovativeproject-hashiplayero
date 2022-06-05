@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   hashiplayero:
-    image: hashiplayero:github
+    image: hashiplayero1:github
     container_name: hashiplayero
     networks:
       - caddy
