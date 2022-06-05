@@ -11,6 +11,7 @@ import {
 } from "./../store/RoomGameSlice";
 import cloneDeep from "lodash/cloneDeep";
 import ParseBridgesModel from "../services/ParseBridgesModel";
+import { lastIndexOf } from "lodash";
 
 const getPossibleNodes = (
   board: number[],
@@ -146,6 +147,7 @@ const Board = ({
     shapes.map((shape: any) => {
       if (shape.color === "green") {
         counter++;
+        console.log(counter);
       }
     });
     if (counter >= numberOfNodes - 2 || counter >= numberOfNodes - 3) {
@@ -155,7 +157,7 @@ const Board = ({
 
   const handleCheckBoard = () => {
     if (webSocket !== undefined) {
-      webSocket.send(
+      webSocket?.send(
         JSON.stringify({
           action: "checkBoard",
           data: {
@@ -264,7 +266,9 @@ const Board = ({
           }
         }
       });
-      setLastNode(index);
+      shapes[lastNode].isSelected = false;
+      shapes[index].isSelected = false;
+      setLastNode(-1);
       return;
     }
   }
@@ -294,11 +298,15 @@ const Board = ({
           }
         }
       });
+      // shapes[lastNode].isSelected = false;
       setLastNode(-1);
     }
   };
 
   const updateLine = (line: Bridge, indexToRemember: number, node: number) => {
+    if(gameEnded) {
+      return;
+    }
     let newLine = cloneDeep(line);
     newLine.value += 1;
     if (newLine.value >= 3) {
@@ -537,9 +545,26 @@ const Board = ({
                         return "white";
                       }
                     })()}
-                    onMouseOver={() => {
+                    onMouseDown={(e) => {
                       if (!gameEnded) {
-                        setHoveredNode(index);
+                        setLastNode(index);
+                        shape.isSelected = true;
+                      }
+                    }}
+                    onMouseUp={(e) => {
+                      if (!gameEnded) {
+                        drawLine(index);
+                      }
+                    }}
+                    onTouchStart={() => {
+                      if (!gameEnded) {
+                        setLastNode(index);
+                        shape.isSelected = true;
+                      }
+                    }}
+                    onTouchEnd={() => {
+                      if (!gameEnded) {
+                        drawLine(index);
                       }
                     }}
                     onMouseLeave={() => {
@@ -547,14 +572,9 @@ const Board = ({
                         setHoveredNode(-1);
                       }
                     }}
-                    onMouseUp={() => {
+                    onMouseOver={() => {
                       if (!gameEnded) {
-                        drawLine(index);
-                      }
-                    }}
-                    onTap={() => {
-                      if (!gameEnded) {
-                        drawLine(index);
+                        setHoveredNode(index);
                       }
                     }}
                   />
@@ -565,9 +585,26 @@ const Board = ({
                     fontSize={shape.fontSize}
                     offsetX={shape.fontSize / 4}
                     offsetY={shape.fontSize / 3}
-                    onMouseEnter={() => {
+                    onMouseDown={(e) => {
                       if (!gameEnded) {
-                        setHoveredNode(index);
+                        setLastNode(index);
+                        shape.isSelected = true;
+                      }
+                    }}
+                    onMouseUp={(e) => {
+                      if (!gameEnded) {
+                        drawLine(index);
+                      }
+                    }}
+                    onTouchStart={() => {
+                      if (!gameEnded) {
+                        setLastNode(index);
+                        shape.isSelected = true;
+                      }
+                    }}
+                    onTouchEnd={() => {
+                      if (!gameEnded) {
+                        drawLine(index);
                       }
                     }}
                     onMouseLeave={() => {
@@ -575,14 +612,9 @@ const Board = ({
                         setHoveredNode(-1);
                       }
                     }}
-                    onMouseUp={() => {
+                    onMouseOver={() => {
                       if (!gameEnded) {
-                        drawLine(index);
-                      }
-                    }}
-                    onTap={() => {
-                      if (!gameEnded) {
-                        drawLine(index);
+                        setHoveredNode(index);
                       }
                     }}
                   />
