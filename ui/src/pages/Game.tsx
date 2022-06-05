@@ -24,6 +24,7 @@ const Game = () => {
 
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [disableHints, setDisableHints] = useState<boolean>(true);
+  const [disableColors, setDisableColors] = useState<boolean>(true);
 
   const matches = useMediaQuery("(min-width:900px)");
 
@@ -38,6 +39,12 @@ const Game = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setDisableHints(event.target.checked);
+  };
+
+  const handleDisableColors = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDisableColors(event.target.checked);
   };
 
   useEffect(() => {
@@ -167,7 +174,7 @@ const Game = () => {
             sx={{ display: !matches ? "none" : "block" }}
           ></Grid>
           <Grid item xs={24} md={18}>
-            <Board gameEnded={gameEnded} disableHints={disableHints} />
+            <Board gameEnded={gameEnded} disableHints={disableHints} disableColors={disableColors} />
           </Grid>
           <Grid item xs={24} lg={3}>
             {!inSingleGame && inMultiGame ? (
@@ -191,10 +198,22 @@ const Game = () => {
                     label="Hints"
                   />
                 </FormGroup>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={disableColors}
+                        onChange={handleDisableColors}
+                      />
+                    }
+                    label="Color"
+                  />
+                </FormGroup>
                 <Button
                   onClick={() => {
                     handleExitGame();
                   }}
+                  color="secondary"
                 >
                   Exit Game
                 </Button>
@@ -206,6 +225,7 @@ const Game = () => {
                   onClick={() => {
                     handleExitGameSingle();
                   }}
+                  color="secondary"
                 >
                   Exit Game
                 </Button>
@@ -218,6 +238,17 @@ const Game = () => {
                       />
                     }
                     label="Hints"
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={disableColors}
+                        onChange={handleDisableColors}
+                      />
+                    }
+                    label="Color"
                   />
                 </FormGroup>
                 <Button
