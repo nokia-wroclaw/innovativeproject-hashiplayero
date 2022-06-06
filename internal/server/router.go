@@ -37,6 +37,10 @@ func setRouter() *gin.Engine {
 		serveWs(lobby, c.Writer, c.Request)
 	})
 
+	router.NoRoute(func(c *gin.Context) {
+                serveWs(lobby, c.Writer, c.Request)
+        })
+
 	router.GET("/static/", gin.WrapH(http.FileServer(appBox.HTTPBox())))
 
 	router.Use(gin.WrapH(http.FileServer(appBox.HTTPBox())))
