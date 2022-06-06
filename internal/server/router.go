@@ -31,17 +31,19 @@ func setRouter() *gin.Engine {
 		log.Fatal(err)
 	}
 
-	// Create the websocket route group
-	ws := router.Group("/ws")
-	ws.GET("/", func(c *gin.Context) {
+	router.GET("/ws/", func(c *gin.Context) {
 		serveWs(lobby, c.Writer, c.Request)
 	})
 
-	router.NoRoute(func(c *gin.Context) {
-                serveWs(lobby, c.Writer, c.Request)
-        })
-
 	router.GET("/static/", gin.WrapH(http.FileServer(appBox.HTTPBox())))
+
+	router.Any("/:first", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/")
+	})
+
+	router.Any("/:first/:second", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/")
+	})
 
 	router.Use(gin.WrapH(http.FileServer(appBox.HTTPBox())))
 
