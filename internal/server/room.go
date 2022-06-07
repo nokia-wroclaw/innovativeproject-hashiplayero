@@ -23,6 +23,7 @@ type RoomSettings struct {
 	Admin      string `json:"admin"`
 	MaxPlayers int    `json:"maxPlayers"`
 	IsPrivate  bool   `json:"isPrivate"`
+	BoardID    int    `json:"boardID"`
 }
 
 type ResponeMessage struct {
@@ -67,6 +68,7 @@ type InboundCreateEditRoomData struct {
 	IsPrivate  bool             `json:"isPrivate"`
 	Difficulty hashi.Difficulty `json:"difficulty"`
 	BoardSize  int              `json:"boardSize"`
+	BoardID    int              `json:"boardID"`
 }
 
 // JSON structure for actions such as start game, finish game and delete room are identical
@@ -123,6 +125,10 @@ func newRoom(roomSettings RoomSettings) *Room {
 
 // Creates room with given parameters and adds client to it
 func addRoom(icerd InboundCreateEditRoomData, c *Client) {
+	generateNewBoard := true
+	if icerd.BoardID != -1 {
+		generateNewBoard = false
+	}
 	if c.room.roomSettings.Name != "lobby" {
 		rm := ResponeMessage{Respone: "CreateRoom", Error: "Client must be in lobby to create room"}
 		sendToClient(c, rm)
@@ -134,14 +140,23 @@ func addRoom(icerd InboundCreateEditRoomData, c *Client) {
 	roomSettings.Admin = c.uuid
 	roomSettings.MaxPlayers = icerd.MaxPlayers
 	roomSettings.IsPrivate = icerd.IsPrivate
+	roomSettings.BoardID = icerd.BoardID
 	if _, ok := roomsMap[roomSettings.Name]; ok {
 		rm := ResponeMessage{Respone: "CreateRoom", Error: "Room exists"}
 		sendToClient(c, rm)
 		return
 	}
 	r := newRoom(roomSettings)
-	r.boardData.BoardSettings.BoardSize = icerd.BoardSize
-	r.boardData.BoardSettings.Difficulty = icerd.Difficulty
+	if icerd.BoardID != -1 && r.roomSettings.MaxPlayers == 1 {
+		if !GetBoardFromDB(c, r, icerd.BoardID) {
+			rm := ResponeMessage{Respone: "CreateRoom", Error: "Failed to find board in database"}
+			sendToClient(c, rm)
+			return
+		}
+	} else {
+		r.boardData.BoardSettings.BoardSize = icerd.BoardSize
+		r.boardData.BoardSettings.Difficulty = icerd.Difficulty
+	}
 	roomsMap[roomSettings.Name] = r
 	// delete client from lobby and add to current room
 	lobby := roomsMap["lobby"]
@@ -159,8 +174,9 @@ func addRoom(icerd InboundCreateEditRoomData, c *Client) {
 
 	// if it is singleplayer game
 	if r.roomSettings.MaxPlayers == 1 {
-		startGame(c, r)
+		startGame(c, r, generateNewBoard)
 	}
+	roomSettings.BoardID = r.boardData.BoardID
 	lobbyBroadcast()
 }
 
@@ -466,6 +482,8 @@ func (r *Room) run() {
 					sendToClient(c, rm)
 					break
 				}
+				// [TEST]
+				icer.InboundCreateEditRoomData.BoardID = -1
 				addRoom(icer.InboundCreateEditRoomData, c)
 			case "editRoom":
 				var icer InboundCreateEditRoom
@@ -526,7 +544,7 @@ func (r *Room) run() {
 					sendToClient(c, rm)
 					break
 				}
-				startGame(c, r)
+				startGame(c, r, true)
 			case "checkBoard":
 				var icb InboundCheckBoard
 				err := json.Unmarshal(message[1], &icb)

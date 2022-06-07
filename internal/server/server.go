@@ -2,7 +2,7 @@ package server
 
 import (
 	"database/sql"
-	"innovativeproject-hashiplayero/internal/server/puzzledb"
+	"innovativeproject-hashiplayero/boardDB"
 	"log"
 	"os"
 
@@ -12,7 +12,7 @@ import (
 
 const fileName = "sqlite.db"
 
-var puzzlesDB *puzzledb.SQLiteRepository
+var boardsDB *boardDB.SQLiteRepository
 
 func Start() {
 	router := setRouter()
@@ -33,8 +33,8 @@ func Start() {
 		log.Fatal(err)
 	}
 
-	puzzlesDB = puzzledb.NewSQLiteRepository(db)
-	if err := puzzlesDB.Migrate(); err != nil {
+	boardsDB = boardDB.NewSQLiteRepository(db)
+	if err := boardsDB.Migrate(); err != nil {
 		log.Fatal(err)
 	}
 
