@@ -11,7 +11,7 @@ type Difficulty int
 
 const (
 	Easy Difficulty = iota
-	Medium
+	Normal
 	Hard
 )
 
@@ -236,9 +236,8 @@ func (b *Board) AddNewNode(twoBridgesChance float32) bool {
 
 func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32, difficulty Difficulty) Board {
     var board Board
-    correct := false
 
-    for !correct {
+    generateLoop: for {
         board = NewBoard(width, height)
         start := rand.Intn(len(board.Items))
         board.Items[start] = &IslandItem{0, 0};
@@ -246,11 +245,30 @@ func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32, dif
 
         for board.AddNewNode(twoBridgesChance) && len(board.IslandLocs) <= noNodes {}
 
+        // check if too easy
+        switch difficulty {
+        case Normal:
+            if board.SolveEasy(true) {
+                continue generateLoop
+            }
+        case Hard:
+            if board.SolveNormal(true) {
+                continue generateLoop
+            }
+        }
+
+        // check if solvable at all
         switch difficulty {
         case Easy:
-            correct = board.SolveEasy()
+            if board.SolveEasy(true) {
+                break generateLoop
+            }
+        case Normal:
+            if board.SolveNormal(true) {
+                break generateLoop
+            }
         default:
-            correct = true
+            break generateLoop
         }
     }
 

@@ -231,14 +231,39 @@ func (b *Board) solveEqualLeftAndAvailable() bool {
     return didSmth
 }
 
-func (b *Board) SolveEasy() bool {
-    b.Clear()
+func (b *Board) SolveEasy(clear bool) bool {
+    if clear {
+        b.Clear()
+    }
 
     didSmth := true
     for didSmth {
         didSmth = false
-        for b.solveCanFloodBridges() { didSmth = true }
-        for b.solveEqualLeftAndAvailable() { didSmth = true }
+
+        for b.solveEqualLeftAndAvailable() {
+            didSmth = true
+        }
+    }
+
+    return CheckSolution(b.Export(), b.Bridges)
+}
+
+func (b *Board) SolveNormal(clear bool) bool {
+    if clear {
+        b.Clear()
+    }
+
+    didSmth := true
+    for didSmth {
+        didSmth = false
+
+        if b.SolveEasy(false) {
+            return true
+        }
+
+        for b.solveCanFloodBridges() {
+            didSmth = true
+        }
     }
 
     return CheckSolution(b.Export(), b.Bridges)
