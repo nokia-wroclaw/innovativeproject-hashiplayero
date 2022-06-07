@@ -1,9 +1,10 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
+	"innovativeproject-hashiplayero/boardDB"
 	"innovativeproject-hashiplayero/hashi"
-	"innovativeproject-hashiplayero/internal/server/puzzledb"
 	"log"
 	"strconv"
 	"strings"
@@ -26,6 +27,7 @@ type BoardSettings struct {
 type BoardData struct {
 	BoardSettings `json:"settings"`
 	Array         []int `json:"array"`
+	BoardID       int   `json:"boardID"`
 }
 
 type UserGameState struct {
@@ -55,8 +57,6 @@ func createBoard(c *Client, r *Room) {
 	difficulty := r.boardData.Difficulty
 	board := hashi.GenerateBoard(size, size, int((size*size)/2), 0.5, difficulty)
 	r.boardData.Array = board.Export()
-	rm := ResponeMessage{Respone: "CreateBoard", Payload: r.boardData}
-	roomBroadcast(r, rm)
 
 	// Change []int to string
 	var b []string
@@ -64,30 +64,64 @@ func createBoard(c *Client, r *Room) {
 		b = append(b, strconv.Itoa(i))
 	}
 	brd := strings.Join(b, ", ")
-	// Create puzzle
-	p := puzzledb.Puzzle{
+	brd = "[" + brd + "]"
+	// Create board
+	p := boardDB.Board{
 		Board:      brd,
 		Difficulty: difficulty,
 		Size:       size,
 	}
-	// Add puzzle to database
-	createdRecord, err := puzzlesDB.Create(p)
+	// Add board to database
+	createdRecord, err := boardsDB.Create(p)
 	if createdRecord == nil {
 		log.Fatal(err)
 	}
+	r.boardData.BoardID = int(createdRecord.ID)
+	fmt.Println(createdRecord.ID)
 	// [TEST] Print database
-	puzzles, err := puzzlesDB.GetAll()
+	boards, err := boardsDB.GetAll()
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Print("DATABASE LENGTH: ")
-	fmt.Println(len(puzzles))
+	fmt.Println(len(boards))
 	fmt.Print("DATABASE: ")
-	fmt.Println(puzzles)
+	fmt.Println(boards)
 	fmt.Println()
+
+	rm := ResponeMessage{Respone: "CreateBoard", Payload: r.boardData}
+	roomBroadcast(r, rm)
 }
 
-func startGame(c *Client, r *Room) {
+func GetBoardFromDB(c *Client, r *Room, boardID int) bool {
+
+	board, err := boardsDB.GetById(int64(boardID))
+	if err != nil {
+		log.Print("Error: Invalid board ID", err)
+		rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+		sendToClient(c, rm)
+		return false
+	}
+
+	r.boardData.BoardSettings.BoardSize = board.Size
+	r.boardData.BoardSettings.Difficulty = board.Difficulty
+
+	var boardInt []int
+	err = json.Unmarshal([]byte(board.Board), &boardInt)
+	if err != nil {
+		log.Print("Failed board data conversion ", err)
+		rm := ResponeMessage{Respone: "Error", Error: err.Error()}
+		sendToClient(c, rm)
+		return false
+	}
+	r.boardData.Array = boardInt
+
+	rm := ResponeMessage{Respone: "CreateBoardFromDB", Payload: r.boardData}
+	roomBroadcast(r, rm)
+	return true
+}
+
+func startGame(c *Client, r *Room, generateNewBoard bool) {
 	if r.gameOn {
 		rm := ResponeMessage{Respone: "startGame", Error: "Game already is started"}
 		sendToClient(c, rm)
@@ -108,7 +142,9 @@ func startGame(c *Client, r *Room) {
 		}
 	}
 	r.gameOn = true
-	createBoard(c, r)
+	if generateNewBoard {
+		createBoard(c, r)
+	}
 	updatedRoomMulticast(r)
 	updatedGameMulticast(r)
 	lobbyBroadcast()
