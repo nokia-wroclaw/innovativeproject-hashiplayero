@@ -1,8 +1,8 @@
 package server
 
 import (
-	"innovativeproject-hashiplayero/hashi"
 	"encoding/json"
+	"innovativeproject-hashiplayero/hashi"
 	"log"
 )
 
@@ -61,12 +61,12 @@ type InboundCreateEditRoom struct {
 }
 
 type InboundCreateEditRoomData struct {
-	Name       string               `json:"name"`
-	Password   string               `json:"password"`
-	MaxPlayers int                  `json:"maxPlayers"`
-	IsPrivate  bool                 `json:"isPrivate"`
-	Difficulty hashi.Difficulty     `json:"difficulty"`
-	BoardSize  int                  `json:"boardSize"`
+	Name       string           `json:"name"`
+	Password   string           `json:"password"`
+	MaxPlayers int              `json:"maxPlayers"`
+	IsPrivate  bool             `json:"isPrivate"`
+	Difficulty hashi.Difficulty `json:"difficulty"`
+	BoardSize  int              `json:"boardSize"`
 }
 
 // JSON structure for actions such as start game, finish game and delete room are identical
@@ -433,7 +433,8 @@ func (r *Room) run() {
 				delete(r.clients, client)
 				if client.room.roomSettings.Admin == client.uuid && client.room.roomSettings.Name != "lobby" {
 					changeAdmin(client, client.room)
-				} else if client.room != roomsMap["lobby"] {
+				}
+				if client.room.roomSettings.Name != "lobby" {
 					delete(clientsMap, client.uuid)
 					updatedRoomMulticast(r)
 					lobbyBroadcast()
