@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/gin-contrib/cors"
@@ -31,28 +32,16 @@ func setRouter() *gin.Engine {
 		log.Fatal(err)
 	}
 
-	router.GET("/ws/", func(c *gin.Context) {
-		serveWs(lobby, c.Writer, c.Request)
-	})
-
-	router.Use(gin.WrapH(http.FileServer(appBox.HTTPBox())))
-
-	router.GET("/static/", gin.WrapH(http.FileServer(appBox.HTTPBox())))
-
-	router.Any("/:first", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/")
-	})
-
-	router.Any("/:first/:second", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/")
-	})
-
-	router.Any("/:first/:second/:third", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/")
-	})
-
-	router.Any("/:first/:second/:third/:fourth", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/")
+	router.GET("/*any", func(c *gin.Context) {
+		any := c.Param("any")
+		log.Print(any)
+		if any == "/ws/" {
+			serveWs(lobby, c.Writer, c.Request)
+		} else if any == "/" || strings.HasPrefix(any, "/static/") {
+			gin.WrapH(http.FileServer(appBox.HTTPBox()))(c)
+		} else {
+			c.Redirect(http.StatusMovedPermanently, "/")
+		}
 	})
 
 	return router
