@@ -1,4 +1,4 @@
-package puzzledb
+package boardDB
 
 // https://gosamples.dev/sqlite-intro/
 // File where we define an SQLiteRepository struct that will interact with the SQLite database
@@ -37,7 +37,7 @@ func (r *SQLiteRepository) Migrate() error {
 
 	// Executes the CREATE TABLE SQL query using DB.Exec() method and returns the error
 	query := `
-    CREATE TABLE IF NOT EXISTS puzzles(
+    CREATE TABLE IF NOT EXISTS boards(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         board TEXT NOT NULL UNIQUE,
         difficulty INTEGER NOT NULL,
@@ -50,8 +50,8 @@ func (r *SQLiteRepository) Migrate() error {
 }
 
 // Method, takes a row to create and returns the row after insertion or an error if the operation fails.
-func (r *SQLiteRepository) Create(puzzle Puzzle) (*Puzzle, error) {
-	res, err := r.db.Exec("INSERT INTO puzzles(board, difficulty, size) values(?,?,?)", puzzle.Board, puzzle.Difficulty, puzzle.Size)
+func (r *SQLiteRepository) Create(board Board) (*Board, error) {
+	res, err := r.db.Exec("INSERT INTO boards(board, difficulty, size) values(?,?,?)", board.Board, board.Difficulty, board.Size)
 	if err != nil {
 		var sqliteErr sqlite3.Error
 		if errors.As(err, &sqliteErr) {
@@ -66,40 +66,40 @@ func (r *SQLiteRepository) Create(puzzle Puzzle) (*Puzzle, error) {
 	if err != nil {
 		return nil, err
 	}
-	puzzle.ID = id
+	board.ID = id
 
-	return &puzzle, nil
+	return &board, nil
 }
 
-// Method returns all avaliable puzzle records from database or an error if the operation fails.
-func (r *SQLiteRepository) GetAll() ([]Puzzle, error) {
-	rows, err := r.db.Query("SELECT * FROM puzzles")
+// Method returns all avaliable board records from database or an error if the operation fails.
+func (r *SQLiteRepository) GetAll() ([]Board, error) {
+	rows, err := r.db.Query("SELECT * FROM boards")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var all []Puzzle
+	var all []Board
 	for rows.Next() {
-		var puzzle Puzzle
-		if err := rows.Scan(&puzzle.ID, &puzzle.Board, &puzzle.Difficulty, &puzzle.Size); err != nil {
+		var board Board
+		if err := rows.Scan(&board.ID, &board.Board, &board.Difficulty, &board.Size); err != nil {
 			return nil, err
 		}
-		all = append(all, puzzle)
+		all = append(all, board)
 	}
 	return all, nil
 }
 
 // Method takes id and returns matching row or an error if the operation fails.
-func (r *SQLiteRepository) GetById(id int64) (*Puzzle, error) {
-	row := r.db.QueryRow("SELECT * FROM puzzles WHERE id = ?", id)
+func (r *SQLiteRepository) GetById(id int64) (*Board, error) {
+	row := r.db.QueryRow("SELECT * FROM boards WHERE id = ?", id)
 
-	var puzzle Puzzle
-	if err := row.Scan(&puzzle.ID, &puzzle.Board, &puzzle.Difficulty, &puzzle.Size); err != nil {
+	var board Board
+	if err := row.Scan(&board.ID, &board.Board, &board.Difficulty, &board.Size); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotExists
 		}
 		return nil, err
 	}
-	return &puzzle, nil
+	return &board, nil
 }
