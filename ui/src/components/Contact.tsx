@@ -1,5 +1,6 @@
 import Grid from "@mui/material/Grid";
 import EmailIcon from "@mui/icons-material/Email";
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 interface IContactInfo {
   email: string;
@@ -53,8 +54,18 @@ const Contact = () => {
           anything, go ahead and do it. We're always happy to hear from you, but we are
           no magicians.
         </span>
-        <h3 className="contact-title">Our team members emails:</h3>
-        <Grid
+        <h3 className="contact-title">Star us at GitHub</h3>
+        <a href="https://github.com/nokia-wroclaw/innovativeproject-hashiplayero" target="_blank"
+          style={{
+            display: "flex",
+            alignContent: "center",
+            justifyContent: "center"
+          }}>
+          <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.onlinewebfonts.com%2Fsvg%2Fimg_326384.png&f=1&nofb=1" alt="github logo"
+            style={{ maxWidth: "50%", alignContent: "center", padding: "16px" }}
+          />
+        </a>
+        {/* <Grid
           container
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, sm: 8, md: 12 }}
@@ -67,7 +78,7 @@ const Contact = () => {
               <a href="#">{information.email}</a>
             </div>
           ))}
-        </Grid>
+        </Grid> */}
       </div>
     </>
   );
