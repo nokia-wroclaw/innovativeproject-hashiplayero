@@ -38,6 +38,25 @@ const Rules = () => {
             description: "If every island is connected with others in a correct way, you completed your puzzle.",
             image: "4",//Image showing completed puzzle
             id: 4
+        },
+        {
+            header: "Competition, but how to do it? ",
+            description: "When it comes to multiplayer the first step is to create a game room. Game room is a hub for you and your " +
+                "friends to join. You can join by finding your friend's room in find a room section. When room is private you will have to enter the password.",
+            image: "5",//Image showing completed puzzle
+            id: 5
+        },
+        {
+            header: "I made a typo when entering my password!",
+            description: "Don't worry, you can always try again there is no penalty for entering a wrong password. But do remember that in a first place you should ask your friend for it!",
+            image: "6",//Image showing completed puzzle
+            id: 6
+        },
+        {
+            header: "What if my friends have won before me?",
+            description: "No worries! If there are nice, they will simply wait for you. In case you struggled with a certain board there is always an option of saving the puzzle for later and contutiung playing with your friends.",
+            image: "7",//Image showing completed puzzle
+            id: 7
         }
     ]
 
@@ -52,7 +71,7 @@ const Rules = () => {
                         <div key={r.id} data-testid='rule-id'>
                             <h3 className="sub-title">{r.header}</h3>
                             <p className="contact-text">{r.description}</p>
-                            <img className="center" src={r.image} alt="Rule pic"></img>
+                            {/* <img className="center" src={r.image} alt="Rule pic"></img> */}
                         </div>
                     ))
                 }
