@@ -60,7 +60,6 @@ const FindRoom = () => {
 
         const diffCond = room.difficulty.toString() == searchedDifficulty || searchedDifficulty === "";
         const sizeCond = room.boardSize.toString() == searchedSize || searchedSize === "";
-        console.log(room.boardSize, searchedSize);
         return nameCond && diffCond && sizeCond;
 
       });

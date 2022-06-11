@@ -31,7 +31,7 @@ const DialogWin = ({
   setOpenWinDialog: any;
 }) => {
   const [fullWidth] = useState(true);
-  const [maxWidth] = useState<DialogProps["maxWidth"]>("md");
+  const [maxWidth] = useState<DialogProps["maxWidth"]>("sm");
 
   const handleClose = () => {
     handleSetOpenWinClose();
@@ -49,18 +49,29 @@ const DialogWin = ({
         fullWidth={fullWidth}
         maxWidth={maxWidth}
       >
-        <DialogTitle id="alert-win-title" sx={{
-          display: "flex",
-          justifyContent: "center"
-        }}>{"You won!"}</DialogTitle>
+        <DialogTitle
+          id="alert-win-title"
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          {"You won!"}
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-windescription">
-            Congratulations! You can definately now call your self a true gamer. That's surely a great accomplishment.
+          <DialogContentText
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+            id="alert-windescription"
+          >
+            Congratulations!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} autoFocus>
-            That's cool I guess?
+            Ok
           </Button>
         </DialogActions>
       </Dialog>

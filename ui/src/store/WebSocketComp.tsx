@@ -262,6 +262,11 @@ const WebSocketComp = () => {
   if (webSocket !== undefined) {
     webSocket.onclose = (e) => {
       consoleLogWebSocket("Disconnect");
+      setSnackbar({
+        message: `Disconnect from the server`,
+        open: true,
+        severity: "error",
+      });
     };
   }
 

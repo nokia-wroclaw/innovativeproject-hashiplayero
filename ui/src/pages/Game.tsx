@@ -228,7 +228,7 @@ const Game = () => {
                   }}
                   color="secondary"
                 >
-                  Exit Game
+                  Exit
                 </Button>
                 <FormGroup>
                   <FormControlLabel
@@ -259,7 +259,7 @@ const Game = () => {
                   }}
                   color="secondary"
                 >
-                  Play Again
+                  New game
                 </Button>
               </div>
             ) : null}

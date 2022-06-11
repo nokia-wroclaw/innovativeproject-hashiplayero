@@ -159,7 +159,7 @@ const Board = ({
   }, [lastNode, width, isChanged, disableColors]);
 
   const handleCheckBoard = () => {
-    if (webSocket !== undefined) {
+    if (webSocket !== undefined && webSocket?.readyState !== 0) {
       webSocket?.send(
         JSON.stringify({
           action: "checkBoard",
