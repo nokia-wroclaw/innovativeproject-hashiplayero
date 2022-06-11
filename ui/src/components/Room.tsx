@@ -1,6 +1,6 @@
 import { IRoom } from "../interfaces/IRoom";
 import { useState } from "react";
-import { Button, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 
 import BoardDisplay from "./static-components/BoardSize";
 import DifficultyDisplay from "./static-components/Difficulty";
@@ -8,7 +8,6 @@ import RoomStatusDisplay from "./static-components/RoomStatus";
 import RoomPlayersDisplay from "./static-components/RoomPlayers";
 import RoomNameDisplay from "./static-components/RoomName";
 import CustomizedSnackbar from "./static-components/SnackBar";
-import Modal from "./dynamic-components/Modal";
 import { ISnackbar } from "../interfaces/ISnackbar";
 import IModal from "../interfaces/IModal";
 import DialogInput from "./dynamic-components/DialogInput";
@@ -24,24 +23,6 @@ const Room = ({ room }: { room: IRoom }) => {
     show: false,
     password: "",
   });
-
-  // !!! type AlertColor = 'success' | 'info' | 'warning' | 'error';
-  const handleJoinRoom = (roomName: string) => {
-    if (room.name !== null) {
-      if (room.isPrivate) {
-        setSnackbar({
-          message: "Room is private",
-          open: true,
-          severity: "warning",
-        });
-        setModal({ show: true, password: "haslo" });
-      } else if (room.maxPlayers === room.numPlayers) {
-        setSnackbar({ message: "Room is full", open: true, severity: "error" });
-      } else {
-        // !!! ODKOMENTUJ JAK CHCESZ PRZEJSC DO POKOJU !!!
-      }
-    }
-  };
 
   return (
     <Grid container className="header">
@@ -75,14 +56,6 @@ const Room = ({ room }: { room: IRoom }) => {
       {snackbar.open ? (
         <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
       ) : null}
-
-      {/* {modal.show ? (
-        <Modal
-          show={modal.show}
-          password={modal.password}
-          setModal={setModal}
-        />
-      ) : null} */}
     </Grid>
   );
 };

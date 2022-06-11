@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import { IGameData } from "../interfaces/IRoomAndBoard";
 import { Icon } from '@iconify/react';
 import playerStatus from "../interfaces/PlayerStatus";
+import ConfirmationModal from "./static-components/ConfirmationModal";
+import { useEffect, useState } from "react";
 
 const Player = ({
   player,
@@ -22,18 +24,27 @@ const Player = ({
   const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
+  const [open, setOpen] = useState<boolean>(false);
+  const [kick, setKick] = useState<boolean>(false);
+
   const handleKickPlayer = () => {
-    if (webSocket !== undefined && isAdmin) {
-      webSocket.send(
-        JSON.stringify({
-          action: "kickUser",
-          data: {
-            userToKick: player.uuid,
-          },
-        })
-      );
-    }
+    setOpen(true);
   };
+
+  useEffect(() => {
+    if (kick) {
+      if (webSocket !== undefined && isAdmin) {
+        webSocket.send(
+          JSON.stringify({
+            action: "kickUser",
+            data: {
+              userToKick: player.uuid,
+            },
+          })
+        );
+      }
+    }
+  }, [kick])
 
   return (
     <div className="element">
@@ -66,7 +77,6 @@ const Player = ({
         </div>
       }
       {
-        // tutaj porównać z uuid admina
         player.uuid === roomAndBoard.admin &&
         <Icon icon="emojione:crown" width="32" height="32" />
       }
@@ -83,6 +93,8 @@ const Player = ({
         <Icon icon="noto:3rd-place-medal" width="32" height="32" />
       }
 
+
+      <ConfirmationModal open={open} setOpen={setOpen} setKick={setKick} />
 
     </div>
   );

@@ -3,10 +3,14 @@ import { useSelector } from "react-redux";
 import RoomData from "../components/RoomData";
 import PlayerList from "../components/PlayerList";
 import { Grid } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ISnackbar } from "../interfaces/ISnackbar";
+import CustomizedSnackbar from "../components/static-components/SnackBar";
 
 const WaitingRoom = () => {
+  const { user } = useSelector((state: RootState) => state.defaultUser);
+
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
   const { inWaitingRoom } = useSelector(
     (state: RootState) => state.StateMachine
@@ -16,6 +20,12 @@ const WaitingRoom = () => {
   );
   const navigate = useNavigate();
 
+  const [snackbar, setSnackbar] = useState<ISnackbar>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
   useEffect(() => {
     if (!inWaitingRoom) {
       navigate("/");
@@ -24,6 +34,16 @@ const WaitingRoom = () => {
       navigate(`/multiplayer/${roomAndBoard.name}`);
     }
   }, [inWaitingRoom, navigate, roomAndBoard, inMultiGame, isAdmin]);
+
+  useEffect(()=>{
+    if(user.uuid !== roomAndBoard.admin ){
+      setSnackbar({
+        open: true,
+        message: "Waiting for the game to start",
+        severity: "warning",
+      })
+    }
+  },[])
 
   return (
     <>
@@ -40,6 +60,9 @@ const WaitingRoom = () => {
           </Grid>
         </Grid>
       </div>
+      {snackbar.open ? (
+        <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+      ) : null}
     </>
   );
 };
