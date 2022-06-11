@@ -16,6 +16,7 @@ import Game from "./pages/Game";
 import WaitingRoom from "./pages/WaitingRoom";
 import WebSocketComp from "./store/WebSocketComp";
 import Footer from "./components/Footer";
+import { PageNotFound } from "./components/svg/VectorGraphics";
 
 class App extends Component {
   render() {
@@ -40,6 +41,7 @@ class App extends Component {
                 element={<WaitingRoom />}
               />
               <Route path="/multiplayer/:roomId" element={<Game />} />
+              <Route path="*" element={<PageNotFound />} />
             </Routes>
           </div>
         </div>
