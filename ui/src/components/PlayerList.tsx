@@ -33,7 +33,6 @@ const PlayerList = ({
         (time1, time2) =>
           time1.UserGameState.solvingTime - time2.UserGameState.solvingTime
       );
-      console.log(gameDataWithStatus);
 
       let resultlist = gameDataWithStatus.filter((elem) => {
         if (elem.UserGameState.solvingTime === 0) {

@@ -47,6 +47,7 @@ export const RoomBoardSlice = createSlice({
           array: action.payload.array,
           settings: action.payload.settings,
           bridges: [],
+          gameData: [],
         },
       };
     },
@@ -62,6 +63,7 @@ export const RoomBoardSlice = createSlice({
           timeLimit: action.payload.timeLimit,
           admin: action.payload.admin,
           bridges: [],
+          gameData: [],
         },
       };
     },
@@ -74,6 +76,7 @@ export const RoomBoardSlice = createSlice({
           members: action.payload.roomAndBoard.members,
           isPrivate: action.payload.roomAndBoard.isPrivate,
           gameOn: action.payload.roomAndBoard.gameOn,
+          gameData: [],
           settings: {
             difficulty: action.payload.roomAndBoard.settings.difficulty,
             size: action.payload.roomAndBoard.settings.size,
@@ -97,6 +100,7 @@ export const RoomBoardSlice = createSlice({
           gameOn: action.payload.roomAndBoard.gameOn,
           name: action.payload.roomAndBoard.name,
           timeLimit: action.payload.roomAndBoard.timeLimit,
+          gameData: [],
         },
       };
     },
