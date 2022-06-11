@@ -14,7 +14,7 @@ const (
 )
 
 type BoardSettings struct {
-	BoardSize  int `json:"size"`
+	BoardSize        int `json:"size"`
 	hashi.Difficulty `json:"difficulty"`
 }
 
@@ -92,6 +92,9 @@ func startGame(c *Client, r *Room) {
 func checkBoard(icbd InboundCheckBoardData, c *Client, r *Room) {
 	if hashi.CheckSolution(r.boardData.Array, icbd.Moves) {
 		userGameState := r.gameData[c.uuid]
+		if userGameState.Correct {
+			return
+		}
 		userGameState.Correct = true
 		timeStart, _ := time.Parse(time.RFC1123, userGameState.TimeStart)
 		current_time := time.Now()
