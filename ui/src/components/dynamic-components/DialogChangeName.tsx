@@ -10,10 +10,10 @@ import {
   Dialog,
   Slide,
   IconButton,
-  Box
+  Box,
 } from "@mui/material";
 
-import CancelIcon from '@mui/icons-material/Cancel';
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import { TransitionProps } from "@mui/material/transitions";
 import { useSelector } from "react-redux";
@@ -48,7 +48,7 @@ const DialogChangeName = () => {
 
   useEffect(() => {
     setName(user.name);
-  }, [user, open])
+  }, [user, open]);
 
   const handleSetName = (event: any) => {
     setName(event.target.value);
@@ -93,51 +93,75 @@ const DialogChangeName = () => {
     event.preventDefault();
   };
 
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      handleChangeName();
+      setTimeout(() => {
+        handleClose();
+      }, 100);
+    }
+  };
+
   return (
     <>
-      <Button
-        color="primary"
-        onClick={handleClickOpen}
-        sx={{ my: 2, display: "block" }}
-      >
-        Change Name
-      </Button>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-        keepMounted
-        fullWidth={fullWidth}
-        maxWidth={maxWidth}
-      >
-        <DialogTitle>New Name!</DialogTitle>
-        <DialogContent>
-          <DialogContentText>To change name enter new name.</DialogContentText>
-          <Box sx={{ display: 'flex', alignItems: 'flex-end', marginTop:"12px", alignContent:"center" }}>
-            <IconButton
-              aria-label="clear name"
-              onClick={handleClearName}
-              onMouseDown={handleMouseDownName}
-              sx={{ mr: 1, my: 0.5 }}
+      <div onKeyDown={handleKeyDown}>
+        <Button
+          color="primary"
+          onClick={handleClickOpen}
+          sx={{ my: 2, display: "block" }}
+        >
+          Change Name
+        </Button>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          TransitionComponent={Transition}
+          keepMounted
+          fullWidth={fullWidth}
+          maxWidth={maxWidth}
+        >
+          <DialogTitle>New Name!</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To change name enter new name.
+            </DialogContentText>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-end",
+                marginTop: "12px",
+                alignContent: "center",
+              }}
             >
-              <CancelIcon />
-            </IconButton>
-            <TextField id="input-name" label="My new shiny name!" variant="standard" 
-            inputProps={{ pattern: '^[a-zA-Z0-9_.-]*$' }}
-            value={name}
-            onChange={handleSetName}/>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleChangeName}>Change</Button>
-        </DialogActions>
-      </Dialog>
-      <>
-      {snackbar.open ? (
-        <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
-      ) : null}
-    </>
+              <IconButton
+                aria-label="clear name"
+                onClick={handleClearName}
+                onMouseDown={handleMouseDownName}
+                sx={{ mr: 1, my: 0.5 }}
+              >
+                <CancelIcon />
+              </IconButton>
+              <TextField
+                id="input-name"
+                label="My new shiny name!"
+                variant="standard"
+                inputProps={{ pattern: "^[a-zA-Z0-9_.-]*$" }}
+                value={name}
+                onChange={handleSetName}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleChangeName}>Change</Button>
+          </DialogActions>
+        </Dialog>
+        <>
+          {snackbar.open ? (
+            <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+          ) : null}
+        </>
+      </div>
     </>
   );
 };

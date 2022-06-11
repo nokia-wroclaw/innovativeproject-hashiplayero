@@ -30,12 +30,12 @@ const Dashboard = () => {
     {
       label: "Create a room",
       navigation: "/createroom",
-      isDisabled: inSingleGame || inMultiGame || (inWaitingRoom && !isAdmin),
+      isDisabled: inSingleGame || (inWaitingRoom && !isAdmin),
     },
     {
       label: "Find a room",
       navigation: "/findroom",
-      isDisabled: inSingleGame || inMultiGame || (inWaitingRoom && isAdmin),
+      isDisabled: inSingleGame || (inWaitingRoom && isAdmin),
     },
   ];
 

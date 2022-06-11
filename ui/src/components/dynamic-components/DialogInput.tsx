@@ -16,7 +16,7 @@ import {
   Slide,
 } from "@mui/material";
 
-import CancelIcon from '@mui/icons-material/Cancel';
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import { TransitionProps } from "@mui/material/transitions";
 import { useSelector } from "react-redux";
@@ -55,7 +55,7 @@ const DialogInput = ({
 
   // const [password, setPassword] = useState("");
   const [values, setValues] = useState<State>({
-    password: '',
+    password: "",
     showPassword: false,
   });
 
@@ -90,27 +90,38 @@ const DialogInput = ({
   };
 
   const handleChange =
-  (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [prop]: event.target.value });
+    (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValues({ ...values, [prop]: event.target.value });
+    };
+
+  const handleClickShowPassword = () => {
+    setValues({
+      ...values,
+      showPassword: !values.showPassword,
+    });
   };
 
-const handleClickShowPassword = () => {
-  setValues({
-    ...values,
-    showPassword: !values.showPassword,
-  });
-};
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
 
-const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-  event.preventDefault();
-};
+  const handleClearPassword = () => {
+    setValues({
+      ...values,
+      password: "",
+    });
+  };
 
-const handleClearPassword = () => {
-  setValues({
-    ...values,
-    password: '',
-  });
-}
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      handleChangeRoom();
+      setTimeout(() => {
+        handleClose();
+      }, 100);
+    }
+  };
 
   return (
     <>
@@ -128,6 +139,7 @@ const handleClearPassword = () => {
         keepMounted
         fullWidth={fullWidth}
         maxWidth={maxWidth}
+        onKeyDown={handleKeyDown}
       >
         <DialogTitle>Enter the room!</DialogTitle>
         <DialogContent>
@@ -145,36 +157,45 @@ const handleClearPassword = () => {
             onChange={handleSetPassword}
             value={password}
           /> */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-end', marginTop:"12px", alignContent:"center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-end",
+              marginTop: "12px",
+              alignContent: "center",
+            }}
+          >
             <IconButton
               aria-label="clear password "
-              onClick={handleClearPassword }
-              onMouseDown={handleMouseDownPassword }
+              onClick={handleClearPassword}
+              onMouseDown={handleMouseDownPassword}
               sx={{ mr: 1, my: 0.5 }}
             >
               <CancelIcon />
             </IconButton>
-        
-          <FormControl sx={{ m: 1 }} variant="standard">
-          <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
-          <Input
-            id="standard-adornment-password"
-            type={values.showPassword ? 'text' : 'password'}
-            value={values.password}
-            onChange={handleChange('password')}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                >
-                  {values.showPassword ? <Visibility /> : <VisibilityOff /> }
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl>
+
+            <FormControl sx={{ m: 1 }} variant="standard">
+              <InputLabel htmlFor="standard-adornment-password">
+                Password
+              </InputLabel>
+              <Input
+                id="standard-adornment-password"
+                type={values.showPassword ? "text" : "password"}
+                value={values.password}
+                onChange={handleChange("password")}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
