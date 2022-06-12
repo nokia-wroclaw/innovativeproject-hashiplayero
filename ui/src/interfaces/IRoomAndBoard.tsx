@@ -2,6 +2,7 @@ import playerStatus from "./PlayerStatus";
 
 export interface IRoomAndBoard {
   name: string;
+  boardID: number,
   maxPlayers: number;
   isPrivate: boolean;
   password: string;
@@ -24,6 +25,7 @@ export interface IDefaultRoomAndBoard {
 
 export interface ICreateBoard {
   array: [];
+  boardID: number;
   settings: {
     difficulty: number;
     size: number;

@@ -482,8 +482,6 @@ func (r *Room) run() {
 					sendToClient(c, rm)
 					break
 				}
-				// [TEST]
-				icer.InboundCreateEditRoomData.BoardID = -1
 				addRoom(icer.InboundCreateEditRoomData, c)
 			case "editRoom":
 				var icer InboundCreateEditRoom
