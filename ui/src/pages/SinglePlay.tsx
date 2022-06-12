@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import DifficultyInput from "../components/dynamic-components/DifficultyInput";
 import BoardInput from "../components/dynamic-components/BardSizeInput";
 import { BackgroundSvg } from "../components/svg/VectorGraphics";
+import BoardIdInput from "../components/dynamic-components/boardIdInput";
 
 interface State {
   difficulty: number;
@@ -16,6 +17,7 @@ interface State {
   showSeedInput: boolean;
   enableTimeLimit: boolean;
   isPrivate: boolean;
+  boardID: number;
 }
 
 const SinglePlay = () => {
@@ -36,6 +38,7 @@ const SinglePlay = () => {
     showSeedInput: false,
     enableTimeLimit: false,
     isPrivate: false,
+    boardID: -1,
   });
 
   const handleChange = (prop: keyof State) => (event: any) => {
@@ -59,6 +62,7 @@ const SinglePlay = () => {
             isPrivate: true,
             difficulty: values.difficulty,
             boardSize: values.boardSize,
+            boardID: parseInt(values.boardID.toString())
           },
         })
       );
@@ -88,6 +92,14 @@ const SinglePlay = () => {
             <BoardInput
               value={values.boardSize}
               handleChange={handleChange("boardSize")}
+              isAdmin={true}
+            />
+          </div>
+
+          <div className="form-element">
+            <BoardIdInput
+              value={values.boardID}
+              handleChange={handleChange("boardID")}
               isAdmin={true}
             />
           </div>

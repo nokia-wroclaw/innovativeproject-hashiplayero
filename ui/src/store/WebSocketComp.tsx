@@ -74,6 +74,7 @@ const WebSocketComp = () => {
             consoleLogWebSocket("CreateBoard");
             let createBoard: ICreateBoard = {
               array: json.Payload.array,
+              boardID: parseInt(json.Payload.boardID),
               settings: {
                 difficulty: json.Payload.settings.difficulty,
                 size: json.Payload.settings.size,
@@ -117,6 +118,7 @@ const WebSocketComp = () => {
               let updateAdminRoom: IDefaultRoomAndBoard = {
                 roomAndBoard: {
                   name: json.Payload.name,
+                  boardID: json.Payload.boardID,
                   maxPlayers: json.Payload.maxPlayers,
                   isPrivate: json.Payload.isPrivate,
                   password: "",
@@ -139,6 +141,7 @@ const WebSocketComp = () => {
               let updateUserRoom: IDefaultRoomAndBoard = {
                 roomAndBoard: {
                   name: json.Payload.name,
+                  boardID: json.Payload.boardID,
                   maxPlayers: json.Payload.maxPlayers,
                   isPrivate: json.Payload.isPrivate,
                   password: "",
@@ -190,6 +193,7 @@ const WebSocketComp = () => {
             let updateAdminRoom: IDefaultRoomAndBoard = {
               roomAndBoard: {
                 name: json.Payload.name,
+                boardID: json.Payload.boardID,
                 maxPlayers: json.Payload.maxPlayers,
                 isPrivate: json.Payload.isPrivate,
                 password: json.Payload.password,

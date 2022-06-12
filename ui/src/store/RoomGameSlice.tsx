@@ -12,6 +12,7 @@ import { RootState } from "./store";
 const initialState: IDefaultRoomAndBoard = {
   roomAndBoard: {
     name: "name",
+    boardID: -1,
     maxPlayers: -1,
     isPrivate: false,
     password: "",
@@ -44,6 +45,7 @@ export const RoomBoardSlice = createSlice({
         ...state,
         roomAndBoard: {
           ...state.roomAndBoard,
+          boardID: action.payload.boardID,
           array: action.payload.array,
           settings: action.payload.settings,
           bridges: [],

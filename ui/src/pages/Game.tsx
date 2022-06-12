@@ -11,7 +11,7 @@ import {
 } from "../store/StateMachineSlice";
 import Board from "./Board";
 import PlayerList from "../components/PlayerList";
-import { Grid, useMediaQuery } from "@mui/material";
+import { Grid, useMediaQuery, Typography } from "@mui/material";
 import DialogWin from "../components/static-components/DialogWin";
 
 const Game = () => {
