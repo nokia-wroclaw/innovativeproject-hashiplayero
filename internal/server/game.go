@@ -94,7 +94,6 @@ func createBoard(c *Client, r *Room) {
 }
 
 func GetBoardFromDB(c *Client, r *Room, boardID int) bool {
-
 	board, err := boardsDB.GetById(int64(boardID))
 	if err != nil {
 		log.Print("Error: Invalid board ID", err)
@@ -115,9 +114,6 @@ func GetBoardFromDB(c *Client, r *Room, boardID int) bool {
 		return false
 	}
 	r.boardData.Array = boardInt
-
-	rm := ResponeMessage{Respone: "CreateBoardFromDB", Payload: r.boardData}
-	roomBroadcast(r, rm)
 	return true
 }
 
@@ -144,6 +140,9 @@ func startGame(c *Client, r *Room, generateNewBoard bool) {
 	r.gameOn = true
 	if generateNewBoard {
 		createBoard(c, r)
+	} else {
+		rm := ResponeMessage{Respone: "CreateBoard", Payload: r.boardData}
+		roomBroadcast(r, rm)
 	}
 	updatedRoomMulticast(r)
 	updatedGameMulticast(r)
