@@ -54,7 +54,7 @@ const Contact = () => {
           anything, go ahead and do it. We're always happy to hear from you, but we are
           no magicians.
         </span>
-        <h3 className="contact-title">Star us at GitHub</h3>
+        <h3 className="contact-title">Star us on GitHub</h3>
         <a href="https://github.com/nokia-wroclaw/innovativeproject-hashiplayero" target="_blank"
           style={{
             display: "flex",
@@ -65,20 +65,6 @@ const Contact = () => {
             style={{ maxWidth: "25%", alignContent: "center", padding: "16px" }}
           />
         </a>
-        {/* <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, sm: 8, md: 12 }}
-          className="contact-people"
-        >
-          {contactInfo.map((information) => (
-            <div key={information.id} className="contact-person">
-              <span>{information.person}</span>
-              <br />
-              <a href="#">{information.email}</a>
-            </div>
-          ))}
-        </Grid> */}
       </div>
     </>
   );

@@ -67,7 +67,7 @@ const Player = ({
       if (userGameData?.UserGameState.correct === true) {
         setSnackbar({
           open: true,
-          message: `Player ${player.name} win with ${userGameData?.UserGameState?.solvingTime} sec`,
+          message: `Player ${player.name} has won in ${userGameData?.UserGameState?.solvingTime} sec`,
           severity: "success",
         });
       }
@@ -76,52 +76,6 @@ const Player = ({
 
   return (
     <>
-      {/* <div className="element">
-        <div className="element-name">
-          {player.uuid === user.uuid ? (
-            <div style={{ width: "100%" }}>
-              <span style={{ maxWidth: "80%" }}>{player.name}</span>
-              <span style={{ marginLeft: "8px" }}>(You)</span>
-            </div>
-          ) : (
-            <span style={{ maxWidth: "100%" }}>{player.name}</span>
-          )}
-        </div>
-        {isAdmin && (
-          <div
-            onClick={() => {
-              handleKickPlayer();
-            }}
-            className="element-button"
-          >
-            <IconButton
-              color="secondary"
-              aria-label="upload picture"
-              component="span"
-              size="small"
-            >
-              <PersonRemove />
-            </IconButton>
-          </div>
-        )}
-        {player.uuid === roomAndBoard.admin && (
-          <Icon icon="emojione:crown" width="32" height="32" />
-        )}
-        {state === playerStatus.firstPlace && (
-          <Icon icon="noto:1st-place-medal" width="32" height="32" />
-        )}
-        {state === playerStatus.secondPlace && (
-          <Icon icon="noto:2nd-place-medal" width="32" height="32" />
-        )}
-        {state === playerStatus.thirdPlace && (
-          <Icon icon="noto:3rd-place-medal" width="32" height="32" />
-        )}
-        czas: {userGameData?.UserGameState?.solvingTime} sec
-        <ConfirmationModal open={open} setOpen={setOpen} setKick={setKick} />
-        {snackbar.open ? (
-          <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
-        ) : null}
-      </div> */}
       <Grid
         container
         spacing={2}

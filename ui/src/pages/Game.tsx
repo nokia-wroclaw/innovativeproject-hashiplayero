@@ -13,6 +13,7 @@ import Board from "./Board";
 import PlayerList from "../components/PlayerList";
 import { Grid, useMediaQuery, Typography } from "@mui/material";
 import DialogWin from "../components/static-components/DialogWin";
+import PlayerMobile from "../components/static-components/PlayerMobile";
 
 const Game = () => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
@@ -200,6 +201,13 @@ const Game = () => {
                   >
                     Waiting Room
                   </Button>
+                  {/* <PlayerMobile
+                    players={roomAndBoard.members}
+                    gameData={roomAndBoard.gameData}
+                  /> */}
+                  {/* <Button onClick={toggleDrawer("right", true)}>
+                    Player list
+                  </Button> */}
                 </div>
                 <FormGroup sx={{ marginLeft: "12px" }}>
                   <FormControlLabel
