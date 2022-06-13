@@ -9,7 +9,7 @@ const initialState: SingleGameData = {
   seed: "seedData",
   board: [],
   boardResult: [],
-}
+};
 
 export const gameSlice = createSlice({
   name: "singleGame",

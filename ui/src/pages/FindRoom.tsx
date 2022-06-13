@@ -28,7 +28,9 @@ const FindRoom = () => {
   const [searchedDifficulty, setsearchedDifficulty] = useState("");
   const [searchedSize, setsearchedSize] = useState("");
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
-  const { inWaitingRoom, inSingleGame } = useSelector((state: RootState) => state.StateMachine);
+  const { inWaitingRoom, inSingleGame } = useSelector(
+    (state: RootState) => state.StateMachine
+  );
 
   const [filteredRooms, setFilteredRooms] = useState<IRoom[]>(rooms);
 
@@ -46,7 +48,6 @@ const FindRoom = () => {
     }
   }, [inWaitingRoom, navigate, roomAndBoard, inSingleGame]);
 
-
   useEffect(() => {
     const inputName = searchedName.toLowerCase();
     if (rooms === null) {
@@ -56,16 +57,17 @@ const FindRoom = () => {
         const roomName = room.name.toLowerCase();
         let nameCond = roomName.includes(inputName);
 
-        if (searchedName.replace(/\s/g, '').length === 0) nameCond = true;
+        if (searchedName.replace(/\s/g, "").length === 0) nameCond = true;
 
-        const diffCond = room.difficulty.toString() == searchedDifficulty || searchedDifficulty === "";
-        const sizeCond = room.boardSize.toString() == searchedSize || searchedSize === "";
+        const diffCond =
+          room.difficulty.toString() == searchedDifficulty ||
+          searchedDifficulty === "";
+        const sizeCond =
+          room.boardSize.toString() == searchedSize || searchedSize === "";
         return nameCond && diffCond && sizeCond;
-
       });
       setFilteredRooms(roomsToShow);
     }
-
   }, [rooms, searchedSize, searchedDifficulty, searchedName]);
 
   return (
@@ -81,16 +83,21 @@ const FindRoom = () => {
               onChange={(event) => setSearchedName(event.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            className="header-element element"
+          >
             <Groups />
             <FormControl
               variant="standard"
               sx={{ m: 1, minWidth: 120, paddingBottom: "16px" }}
               size="small"
             >
-              <InputLabel id="room-search-size-label">
-                Board size
-              </InputLabel>
+              <InputLabel id="room-search-size-label">Board size</InputLabel>
               <Select
                 labelId="room-search-size"
                 id="room-search-size"
@@ -107,7 +114,14 @@ const FindRoom = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3} className="header-element element">
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            className="header-element element"
+          >
             <Analytics />
             <FormControl
               variant="standard"

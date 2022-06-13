@@ -1,4 +1,4 @@
 export default interface IMember {
-    uuid: string;
-    name: string;
+  uuid: string;
+  name: string;
 }

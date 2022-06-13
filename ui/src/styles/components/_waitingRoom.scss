@@ -1,89 +1,91 @@
 .waiting-room-header {
-    display: flex;
-    align-items: center;
-    margin: 16px;
-    background-color: black;
+  display: flex;
+  align-items: center;
+  margin: 16px;
+  background-color: black;
 }
 
 .wating-room-container {
-    width: 80%;
-    margin: 0 auto;
+  width: 80%;
+  margin: 0 auto;
 
-    @media screen and (max-width: 1420px) {
-        width: 100%;
-    }
+  @media screen and (max-width: 1420px) {
+    width: 100%;
+  }
 }
 
 .general-info-waitingRoom {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    height: 90%;
-    width: 85%;
-    box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
-    margin-bottom: 24px;
-    padding: 16px;
-    border-radius: 6px;
-    background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  height: 90%;
+  width: 85%;
+  box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1),
+    0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: #ffffff;
 
-    @media screen and (max-width: 700px) {
-        width: 95%;
-        .general-info-waitingRoom {
-            width: 95%;
-        }
+  @media screen and (max-width: 700px) {
+    width: 95%;
+    .general-info-waitingRoom {
+      width: 95%;
     }
+  }
 }
 
 .paper-waitingRoom {
-    width: 100%;
-    max-width: 900px;
-    padding: 32px 8px;
-    margin: 24px 16px;
-    background-color: #FFFFFF;
-    border-radius: 6px;
-    box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
-    transition: all 0.5s ease-in-out;
+  width: 100%;
+  max-width: 900px;
+  padding: 32px 8px;
+  margin: 24px 16px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1),
+    0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  transition: all 0.5s ease-in-out;
 
-    &:hover {
-        // background-color: rgb(250, 250, 250);
-        box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158),
-            0px 24px 60px rgba(6, 48, 125, 0.295),
-            0px 12px 24px rgba(27, 59, 119, 0.103);
-        transition: all 0.5s ease-in;
-    }
+  &:hover {
+    // background-color: rgb(250, 250, 250);
+    box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158),
+      0px 24px 60px rgba(6, 48, 125, 0.295),
+      0px 12px 24px rgba(27, 59, 119, 0.103);
+    transition: all 0.5s ease-in;
+  }
 
-    @media screen and (max-width: 700px) {
-        .paper-waitingRoom {
-            margin: 0px 16px;
-        }
+  @media screen and (max-width: 700px) {
+    .paper-waitingRoom {
+      margin: 0px 16px;
     }
+  }
 }
 
 .room-data {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: right;
-    margin: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: right;
+  margin: 16px;
 
-    @media screen and (max-width: 1420px) {
-        width: 100%;
-        justify-content: center;
-    }
+  @media screen and (max-width: 1420px) {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .players-data {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 16px;
 }
 
 .button-placment {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }

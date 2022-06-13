@@ -1,4 +1,4 @@
 export default interface IModal {
-    show: boolean;
-    password: String;
+  show: boolean;
+  password: String;
 }

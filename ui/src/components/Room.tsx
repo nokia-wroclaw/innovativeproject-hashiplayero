@@ -12,7 +12,6 @@ import { ISnackbar } from "../interfaces/ISnackbar";
 import IModal from "../interfaces/IModal";
 import DialogInput from "./dynamic-components/DialogInput";
 const Room = ({ room }: { room: IRoom }) => {
-
   const [snackbar, setSnackbar] = useState<ISnackbar>({
     open: false,
     message: "",
@@ -51,7 +50,11 @@ const Room = ({ room }: { room: IRoom }) => {
       </Grid>
 
       <Grid item xs className="header-element but">
-        <DialogInput isPrivate={room.isPrivate} handleClick={setModal} roomName={room.name}/>
+        <DialogInput
+          isPrivate={room.isPrivate}
+          handleClick={setModal}
+          roomName={room.name}
+        />
       </Grid>
       {snackbar.open ? (
         <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />

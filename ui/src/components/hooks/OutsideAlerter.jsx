@@ -34,7 +34,7 @@ function OutsideAlerter(props) {
 }
 
 OutsideAlerter.propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.element.isRequired,
 };
 
 export default OutsideAlerter;

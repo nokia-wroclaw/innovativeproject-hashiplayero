@@ -11,94 +11,91 @@ const primaryBackgroundColor = "#FFFFFF";
 const primarySvgColor = "#9ca9c3";
 
 const lightTheme = createTheme({
-    palette: {
-        primary: {
-            main: primaryColor,
-        },
-        secondary: {
-            main: secondaryColor,
-        },
+  palette: {
+    primary: {
+      main: primaryColor,
     },
-    components: {
-        MuiAppBar: {
-            styleOverrides:{
-                root:{
-                    backgroundColor: primaryBackgroundColor,
-                    color: primaryColor,
-                    border: "none",
-                    boxShadow: "none",
-                    padding: "0px 20px",
-                }
-            }
-
-        },  
-        MuiButton: {
-            styleOverrides:{
-                root:{
-                    padding: "8px 24px",
-                    transition: "all 0.3s ease",
-                },
-                textPrimary:{
-                        color: secondaryColor,
-                    '&:hover': {
-                        backgroundColor: primaryColorHover,
-                        color: primaryBackgroundColor,
-                        // scale: "1.1",
-                        transition: "all 0.5s ease",
-                    }
-
-                },
-                textSecondary:{
-                    backgroundColor: primaryColor,
-                    color: primaryBackgroundColor,
-                    '&:hover': {
-                        backgroundColor: secondaryColorHover,
-                        color: primaryBackgroundColor,
-                        // scale: "1.05",
-                        transition: "all 0.5s ease",
-                    }
-
-                }
-            }
-        }, 
-        MuiFormControl:{
-            styleOverrides:{
-                root:{
-                    width: "100%",
-                    padding: "0px",
-                }
-            }
+    secondary: {
+      main: secondaryColor,
+    },
+  },
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: primaryBackgroundColor,
+          color: primaryColor,
+          border: "none",
+          boxShadow: "none",
+          padding: "0px 20px",
         },
-        MuiSvgIcon:{
-            styleOverrides:{
-                root:{
-                    color: primarySvgColor,
-                }
-            }
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          padding: "8px 24px",
+          transition: "all 0.3s ease",
         },
-        MuiAlert: {
-            styleOverrides:{
-                root:{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                }
-            }
+        textPrimary: {
+          color: secondaryColor,
+          "&:hover": {
+            backgroundColor: primaryColorHover,
+            color: primaryBackgroundColor,
+            // scale: "1.1",
+            transition: "all 0.5s ease",
+          },
         },
-        MuiList:{
-            styleOverrides:{
-                root:{
-                    paddingTop: "0px",
-                    paddingBottom: "0px",
-                    button:{
-                        marginTop: "0px",
-                        marginBottom: "0px",
-                        padding: "24px 38px",
-                    }
-                }
-            }
-        }
-    }
+        textSecondary: {
+          backgroundColor: primaryColor,
+          color: primaryBackgroundColor,
+          "&:hover": {
+            backgroundColor: secondaryColorHover,
+            color: primaryBackgroundColor,
+            // scale: "1.05",
+            transition: "all 0.5s ease",
+          },
+        },
+      },
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          width: "100%",
+          padding: "0px",
+        },
+      },
+    },
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          color: primarySvgColor,
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      },
+    },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          paddingTop: "0px",
+          paddingBottom: "0px",
+          button: {
+            marginTop: "0px",
+            marginBottom: "0px",
+            padding: "24px 38px",
+          },
+        },
+      },
+    },
+  },
 });
 
 export default lightTheme;

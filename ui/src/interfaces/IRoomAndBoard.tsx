@@ -2,7 +2,7 @@ import playerStatus from "./PlayerStatus";
 
 export interface IRoomAndBoard {
   name: string;
-  boardID: number,
+  boardID: number;
   maxPlayers: number;
   isPrivate: boolean;
   password: string;

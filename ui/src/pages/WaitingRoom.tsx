@@ -35,15 +35,15 @@ const WaitingRoom = () => {
     }
   }, [inWaitingRoom, navigate, roomAndBoard, inMultiGame, isAdmin]);
 
-  useEffect(()=>{
-    if(user.uuid !== roomAndBoard.admin ){
+  useEffect(() => {
+    if (user.uuid !== roomAndBoard.admin) {
       setSnackbar({
         open: true,
         message: "Waiting for the game to start",
         severity: "warning",
-      })
+      });
     }
-  },[])
+  }, []);
 
   return (
     <>

@@ -140,7 +140,6 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
           </div>
 
           <div className="form-elements-options">
-
             <div className="form-element">
               <DifficultyInput
                 value={values.difficultyInput}
@@ -269,9 +268,9 @@ const RoomData = ({ room }: { room: IRoomAndBoard }) => {
             </Grid>
           ) : null}
           <SwipeablePlayerList
-                  players={roomAndBoard.members}
-                  gameData={roomAndBoard.gameData}
-                />
+            players={roomAndBoard.members}
+            gameData={roomAndBoard.gameData}
+          />
         </div>
       </div>
     </>

@@ -41,9 +41,7 @@ const Game = () => {
     setDisableHints(event.target.checked);
   };
 
-  const handleDisableColors = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleDisableColors = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDisableColors(event.target.checked);
   };
 
@@ -174,7 +172,11 @@ const Game = () => {
             sx={{ display: !matches ? "none" : "block" }}
           ></Grid>
           <Grid item xs={24} md={18}>
-            <Board gameEnded={gameEnded} disableHints={disableHints} disableColors={disableColors} />
+            <Board
+              gameEnded={gameEnded}
+              disableHints={disableHints}
+              disableColors={disableColors}
+            />
           </Grid>
           <Grid item xs={24} lg={3}>
             {!inSingleGame && inMultiGame ? (

@@ -21,9 +21,9 @@ export const userSlice = createSlice({
         ...state,
         user: {
           ...state.user,
-          name: action.payload
-        }
-      }
+          name: action.payload,
+        },
+      };
     },
   },
 });

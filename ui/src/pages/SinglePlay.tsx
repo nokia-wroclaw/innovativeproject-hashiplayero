@@ -62,7 +62,7 @@ const SinglePlay = () => {
             isPrivate: true,
             difficulty: values.difficulty,
             boardSize: values.boardSize,
-            boardID: parseInt(values.boardID.toString())
+            boardID: parseInt(values.boardID.toString()),
           },
         })
       );
@@ -113,12 +113,11 @@ const SinglePlay = () => {
         >
           Play!
         </Button>
-        
+
         {/* <div className="background">
           <BackgroundSvg />
         </div> */}
       </div>
-
     </>
   );
 };

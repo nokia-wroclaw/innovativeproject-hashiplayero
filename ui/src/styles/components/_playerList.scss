@@ -1,70 +1,70 @@
-.player-list{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+.player-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 900px;
+
+  padding: 8px;
+  margin: 24px 16px;
+
+  @media screen and (max-width: 1300px) {
+    max-width: 100%;
     max-width: 900px;
+  }
 
-    padding: 8px;
-    margin: 24px 16px;
+  margin: 8px;
+  min-height: 40px;
 
-    @media screen and (max-width: 1300px) {
-        max-width: 100%;
-        max-width: 900px;
-    }
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1),
+    0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
+  transition: all 0.5s ease-in-out;
 
-    margin: 8px;
-    min-height: 40px;
+  &:hover {
+    box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158),
+      0px 24px 60px rgba(6, 48, 125, 0.295),
+      0px 12px 24px rgba(27, 59, 119, 0.103);
+    transition: all 0.5s ease-in;
+  }
 
-    background-color: #FFFFFF;
-    border-radius: 6px;
-    box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
-    transition: all 0.5s ease-in-out;
-
-    &:hover {
-        box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158),
-            0px 24px 60px rgba(6, 48, 125, 0.295),
-            0px 12px 24px rgba(27, 59, 119, 0.103);
-        transition: all 0.5s ease-in;
-    }
-
-
-    div{
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    & > div:not(:first-child) {
-        padding-top: 16px;
-        box-shadow: 0px -2px rgba(6, 4, 146, 0.041);
-    }
-}
-
-.element{
-    margin: 16px;
+  div {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 100%;
+  }
+
+  & > div:not(:first-child) {
+    padding-top: 16px;
+    box-shadow: 0px -2px rgba(6, 4, 146, 0.041);
+  }
 }
 
-.element-name{
-    padding: 2px 5px;
-    direction: ltr;
-    max-width: 70%;
-    width: 100%;
-    span{
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+.element {
+  margin: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
-.element-button{
-    border: none;
-    background-color: transparent;
+.element-name {
+  padding: 2px 5px;
+  direction: ltr;
+  max-width: 70%;
+  width: 100%;
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.element-button {
+  border: none;
+  background-color: transparent;
 }

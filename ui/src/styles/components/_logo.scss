@@ -1,15 +1,15 @@
-$light_primary_background_color: #FFFFFF;
+$light_primary_background_color: #ffffff;
 
 $lighter_primary_button_color: #6c6af0;
-$light_primary_button_color: #5452E4;
+$light_primary_button_color: #5452e4;
 $light_primary_button_color-hover: #403eb4;
 
-$light_secondary_button_color: #7081A6;
+$light_secondary_button_color: #7081a6;
 $light_secondary_button_color-hover: #374157;
 
 $light_logo-secondary-color: #8b89ec;
 
-@mixin display-flex ($direction, $spacing) {
+@mixin display-flex($direction, $spacing) {
   display: flex;
   align-items: center;
   flex-direction: $direction;
@@ -37,7 +37,7 @@ $light_logo-secondary-color: #8b89ec;
   inset: 0 0 0 0;
   background: hsl(200 100% 80%);
   z-index: -1;
-  transition: transform .3s ease;
+  transition: transform 0.3s ease;
 }
 
 .logo {
@@ -49,7 +49,7 @@ $light_logo-secondary-color: #8b89ec;
   flex-grow: 1;
   justify-content: flex-start;
 
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 
   &:hover {
     transition: all 0.3s ease-out;
