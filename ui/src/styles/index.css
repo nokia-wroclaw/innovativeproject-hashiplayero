@@ -511,9 +511,6 @@
     justify-content: center;
     margin: 8px 36px;
   }
-  .buttons-board div {
-    margin: 0 16px;
-  }
 }
 @media (max-width: 600px) {
   .buttons-board {

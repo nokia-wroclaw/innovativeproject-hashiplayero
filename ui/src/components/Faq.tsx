@@ -36,7 +36,7 @@ const Faq = () => {
     {
       question: "How can I report a bug?",
       answer:
-        "In case you find any probelms with application, go ahead and check our Contact page, in order to contact us.",
+        "In case you find any problems with application, go ahead and issue on your Github repository page. Link is down below.",
       id: 3,
     },
   ];
@@ -53,13 +53,18 @@ const Faq = () => {
             <Accordion key={item.id}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
-                data-testid="faq-subtitle"
+                data-testid={`faq-question-${item.id}`}
               >
                 <h5 className="sub-title">{item.question}</h5>
               </AccordionSummary>
               <AccordionDetails>
                 <p data-testid="faq-answer">{item.answer}</p>
               </AccordionDetails>
+              {item.id === 3 ? (
+                <a href="" target="_blank">
+                  <AccordionDetails>Github issues</AccordionDetails>
+                </a>
+              ) : null}
             </Accordion>
           ))}
         </div>

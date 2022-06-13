@@ -200,7 +200,7 @@ const Game = () => {
                     Waiting Room
                   </Button>
                 </div>
-                <FormGroup>
+                <FormGroup sx={{ marginLeft: "12px" }}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -211,7 +211,7 @@ const Game = () => {
                     label="Hints"
                   />
                 </FormGroup>
-                <FormGroup>
+                <FormGroup sx={{ marginLeft: "12px" }}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -245,7 +245,7 @@ const Game = () => {
                     Exit
                   </Button>
                 </div>
-                <FormGroup>
+                <FormGroup sx={{ marginLeft: "12px" }}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -256,7 +256,7 @@ const Game = () => {
                     label="Hints"
                   />
                 </FormGroup>
-                <FormGroup>
+                <FormGroup sx={{ marginLeft: "12px" }}>
                   <FormControlLabel
                     control={
                       <Switch

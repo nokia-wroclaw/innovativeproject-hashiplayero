@@ -125,6 +125,7 @@ const HeaderBar = () => {
                   {...(page.type === "secondary"
                     ? { color: "secondary" }
                     : { color: "primary" })}
+                  disabled={inWaitingRoom || isAdmin}
                 >
                   <Typography textAlign="center">{page.name}</Typography>
                 </Button>

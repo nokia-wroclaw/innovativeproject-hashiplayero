@@ -3,12 +3,12 @@ import IWebSocket from "../interfaces/IWebSocket";
 import { RootState } from "./store";
 
 const initialState: IWebSocket = {
-  webSocket: new WebSocket("ws://localhost:8080/ws/"),
-  // webSocket: new WebSocket(
-  //   `ws${document.location.host.startsWith("localhost") ? "" : "s"}://${
-  //     document.location.host
-  //   }/ws/`
-  // ),
+  // webSocket: new WebSocket("ws://localhost:8080/ws/"),
+  webSocket: new WebSocket(
+    `ws${document.location.host.startsWith("localhost") ? "" : "s"}://${
+      document.location.host
+    }/ws/`
+  ),
 };
 
 export const WebSocketSlice = createSlice({
