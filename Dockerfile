@@ -12,7 +12,7 @@ RUN npm install \
 
 # Stage 2 - Run rice to generate go file containing all asset and compile go sources into an executable file
 FROM golang:alpine
-RUN apk add --update git
+RUN apk add --update git build-base
 WORKDIR /innovativeproject-hashiplayero/
 COPY --from=0 /innovativeproject-hashiplayero/ .
 COPY --from=1 /ui/build ui/build
@@ -25,5 +25,6 @@ RUN go get github.com/GeertJohan/go.rice \
 # Stage 3 - Copy binary file and setup entry point
 FROM alpine:latest
 COPY --from=2 /innovativeproject-hashiplayero/hashiplayero /usr/bin/hashiplayero
+RUN mkdir db
 ENTRYPOINT ["/usr/bin/hashiplayero"]
 
