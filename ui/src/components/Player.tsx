@@ -21,8 +21,10 @@ const Player = ({
   state: playerStatus;
 }) => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
+  const { isAdmin, inWaitingRoom, inMultiGame } = useSelector(
+    (state: RootState) => state.StateMachine
+  );
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
   const [open, setOpen] = useState<boolean>(false);
@@ -54,12 +56,21 @@ const Player = ({
   }, [kick]);
 
   useEffect(() => {
-    if (userGameData?.UserGameState.correct === true) {
-      setSnackbar({
-        open: true,
-        message: `Player ${player.name} win with ${userGameData?.UserGameState?.solvingTime} sec`,
-        severity: "success",
-      });
+    if (
+      userGameData?.UserGameState?.correct === true &&
+      !(player.uuid === user.uuid) &&
+      userGameData?.UserGameState.inGame &&
+      inWaitingRoom &&
+      inMultiGame &&
+      userGameData?.UserGameState?.inGame
+    ) {
+      if (userGameData?.UserGameState.correct === true) {
+        setSnackbar({
+          open: true,
+          message: `Player ${player.name} win with ${userGameData?.UserGameState?.solvingTime} sec`,
+          severity: "success",
+        });
+      }
     }
   }, [userGameData?.UserGameState?.solvingTime]);
 
@@ -133,10 +144,10 @@ const Player = ({
           )}
         </Grid>
         <Grid item xs={4}>
-          {userGameData?.UserGameState?.solvingTime === null ? (
+          {userGameData?.UserGameState?.solvingTime &&
+          userGameData?.UserGameState?.solvingTime !== 0 ? (
             <Typography noWrap>
-              {" "}
-              czas: {userGameData?.UserGameState?.solvingTime} sec{" "}
+              time: {userGameData?.UserGameState?.solvingTime} sec
             </Typography>
           ) : null}
         </Grid>
@@ -183,6 +194,9 @@ const Player = ({
         ) : null}
       </Grid>
       <ConfirmationModal open={open} setOpen={setOpen} setKick={setKick} />
+      {snackbar.open ? (
+        <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+      ) : null}
     </>
   );
 };

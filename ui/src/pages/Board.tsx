@@ -351,7 +351,7 @@ const Board = ({
   };
 
   return (
-    <div className="game-info">
+    <div className="game-info" style={{ marginLeft: "0px" }}>
       <div>
         <span>Board ID: #{boardID}</span>
       </div>

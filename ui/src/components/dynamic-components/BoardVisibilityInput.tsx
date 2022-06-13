@@ -11,7 +11,7 @@ const BoardVisibilityInput = ({
 }) => {
   return (
     <>
-      {value ? "New game" : "Play saved board"}
+      {value ? "New game" : "Replay"}
       <Checkbox
         checked={value}
         onChange={handleChange}
