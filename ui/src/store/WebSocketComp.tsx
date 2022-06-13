@@ -31,6 +31,9 @@ import {
   changeSingleGame,
   changeBoardCorrect,
 } from "./StateMachineSlice";
+import { setWebSocket } from "./WebSocketSlice";
+import IWebSocket from "../interfaces/IWebSocket";
+import { URL_API } from "../environments";
 
 const WebSocketComp = () => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
@@ -267,8 +270,14 @@ const WebSocketComp = () => {
   if (webSocket !== undefined) {
     webSocket.onclose = (e) => {
       consoleLogWebSocket("Disconnect");
+      setTimeout(() => {
+        let websocket: IWebSocket = {
+          webSocket: new WebSocket(URL_API),
+        };
+        dispatch(setWebSocket(websocket));
+      }, 1000);
       setSnackbar({
-        message: `Disconnect from the server`,
+        message: "Connection lost",
         open: true,
         severity: "error",
       });
