@@ -346,7 +346,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
   max-width: 900px;
   padding: 8px;
@@ -358,34 +358,23 @@
   box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
   transition: all 0.5s ease-in-out;
 }
-@media screen and (max-width: 1300px) {
-  .player-list {
-    max-width: 100%;
-    max-width: 900px;
-  }
-}
 .player-list:hover {
   box-shadow: 0px 2px 4px rgba(5, 3, 124, 0.158), 0px 24px 60px rgba(6, 48, 125, 0.295), 0px 12px 24px rgba(27, 59, 119, 0.103);
   transition: all 0.5s ease-in;
 }
-.player-list div {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
 .player-list > div:not(:first-child) {
-  padding-top: 16px;
+  margin-top: 8px;
   box-shadow: 0px -2px rgba(6, 4, 146, 0.041);
 }
 
 .element {
-  margin: 16px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  padding: 8px 16px;
   width: 100%;
+  padding-right: 32px;
 }
 
 .element-name {

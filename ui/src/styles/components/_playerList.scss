@@ -2,17 +2,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
   max-width: 900px;
 
   padding: 8px;
   margin: 24px 16px;
 
-  @media screen and (max-width: 1300px) {
-    max-width: 100%;
-    max-width: 900px;
-  }
+  // @media screen and (max-width: 1300px) {
+  //   max-width: 100%;
+  //   max-width: 900px;
+  // }
 
   margin: 8px;
   min-height: 40px;
@@ -30,26 +30,21 @@
     transition: all 0.5s ease-in;
   }
 
-  div {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
-
   & > div:not(:first-child) {
-    padding-top: 16px;
+    margin-top: 8px;
+    // move shadow box to 1px to left
     box-shadow: 0px -2px rgba(6, 4, 146, 0.041);
   }
 }
 
 .element {
-  margin: 16px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  padding: 8px 16px;
   width: 100%;
+  padding-right: 32px;
 }
 
 .element-name {

@@ -25,7 +25,7 @@ const Room = ({ room }: { room: IRoom }) => {
 
   return (
     <Grid container className="header">
-      <Grid item xs={12} sm={8} md={4}>
+      <Grid item xs={12} sm={8} md={3}>
         <div className="header-element">
           <RoomNameDisplay value={room.name} />
         </div>
@@ -35,7 +35,7 @@ const Room = ({ room }: { room: IRoom }) => {
         <RoomStatusDisplay value={room.isPrivate} />
       </Grid>
 
-      <Grid item xs={6} sm={4} md={1} className="header-element center">
+      <Grid item xs={6} sm={4} md={2} className="header-element center">
         <RoomPlayersDisplay
           players={room.numPlayers}
           maxPlayers={room.maxPlayers}
