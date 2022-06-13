@@ -54,7 +54,7 @@ const Player = ({
   }, [kick]);
 
   useEffect(() => {
-    if(userGameData?.UserGameState.correct === true){
+    if (userGameData?.UserGameState.correct === true) {
       setSnackbar({
         open: true,
         message: `Player ${player.name} win with ${userGameData?.UserGameState?.solvingTime} sec`,

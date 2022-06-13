@@ -56,7 +56,7 @@ export const {
   changeMultiGame,
   changeSingleGame,
   changeBoardCorrect,
-  setInitialState
+  setInitialState,
 } = StateMachineSlice.actions;
 
 export const selectRooms = (state: RootState) => state.RoomGame;
