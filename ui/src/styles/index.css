@@ -305,16 +305,16 @@
   border-radius: 4px;
   flex-grow: 1;
   justify-content: flex-start;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 .logo:hover {
   transition: all 0.3s ease-out;
 }
 .logo:hover .logo-first-half {
-  color: #7081A6;
+  color: #7081a6;
 }
 .logo:hover .logo-second-half {
-  color: #5452E4;
+  color: #5452e4;
 }
 
 .logo-inner {
@@ -323,11 +323,11 @@
 }
 
 .logo-first-half {
-  color: #5452E4;
+  color: #5452e4;
 }
 
 .logo-second-half {
-  color: #7081A6;
+  color: #7081a6;
 }
 
 .background {
@@ -336,7 +336,7 @@
   width: 100%;
   max-width: 900px;
   margin: 24px 16px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
   min-width: 800px;
   transform: translate(-10%, 15%);
@@ -353,7 +353,7 @@
   margin: 24px 16px;
   margin: 8px;
   min-height: 40px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
   transition: all 0.5s ease-in-out;
@@ -433,7 +433,7 @@
   margin-bottom: 24px;
   padding: 16px;
   border-radius: 6px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 @media screen and (max-width: 700px) {
   .general-info-waitingRoom {
@@ -449,7 +449,7 @@
   max-width: 900px;
   padding: 32px 8px;
   margin: 24px 16px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
   transition: all 0.5s ease-in-out;
@@ -502,6 +502,9 @@
   padding: 0;
   margin: 0;
 }
+.buttons-board button {
+  margin: 8px;
+}
 @media (max-width: 1199px) {
   .buttons-board {
     flex-direction: row;
@@ -518,6 +521,23 @@
     align-items: center;
     justify-content: center;
     margin: 16px 12px;
+  }
+}
+
+.inner-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 1199px) {
+  .inner-buttons {
+    flex-direction: row;
+  }
+}
+@media (max-width: 339px) {
+  .inner-buttons {
+    flex-direction: column;
   }
 }
 
@@ -601,7 +621,7 @@
   height: 100%;
   padding: 32px 8px;
   margin: 24px 16px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
   transition: all 0.5s ease-in-out;
@@ -618,7 +638,7 @@
   padding: 32px 8px;
   margin: 24px 16px;
   margin-top: 10vh;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
   transition: all 0.5s ease-in-out;
@@ -652,12 +672,12 @@
 .title {
   display: flex;
   align-items: center;
-  color: #7081A6;
+  color: #7081a6;
 }
 .title h1 {
   font-size: 40px;
   font-weight: bold;
-  color: #7081A6;
+  color: #7081a6;
   margin: 24px;
 }
 .title svg {
@@ -666,14 +686,14 @@
 .title svg:hover {
   transition: all 0.6s ease-out;
   transform: rotate(360deg) scale(1.5);
-  color: #5452E4;
+  color: #5452e4;
   cursor: pointer;
 }
 
 .contact-title {
   font-size: 24px;
   font-weight: bold;
-  color: #7081A6;
+  color: #7081a6;
   margin: 24px;
 }
 
@@ -701,7 +721,7 @@
   padding: 32px;
   margin: 24px 32px;
   border-radius: 6px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
   transition: all 0.5s ease-in-out;
@@ -732,7 +752,7 @@
   margin-bottom: 24px;
   padding: 16px;
   border-radius: 6px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 @media screen and (max-width: 700px) {
   .general-info .general-info {
@@ -842,7 +862,7 @@
 .faq-questions p {
   font-size: 16px;
   margin: 8px;
-  color: #7081A6;
+  color: #7081a6;
   text-align: justify;
 }
 
@@ -860,7 +880,7 @@
   display: flex;
   margin: 8px;
   min-height: 40px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05);
   transition: all 0.5s ease-in-out;

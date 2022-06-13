@@ -181,15 +181,25 @@ const Game = () => {
           <Grid item xs={24} lg={3}>
             {!inSingleGame && inMultiGame ? (
               <div className="buttons-board">
-                <Button
-                  disabled={!isBoardCorrect}
-                  onClick={() => {
-                    handleFinishGame();
-                  }}
-                  color="secondary"
-                >
-                  Waiting Room
-                </Button>
+                <div className="inner-buttons">
+                  <Button
+                    onClick={() => {
+                      handleExitGame();
+                    }}
+                    color="secondary"
+                  >
+                    Exit Game
+                  </Button>
+                  <Button
+                    disabled={!isBoardCorrect}
+                    onClick={() => {
+                      handleFinishGame();
+                    }}
+                    color="secondary"
+                  >
+                    Waiting Room
+                  </Button>
+                </div>
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -212,26 +222,29 @@ const Game = () => {
                     label="Color"
                   />
                 </FormGroup>
-                <Button
-                  onClick={() => {
-                    handleExitGame();
-                  }}
-                  color="secondary"
-                >
-                  Exit Game
-                </Button>
               </div>
             ) : null}
             {inSingleGame && !inMultiGame ? (
               <div className="buttons-board">
-                <Button
-                  onClick={() => {
-                    handleExitGameSingle();
-                  }}
-                  color="secondary"
-                >
-                  Exit
-                </Button>
+                <div className="inner-buttons">
+                  <Button
+                    disabled={!isBoardCorrect}
+                    onClick={() => {
+                      handlePlayAgain();
+                    }}
+                    color="secondary"
+                  >
+                    New game
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleExitGameSingle();
+                    }}
+                    color="secondary"
+                  >
+                    Exit
+                  </Button>
+                </div>
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -254,15 +267,6 @@ const Game = () => {
                     label="Color"
                   />
                 </FormGroup>
-                <Button
-                  disabled={!isBoardCorrect}
-                  onClick={() => {
-                    handlePlayAgain();
-                  }}
-                  color="secondary"
-                >
-                  New game
-                </Button>
               </div>
             ) : null}
           </Grid>

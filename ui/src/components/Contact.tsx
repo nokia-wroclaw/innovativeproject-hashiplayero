@@ -62,7 +62,7 @@ const Contact = () => {
             justifyContent: "center"
           }}>
           <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.onlinewebfonts.com%2Fsvg%2Fimg_326384.png&f=1&nofb=1" alt="github logo"
-            style={{ maxWidth: "50%", alignContent: "center", padding: "16px" }}
+            style={{ maxWidth: "30%", alignContent: "center", padding: "16px" }}
           />
         </a>
         {/* <Grid
