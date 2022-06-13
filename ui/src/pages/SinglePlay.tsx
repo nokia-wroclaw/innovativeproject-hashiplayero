@@ -7,6 +7,7 @@ import DifficultyInput from "../components/dynamic-components/DifficultyInput";
 import BoardInput from "../components/dynamic-components/BardSizeInput";
 import { BackgroundSvg } from "../components/svg/VectorGraphics";
 import BoardIdInput from "../components/dynamic-components/boardIdInput";
+import BoardVisibilityInput from "../components/dynamic-components/BoardVisibilityInput";
 
 interface State {
   difficulty: number;
@@ -18,6 +19,7 @@ interface State {
   enableTimeLimit: boolean;
   isPrivate: boolean;
   boardID: number;
+  showBoardID: boolean;
 }
 
 const SinglePlay = () => {
@@ -39,10 +41,11 @@ const SinglePlay = () => {
     enableTimeLimit: false,
     isPrivate: false,
     boardID: -1,
+    showBoardID: false,
   });
 
   const handleChange = (prop: keyof State) => (event: any) => {
-    if (prop === "enableTimeLimit") {
+    if (prop === "enableTimeLimit" || prop === "showBoardID") {
       setValues({ ...values, [prop]: event.target.checked });
     } else {
       setValues({ ...values, [prop]: event.target.value });
@@ -80,28 +83,46 @@ const SinglePlay = () => {
     <>
       <div className="form-container paper-create">
         <div className="general-info">
-          <div className="form-element">
-            <DifficultyInput
-              value={values.difficulty}
-              handleChange={handleChange("difficulty")}
-              isAdmin={true}
-            />
-          </div>
+          {!values.showBoardID ? (
+            <div className="form-element">
+              <DifficultyInput
+                value={values.difficulty}
+                handleChange={handleChange("difficulty")}
+                isAdmin={true}
+              />
+            </div>
+          ) : null}
+          {!values.showBoardID ? (
+            <div className="form-element">
+              <BoardInput
+                value={values.boardSize}
+                handleChange={handleChange("boardSize")}
+                isAdmin={true}
+              />
+            </div>
+          ) : null}
 
-          <div className="form-element">
-            <BoardInput
-              value={values.boardSize}
-              handleChange={handleChange("boardSize")}
-              isAdmin={true}
-            />
-          </div>
-
-          <div className="form-element">
-            <BoardIdInput
-              value={values.boardID}
-              handleChange={handleChange("boardID")}
-              isAdmin={true}
-            />
+          <div className="form-elements-visibility">
+            <div className="form-element-visibility">
+              <BoardVisibilityInput
+                value={values.showBoardID}
+                handleChange={handleChange("showBoardID")}
+              />
+            </div>
+            <div
+              className="form-element"
+              style={{ display: values.showBoardID ? "block" : "none" }}
+            >
+              {values.showBoardID ? (
+                <div className="form-element">
+                  <BoardIdInput
+                    value={values.boardID}
+                    handleChange={handleChange("boardID")}
+                    isAdmin={true}
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
 

@@ -73,10 +73,12 @@ const Board = ({
   gameEnded,
   disableHints,
   disableColors,
+  boardID,
 }: {
   gameEnded: boolean;
   disableHints: boolean;
   disableColors: boolean;
+  boardID: number;
 }) => {
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
@@ -349,7 +351,10 @@ const Board = ({
   };
 
   return (
-    <>
+    <div className="game-info">
+      <div>
+        <span>Board ID: #{boardID}</span>
+      </div>
       <div
         style={{
           width: "100%",
@@ -656,7 +661,7 @@ const Board = ({
           </Layer>
         </Stage>
       </div>
-    </>
+    </div>
   );
 };
 

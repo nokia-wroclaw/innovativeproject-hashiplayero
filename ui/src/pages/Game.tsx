@@ -176,6 +176,7 @@ const Game = () => {
               gameEnded={gameEnded}
               disableHints={disableHints}
               disableColors={disableColors}
+              boardID={roomAndBoard.boardID}
             />
           </Grid>
           <Grid item xs={24} lg={3}>

@@ -1006,4 +1006,14 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 16px;
+  font-size: large;
 }/*# sourceMappingURL=index.css.map */
