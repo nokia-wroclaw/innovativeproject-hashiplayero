@@ -77,7 +77,6 @@ func createBoard(c *Client, r *Room) {
 		log.Fatal(err)
 	}
 	r.boardData.BoardID = int(createdRecord.ID)
-	fmt.Println(createdRecord.ID)
 	// [TEST] Print database
 	boards, err := boardsDB.GetAll()
 	if err != nil {
@@ -85,9 +84,6 @@ func createBoard(c *Client, r *Room) {
 	}
 	fmt.Print("DATABASE LENGTH: ")
 	fmt.Println(len(boards))
-	fmt.Print("DATABASE: ")
-	fmt.Println(boards)
-	fmt.Println()
 
 	rm := ResponeMessage{Respone: "CreateBoard", Payload: r.boardData}
 	roomBroadcast(r, rm)
