@@ -1,4 +1,4 @@
-import { Slider } from "@mui/material";
+import { Slider, Typography } from "@mui/material";
 
 interface IMark {
   value: number;
@@ -8,7 +8,6 @@ interface IMark {
 function createMarks() {
   const marks: IMark[] = [];
   for (let i = 2; i <= 10; i++) {
-    // # TOOD change loop
     marks.push({
       value: i,
       label: i.toString(),
@@ -35,18 +34,23 @@ const PlayersInput = ({
 
   return (
     <>
-      <Slider
-        disabled={!isAdmin}
-        aria-label="Custom marks"
-        marks={marks}
-        valueLabelDisplay="auto"
-        valueLabelFormat={valueLabelFormat}
-        value={value}
-        onChange={handleChange}
-        min={2}
-        step={1}
-        max={10}
-      />
+      <div className="slider">
+        <Typography>
+          {isAdmin ? "Number of players" : "Number of players in game"}
+        </Typography>
+        <Slider
+          disabled={!isAdmin}
+          aria-label="Custom marks"
+          marks={marks}
+          valueLabelDisplay="auto"
+          valueLabelFormat={valueLabelFormat}
+          value={value}
+          onChange={handleChange}
+          min={2}
+          step={1}
+          max={10}
+        />
+      </div>
     </>
   );
 };

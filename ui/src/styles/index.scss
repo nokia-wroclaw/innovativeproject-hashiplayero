@@ -460,3 +460,11 @@ $light_logo-secondary-color: #8b89ec;
       2px 2px 2px #ffffff inset;
   }
 }
+
+.slider{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
