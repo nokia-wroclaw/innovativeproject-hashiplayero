@@ -39,7 +39,7 @@ func (r *SQLiteRepository) Migrate() error {
 	query := `
     CREATE TABLE IF NOT EXISTS boards(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        board TEXT NOT NULL UNIQUE,
+        board TEXT NOT NULL,
         difficulty INTEGER NOT NULL,
         size INTEGER NOT NULL
     );
