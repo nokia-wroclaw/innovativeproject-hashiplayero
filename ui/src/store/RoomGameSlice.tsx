@@ -64,6 +64,7 @@ export const RoomBoardSlice = createSlice({
           password: action.payload.password,
           timeLimit: action.payload.timeLimit,
           admin: action.payload.admin,
+          boardID: action.payload.boardID,
           bridges: [],
           gameData: [],
         },

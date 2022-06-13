@@ -39,6 +39,7 @@ export interface ICreateRoom {
   name: string;
   password: string;
   timeLimit: number;
+  boardID: number;
 }
 
 export interface IGameData {

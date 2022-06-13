@@ -100,6 +100,7 @@ const WebSocketComp = () => {
               name: json.Payload.name,
               password: json.Payload.password,
               timeLimit: json.Payload.timeLimit,
+              boardID: json.Payload.boardID,
             };
             dispatch(updateCreateRoom(createRoom));
             dispatch(setInitialRoomsList());

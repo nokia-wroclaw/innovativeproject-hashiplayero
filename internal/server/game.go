@@ -104,6 +104,7 @@ func GetBoardFromDB(c *Client, r *Room, boardID int) bool {
 
 	r.boardData.BoardSettings.BoardSize = board.Size
 	r.boardData.BoardSettings.Difficulty = board.Difficulty
+	r.boardData.BoardID = boardID
 
 	var boardInt []int
 	err = json.Unmarshal([]byte(board.Board), &boardInt)
