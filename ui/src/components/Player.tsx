@@ -22,7 +22,7 @@ const Player = ({
 }) => {
   const { user } = useSelector((state: RootState) => state.defaultUser);
   const { webSocket } = useSelector((state: RootState) => state.webSocket);
-  const { isAdmin } = useSelector((state: RootState) => state.StateMachine);
+  const { isAdmin, inWaitingRoom, inMultiGame } = useSelector((state: RootState) => state.StateMachine);
   const { roomAndBoard } = useSelector((state: RootState) => state.RoomGame);
 
   const [open, setOpen] = useState<boolean>(false);
@@ -54,7 +54,14 @@ const Player = ({
   }, [kick]);
 
   useEffect(() => {
-    if (userGameData?.UserGameState.correct === true) {
+    if (
+      userGameData?.UserGameState?.correct === true &&
+      !(player.uuid === user.uuid) &&
+      userGameData?.UserGameState.inGame &&
+      inWaitingRoom &&
+      inMultiGame &&
+      userGameData?.UserGameState?.inGame
+    ) {
       setSnackbar({
         open: true,
         message: `Player ${player.name} win with ${userGameData?.UserGameState?.solvingTime} sec`,
