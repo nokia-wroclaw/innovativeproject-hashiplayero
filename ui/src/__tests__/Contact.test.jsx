@@ -6,10 +6,7 @@ test('Contact renders without crashing', ()=>{
 })
 
 test('Contact renders with correct components', ()=>{
-    const {getByText, getAllByRole} = render(<Contact/>)
+    const {getByText} = render(<Contact/>)
     getByText('Contact us')
     getByText('We\'re all ears.')
-    getByText('Our team members emails:')
-    const emails = getAllByRole('link')
-    expect(emails).toHaveLength(6)
 })

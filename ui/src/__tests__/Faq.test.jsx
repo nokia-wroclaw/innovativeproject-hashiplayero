@@ -1,4 +1,4 @@
-import {fireEvent, getAllByTestId, render} from '@testing-library/react'
+import {fireEvent, getByTestId, render} from '@testing-library/react'
 import Faq from '../components/Faq'
 
 test('Faq renders without crashing', ()=>{
@@ -9,8 +9,8 @@ test('Faq renders with correct components', ()=>{
     const {getAllByTestId} = render(<Faq/>)
 
     // Check if there is a correct amount of questions
-    const faqHeaders = getAllByTestId('faq-subtitle')
-    expect(faqHeaders).toHaveLength(4)
+    const faqHeaders = getAllByTestId(/faq-question/i)
+    expect(faqHeaders).toHaveLength(5)
 })
 
 // Problem with user-event
@@ -18,12 +18,12 @@ test('Faq renders with correct components', ()=>{
 // Used fireEvent instead
 
 test('Faq components behave in a correct way', ()=>{
-    const {getAllByTestId} = render(<Faq/>)
+    const {getByTestId} = render(<Faq/>)
 
     // Check if questions aren't expanded by default
-    const faqHeaders = getAllByTestId('faq-subtitle')
-    expect(faqHeaders[0]).not.toHaveClass('Mui-expanded')
+    const faqHeader = getByTestId(`faq-question-0`)
+    expect(faqHeader).not.toHaveClass('Mui-expanded')
     // Check if questions are expanded after being cliked
-    fireEvent.click(faqHeaders[0])
-    expect(faqHeaders[0]).toHaveClass('Mui-expanded')
+    fireEvent.click(faqHeader)
+    expect(faqHeader).toHaveClass('Mui-expanded')
 })

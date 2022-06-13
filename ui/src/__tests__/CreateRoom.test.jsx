@@ -19,8 +19,8 @@ test('CreateRoom renders with correct components', () => {
     getByRole("textbox", { name: /password/i })
     getByRole("button", { name: /password visibility/i })
     getByRole("slider", { name: /custom/i })
-    getAllByRole("button", { name: /normal/i })
-    getAllByRole("button", { name: /medium/i })
+    getAllByRole("button", { name: /easy/i })
+    getAllByRole("button", { name: /small/i })
     const createButton = getByRole("button", { name: /create!/i })
 
     fireEvent.click(createButton)

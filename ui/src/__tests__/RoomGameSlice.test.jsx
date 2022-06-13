@@ -6,9 +6,10 @@ test('should return the initial state', () => {
         {
             roomAndBoard: {
                 name: "name",
+                boardID: -1,
                 maxPlayers: -1,
                 isPrivate: false,
-                password: "password",
+                password: "",
                 timeLimit: -1,
                 members: [],
                 array: [],
@@ -29,6 +30,7 @@ test('should update room and board in game with correct data', () => {
     const state = {
         roomAndBoard: {
             name: "name",
+            boardID: -1,
             maxPlayers: -1,
             isPrivate: false,
             password: "password",
@@ -48,6 +50,7 @@ test('should update room and board in game with correct data', () => {
     expect(reducer(state, updateRoomGame({
         roomAndBoard: {
             name: "pokoj",
+            boardID: 3,
             maxPlayers: 2,
             isPrivate: false,
             password: "12345",
@@ -66,6 +69,7 @@ test('should update room and board in game with correct data', () => {
     }))).toEqual({
         roomAndBoard: {
             name: "pokoj",
+            boardID: 3,
             maxPlayers: 2,
             isPrivate: false,
             password: "12345",
