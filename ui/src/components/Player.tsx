@@ -111,7 +111,13 @@ const Player = ({
           <CustomizedSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
         ) : null}
       </div> */}
-      <Grid container spacing={2} columns={24} className="element" sx={{marginLeft: 0}}>
+      <Grid
+        container
+        spacing={2}
+        columns={24}
+        className="element"
+        sx={{ marginLeft: 0 }}
+      >
         <Grid item xs={14} justifyContent="flex-start">
           {player.uuid === user.uuid ? (
             <div style={{ width: "100%", display: "flex" }}>
@@ -176,6 +182,7 @@ const Player = ({
           </Grid>
         ) : null}
       </Grid>
+      <ConfirmationModal open={open} setOpen={setOpen} setKick={setKick} />
     </>
   );
 };
