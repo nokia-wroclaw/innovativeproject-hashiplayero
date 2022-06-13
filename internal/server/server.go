@@ -10,7 +10,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const fileName = "sqlite.db"
+const fileName = "db/sqlite.db"
 
 var boardsDB *boardDB.SQLiteRepository
 
