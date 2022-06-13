@@ -5,7 +5,7 @@ services:
     build:
       context: .
     volumes:
-      - database:/db
+      - ./database:/db
     container_name: hashiplayero
     networks:
       - caddy
