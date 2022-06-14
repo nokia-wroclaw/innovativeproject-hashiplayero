@@ -87,6 +87,7 @@ type Board struct {
     Items []BoardItem
     IslandLocs []int
     Bridges [][2]int
+    BannedBridges [][2]int
 }
 
 func (b *Board) GetCrossSection(loc int) []int {
@@ -267,6 +268,10 @@ func GenerateBoard(width, height int, noNodes int, twoBridgesChance float32, dif
             if board.SolveNormal(true) {
                 break generateLoop
             }
+        case Hard:
+            if board.SolveHard(true) {
+                break generateLoop
+            }
         default:
             break generateLoop
         }
@@ -280,7 +285,7 @@ func (b *Board) Render() string {
 
     for y := 0; y < b.Height; y++ {
         for x := 0; x < b.Width; x++ {
-            ret += b.Items[y * b.Width + x].Render() + " "
+            ret += b.Items[y * b.Width + x].Render()
         }
         ret += "\n"
     }
@@ -303,6 +308,30 @@ func (b *Board) Encode() string {
     return ret
 }
 
+func (b *Board) EncodeAlt() string {
+    text := "";
+
+    free_space := 0
+    for _, item := range b.Items {
+        switch item.(type) {
+        case *IslandItem:
+            if free_space > 0 {
+                text += string(rune('a' + free_space - 1))
+                free_space = 0
+            }
+            text += string(rune('0' + item.getCount()))
+        default:
+            if free_space == 26 {
+                text += string(rune('a' + free_space - 1))
+                free_space = 0
+            }
+            free_space += 1
+        }
+    }
+
+    return text;
+}
+
 func BoardDecode(code string) Board {
     sizeAndItems := strings.Split(code, ":")
 
@@ -315,14 +344,12 @@ func BoardDecode(code string) Board {
 
     b := NewBoard(width, height)
 
-    for y := 0; y < b.Height; y++ {
-        for x := 0; x < b.Width; x++ {
-            c := string(sizeAndItems[1][y * b.Width + x])
-            if c == "-" {
-                b.Items[y * b.Width + x] = &EmptyItem{}
-            } else if bridges, err := strconv.Atoi(c); err == nil {
-                b.Items[y * b.Width + x] = &IslandItem {bridges, 0}
-            }
+    for loc, c := range string(sizeAndItems[1]) {
+        if c == '-' {
+            b.Items[loc] = &EmptyItem{}
+        } else {
+            b.IslandLocs = append(b.IslandLocs, loc)
+            b.Items[loc] = &IslandItem {int(c - '0'), 0}
         }
     }
     return b
