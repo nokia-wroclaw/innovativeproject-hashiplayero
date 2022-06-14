@@ -40,7 +40,7 @@ const SinglePlay = () => {
     showSeedInput: false,
     enableTimeLimit: false,
     isPrivate: false,
-    boardID: -1,
+    boardID: 1,
     showBoardID: false,
   });
 
@@ -65,7 +65,7 @@ const SinglePlay = () => {
             isPrivate: true,
             difficulty: values.difficulty,
             boardSize: values.boardSize,
-            boardID: parseInt(values.boardID.toString()),
+            boardID: values.showBoardID ? parseInt(values.boardID.toString())  : -1,
           },
         })
       );

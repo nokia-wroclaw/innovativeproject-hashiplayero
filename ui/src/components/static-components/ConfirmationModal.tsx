@@ -66,9 +66,9 @@ const ConfirmationModal = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            If you kick this user, he will be able to come back if he knows the
-            password. To make he wont come back sure we advice to change it as
-            well.
+            If you kick this user, they will be able to come back if they know
+            the password. To make sure they won't, we advice to change the
+            password as well.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
