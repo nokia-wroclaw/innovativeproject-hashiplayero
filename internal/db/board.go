@@ -1,4 +1,4 @@
-package boardDB
+package db
 
 import (
 	"innovativeproject-hashiplayero/hashi"

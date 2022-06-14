@@ -1,7 +1,7 @@
 # Stage 0 - Pull app repo
 FROM alpine/git:latest
 WORKDIR /
-RUN git clone https://github.com/nokia-wroclaw/innovativeproject-hashiplayero.git
+COPY ./ ./innovativeproject-hashiplayero 
 
 # Stage 1 - Build web app from artifacts from previous stage
 FROM node:lts-alpine
@@ -24,7 +24,7 @@ RUN go get github.com/GeertJohan/go.rice \
 
 # Stage 3 - Copy binary file and setup entry point
 FROM alpine:latest
-COPY --from=2 /innovativeproject-hashiplayero/hashiplayero /usr/bin/hashiplayero
-RUN mkdir db
-ENTRYPOINT ["/usr/bin/hashiplayero"]
+COPY --from=2 /innovativeproject-hashiplayero/hashiplayero /app/hashiplayero
+WORKDIR /app
+ENTRYPOINT ["/app/hashiplayero"]
 

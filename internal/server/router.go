@@ -20,7 +20,7 @@ func setRouter() *gin.Engine {
 	roomsMap["lobby"] = lobby
 	go lobby.run()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     []string{"https://hashiplayero.pl", "https://www.hashiplayero.pl"},
 		AllowMethods:     []string{"OPTIONS", "GET", "POST"},
 		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,

@@ -3,8 +3,8 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"innovativeproject-hashiplayero/boardDB"
 	"innovativeproject-hashiplayero/hashi"
+	"innovativeproject-hashiplayero/internal/db"
 	"log"
 	"strconv"
 	"strings"
@@ -66,7 +66,7 @@ func createBoard(c *Client, r *Room) {
 	brd := strings.Join(b, ", ")
 	brd = "[" + brd + "]"
 	// Create board
-	p := boardDB.Board{
+	p := db.Board{
 		Board:      brd,
 		Difficulty: difficulty,
 		Size:       size,

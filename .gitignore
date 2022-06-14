@@ -212,3 +212,4 @@ rice-box.go
 package-lock.json
 
 sqlite.db
+hashi.db

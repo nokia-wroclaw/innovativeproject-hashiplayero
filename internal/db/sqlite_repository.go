@@ -1,4 +1,4 @@
-package boardDB
+package db
 
 // https://gosamples.dev/sqlite-intro/
 // File where we define an SQLiteRepository struct that will interact with the SQLite database

@@ -2,7 +2,7 @@ package server
 
 import (
 	"database/sql"
-	"innovativeproject-hashiplayero/boardDB"
+	"innovativeproject-hashiplayero/internal/db"
 	"log"
 	"os"
 
@@ -10,9 +10,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const fileName = "database/sqlite.db"
+const fileName = "database/hashi.db"
 
-var boardsDB *boardDB.SQLiteRepository
+var boardsDB *db.SQLiteRepository
 
 func Start() {
 	router := setRouter()
@@ -25,12 +25,12 @@ func Start() {
 	// Function registers the driver in the database/sql interface under the name sqlite3.
 	// Using the sql.Open() function with the registered sqlite3 driver name, we connect to a new SQLite database.
 	// The second argument is the data source name which in the case of SQLite is a path to the database file.
-	db, err := sql.Open("sqlite3", fileName)
+	dbConn, err := sql.Open("sqlite3", fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	boardsDB = boardDB.NewSQLiteRepository(db)
+	boardsDB = db.NewSQLiteRepository(dbConn)
 	if err := boardsDB.Migrate(); err != nil {
 		log.Fatal(err)
 	}
