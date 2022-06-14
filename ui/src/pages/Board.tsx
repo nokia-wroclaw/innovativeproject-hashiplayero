@@ -646,9 +646,9 @@ const Board = ({
                       shapes !== undefined
                         ? [
                             shapes[index]?.x - shapes[index]?.radius * 0.8,
-                            shapes[index]?.y - shapes[index]?.radius * 0.8,
-                            shapes[index]?.x + shapes[index]?.radius * 0.8,
                             shapes[index]?.y + shapes[index]?.radius * 0.8,
+                            shapes[index]?.x + shapes[index]?.radius * 0.8,
+                            shapes[index]?.y - shapes[index]?.radius * 0.8,
                           ]
                         : []
                     }
